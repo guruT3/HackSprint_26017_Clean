@@ -1335,30 +1335,9 @@
           </label>
           <label>Farm Location <span class="opt">(Auto Detect)</span></label>
 
-<div class="cp-location-wrap">
-    <input
-        type="text"
-        id="farm_location"
-        name="farm_location"
-        placeholder="Click 📍 to detect location"
-        value="{{ farm_input.farm_location if farm_input else '' }}">
 
-    <button type="button" id="gpsBtn" class="cp-gps-btn">
-        📍
-    </button>
-</div>
 
-<p class="cp-hint">
-    Click the location button to auto-fill your current location.
-</p>
 
-<label>Region <span class="opt">(optional)</span>
-    <select name="region">
-        {% for r in ["North","South","East","West","Central","North-East"] %}
-        <option value="{{ r }}">{{ r }}</option>
-        {% endfor %}
-    </select>
-</label>
 
           <label>Region <span class="opt">(optional)</span>
             <select name="region">
