@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Newsletter Management - FarmConnect</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 2rem;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            color: #666;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab.active {
+            color: #2E7D32;
+            border-bottom-color: #2E7D32;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 5px solid #4CAF50;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h3 {
+            color: #2E7D32;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(46, 125, 50, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #F44336, #D32F2F);
+        }
+
+        .newsletter-preview {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-top: 1rem;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .language-selector {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .language-option {
+            padding: 8px 16px;
+            border: 2px solid #4CAF50;
+            border-radius: 25px;
+            background: white;
+            color: #4CAF50;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .language-option.selected {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .content-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #f0f8f0;
+            border-radius: 10px;
+            border: 1px solid #c8e6c9;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left-color: #28a745;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left-color: #ffc107;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left-color: #dc3545;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4CAF50;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .recipient-list {
+            max-height: 300px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .recipient-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .recipient-item:last-child {
+            border-bottom: none;
+        }
+
+        .schedule-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .schedule-card {
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .schedule-card.selected {
+            border-color: #4CAF50;
+            background: #f0f8f0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 1.5rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                text-align: left;
+                padding: 0.8rem 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .language-selector {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📰 Weekly Newsletter System</h1>
+            <p>Automated multilingual newsletters for farmers worldwide</p>
+        </div>
+
+        <div class="main-content">
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('dashboard')">📊 Dashboard</button>
+                <button class="tab" onclick="showTab('content')">📝 Content Management</button>
+                <button class="tab" onclick="showTab('recipients')">👥 Recipients</button>
+                <button class="tab" onclick="showTab('schedule')">⏰ Schedule</button>
+                <button class="tab" onclick="showTab('analytics')">📈 Analytics</button>
+            </div>
+
+            <!-- Dashboard Tab -->
+            <div id="dashboard" class="tab-content active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalSubscribers">2,847</div>
+                        <div class="stat-label">Active Subscribers</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="newslettersSent">156</div>
+                        <div class="stat-label">Newsletters Sent</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="openRate">78%</div>
+                        <div class="stat-label">Average Open Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="supportedLanguages">12</div>
+                        <div class="stat-label">Supported Languages</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>🚀 Quick Actions</h3>
+                    <button class="btn" onclick="generateNewsletter()">Generate This Week's Newsletter</button>
+                    <button class="btn btn-secondary" onclick="sendTestNewsletter()">Send Test Newsletter</button>
+                    <button class="btn btn-danger" onclick="sendImmediateAlert()">Send Emergency Alert</button>
+                </div>
+
+                <div class="card">
+                    <h3>📋 Recent Activity</h3>
+                    <div id="recentActivity">
+                        <div class="alert alert-success">Newsletter sent to 2,847 subscribers in 12 languages (2 hours ago)</div>
+                        <div class="alert alert-warning">Disease alert: Late blight detected in Punjab region (5 hours ago)</div>
+                        <div class="alert alert-success">Weekly content updated for market opportunities (1 day ago)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Management Tab -->
+            <div id="content" class="tab-content">
+                <div class="card">
+                    <h3>🌐 Language Selection</h3>
+                    <div class="language-selector">
+                        <div class="language-option selected" data-lang="en">🇺🇸 English</div>
+                        <div class="language-option" data-lang="hi">🇮🇳 हिंदी</div>
+                        <div class="language-option" data-lang="pa">🇮🇳 ਪੰਜਾਬੀ</div>
+                        <div class="language-option" data-lang="te">🇮🇳 తెలుగు</div>
+                        <div class="language-option" data-lang="ta">🇮🇳 தமிழ்</div>
+                        <div class="language-option" data-lang="bn">🇧🇩 বাংলা</div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>💡 Tips of the Week</h3>
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" class="form-control" id="tipsTitle" placeholder="Enter weekly tip title">
+                    </div>
+                    <div class="form-group">
+                        <label>Content</label>
+                        <textarea class="form-control" id="tipsContent" rows="4" placeholder="Enter detailed farming tip content"></textarea>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>🚨 Disease Alerts</h3>
+                    <div class="form-group">
+                        <label>Alert Type</label>
+                        <select class="form-control" id="alertType">
+                            <option value="fungal">Fungal Disease</option>
+                            <option value="bacterial">Bacterial Disease</option>
+                            <option value="viral">Viral Disease</option>
+                            <option value="pest">Pest Alert</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Affected Regions</label>
+                        <input type="text" class="form-control" id="affectedRegions" placeholder="Enter regions (comma-separated)">
+                    </div>
+                    <div class="form-group">
+                        <label>Alert Description</label>
+                        <textarea class="form-control" id="alertDescription" rows="3" placeholder="Describe the disease/pest alert"></textarea>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>💰 Market Opportunities</h3>
+                    <div class="form-group">
+                        <label>Crop/Product</label>
+                        <input type="text" class="form-control" id="marketCrop" placeholder="Enter crop or product name">
+                    </div>
+                    <div class="form-group">
+                        <label>Current Price (per kg)</label>
+                        <input type="number" class="form-control" id="currentPrice" placeholder="Enter current market price">
+                    </div>
+                    <div class="form-group">
+                        <label>Market Location</label>
+                        <input type="text" class="form-control" id="marketLocation" placeholder="Enter market location">
+                    </div>
+                    <div class="form-group">
+                        <label>Opportunity Details</label>
+                        <textarea class="form-control" id="opportunityDetails" rows="3" placeholder="Enter market opportunity details"></textarea>
+                    </div>
+                </div>
+
+                <button class="btn" onclick="saveContent()">💾 Save Content</button>
+                <button class="btn btn-secondary" onclick="previewNewsletter()">👁️ Preview Newsletter</button>
+            </div>
+
+            <!-- Recipients Tab -->
+            <div id="recipients" class="tab-content">
+                <div class="card">
+                    <h3>👥 Subscriber Management</h3>
+                    <div class="form-group">
+                        <label>Filter by Region</label>
+                        <select class="form-control" id="regionFilter">
+                            <option value="">All Regions</option>
+                            <option value="punjab">Punjab</option>
+                            <option value="haryana">Haryana</option>
+                            <option value="uttar-pradesh">Uttar Pradesh</option>
+                            <option value="bihar">Bihar</option>
+                            <option value="west-bengal">West Bengal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Filter by Language</label>
+                        <select class="form-control" id="languageFilter">
+                            <option value="">All Languages</option>
+                            <option value="en">English</option>
+                            <option value="hi">Hindi</option>
+                            <option value="pa">Punjabi</option>
+                            <option value="te">Telugu</option>
+                            <option value="ta">Tamil</option>
+                            <option value="bn">Bengali</option>
+                        </select>
+                    </div>
+                    <button class="btn" onclick="loadRecipients()">🔍 Load Recipients</button>
+                </div>
+
+                <div class="card">
+                    <h3>📧 Recipient List</h3>
+                    <div class="recipient-list" id="recipientList">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <p>Loading recipients...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>➕ Add New Subscriber</h3>
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" class="form-control" id="newSubscriberName" placeholder="Enter subscriber name">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" class="form-control" id="newSubscriberEmail" placeholder="Enter email address">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" class="form-control" id="newSubscriberPhone" placeholder="Enter phone number">
+                    </div>
+                    <div class="form-group">
+                        <label>Preferred Language</label>
+                        <select class="form-control" id="newSubscriberLanguage">
+                            <option value="en">English</option>
+                            <option value="hi">Hindi</option>
+                            <option value="pa">Punjabi</option>
+                            <option value="te">Telugu</option>
+                            <option value="ta">Tamil</option>
+                            <option value="bn">Bengali</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Region</label>
+                        <input type="text" class="form-control" id="newSubscriberRegion" placeholder="Enter region/location">
+                    </div>
+                    <button class="btn" onclick="addSubscriber()">➕ Add Subscriber</button>
+                </div>
+            </div>
+
+            <!-- Schedule Tab -->
+            <div id="schedule" class="tab-content">
+                <div class="card">
+                    <h3>⏰ Newsletter Schedule</h3>
+                    <div class="schedule-options">
+                        <div class="schedule-card selected" data-schedule="weekly">
+                            <h4>📅 Weekly</h4>
+                            <p>Every Sunday at 8:00 AM</p>
+                        </div>
+                        <div class="schedule-card" data-schedule="biweekly">
+                            <h4>📅 Bi-Weekly</h4>
+                            <p>Every 2nd Sunday</p>
+                        </div>
+                        <div class="schedule-card" data-schedule="monthly">
+                            <h4>📅 Monthly</h4>
+                            <p>1st Sunday of month</p>
+                        </div>
+                        <div class="schedule-card" data-schedule="custom">
+                            <h4>📅 Custom</h4>
+                            <p>Set your own schedule</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>🕐 Custom Schedule Settings</h3>
+                    <div class="form-group">
+                        <label>Send Day</label>
+                        <select class="form-control" id="sendDay">
+                            <option value="0">Sunday</option>
+                            <option value="1">Monday</option>
+                            <option value="2">Tuesday</option>
+                            <option value="3">Wednesday</option>
+                            <option value="4">Thursday</option>
+                            <option value="5">Friday</option>
+                            <option value="6">Saturday</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Send Time</label>
+                        <input type="time" class="form-control" id="sendTime" value="08:00">
+                    </div>
+                    <div class="form-group">
+                        <label>Timezone</label>
+                        <select class="form-control" id="timezone">
+                            <option value="Asia/Kolkata">India Standard Time (IST)</option>
+                            <option value="Asia/Dhaka">Bangladesh Standard Time</option>
+                            <option value="Asia/Karachi">Pakistan Standard Time</option>
+                        </select>
+                    </div>
+                    <button class="btn" onclick="saveSchedule()">💾 Save Schedule</button>
+                </div>
+
+                <div class="card">
+                    <h3>📋 Upcoming Newsletters</h3>
+                    <div id="upcomingNewsletters">
+                        <div class="alert alert-success">
+                            <strong>Next Newsletter:</strong> Sunday, September 15, 2025 at 8:00 AM IST
+                        </div>
+                        <div class="alert alert-warning">
+                            <strong>Content Status:</strong> Ready for review and sending
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div id="analytics" class="tab-content">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">89%</div>
+                        <div class="stat-label">Delivery Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">67%</div>
+                        <div class="stat-label">SMS Open Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">34%</div>
+                        <div class="stat-label">Click Through Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">2.3%</div>
+                        <div class="stat-label">Unsubscribe Rate</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>📊 Language Performance</h3>
+                    <div id="languageAnalytics">
+                        <div class="alert alert-success">Hindi: 45% of subscribers, 82% open rate</div>
+                        <div class="alert alert-success">English: 25% of subscribers, 75% open rate</div>
+                        <div class="alert alert-success">Punjabi: 15% of subscribers, 88% open rate</div>
+                        <div class="alert alert-success">Telugu: 10% of subscribers, 71% open rate</div>
+                        <div class="alert alert-success">Tamil: 3% of subscribers, 79% open rate</div>
+                        <div class="alert alert-success">Bengali: 2% of subscribers, 85% open rate</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>🌍 Regional Performance</h3>
+                    <div id="regionalAnalytics">
+                        <div class="alert alert-success">Punjab: 892 subscribers, 91% engagement</div>
+                        <div class="alert alert-success">Haryana: 743 subscribers, 87% engagement</div>
+                        <div class="alert alert-success">Uttar Pradesh: 654 subscribers, 76% engagement</div>
+                        <div class="alert alert-success">Bihar: 421 subscribers, 83% engagement</div>
+                        <div class="alert alert-success">West Bengal: 137 subscribers, 94% engagement</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Newsletter Preview Modal -->
+            <div id="previewModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000;">
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 600px; max-height: 90%; overflow-y: auto; background: white; border-radius: 15px; padding: 2rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h2>📧 Newsletter Preview</h2>
+                        <button onclick="closePreview()" style="background: none; border: none; font-size: 2rem; cursor: pointer;">×</button>
+                    </div>
+                    <div id="previewContent" class="newsletter-preview">
+                        <!-- Preview content will be generated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock data
+        const mockRecipients = [
+            { id: 1, name: 'Rajesh Kumar', email: 'rajesh@example.com', phone: '+91-9876543210', language: 'hi', region: 'Punjab' },
+            { id: 2, name: 'Priya Singh', email: 'priya@example.com', phone: '+91-9876543211', language: 'en', region: 'Haryana' },
+            { id: 3, name: 'Gurpreet Singh', email: 'gurpreet@example.com', phone: '+91-9876543212', language: 'pa', region: 'Punjab' },
+            { id: 4, name: 'Ravi Sharma', email: 'ravi@example.com', phone: '+91-9876543213', language: 'hi', region: 'Uttar Pradesh' },
+            { id: 5, name: 'Sunita Devi', email: 'sunita@example.com', phone: '+91-9876543214', language: 'hi', region: 'Bihar' }
+        ];
+
+        const translations = {
+            en: {
+                tipsTitle: 'Smart Irrigation Techniques',
+                tipsContent: 'Learn how to optimize water usage in your fields using drip irrigation and moisture sensors. This week, we focus on water conservation methods that can increase your crop yield by up to 30% while reducing water consumption by 40%.',
+                diseaseAlert: 'Late Blight Alert in Northern Regions',
+                diseaseDescription: 'Farmers in Punjab and Haryana should watch for late blight symptoms on potato and tomato crops. Apply preventive fungicide sprays immediately.',
+                marketOpportunity: 'High Demand for Organic Wheat',
+                marketDetails: 'Organic wheat prices have increased by 25% this week. Contact local buyers in Chandigarh and Delhi markets for immediate sales opportunities.'
+            },
+            hi: {
+                tipsTitle: 'स्मार्ट सिंचाई तकनीक',
+                tipsContent: 'ड्रिप सिंचाई और नमी सेंसर का उपयोग करके अपने खेतों में पानी के उपयोग को अनुकूलित करना सीखें। इस सप्ताह हम पानी संरक्षण के तरीकों पर ध्यान देते हैं।',
+                diseaseAlert: 'उत्तरी क्षेत्रों में देर से झुलसा रोग की चेतावनी',
+                diseaseDescription: 'पंजाब और हरियाणा के किसानों को आलू और टमाटर की फसलों पर देर से झुलसा के लक्षणों पर नजर रखनी चाहिए।',
+                marketOpportunity: 'जैविक गेहूं की उच्च मांग',
+                marketDetails: 'जैविक गेहूं की कीमतों में इस सप्ताह 25% की वृद्धि हुई है। तत्काल बिक्री के अवसरों के लिए चंडीगढ़ और दिल्ली बाजारों के स्थानीय खरीदारों से संपर्क करें।'
+            },
+            pa: {
+                tipsTitle: 'ਸਮਾਰਟ ਸਿੰਚਾਈ ਤਕਨੀਕ',
+                tipsContent: 'ਡ੍ਰਿਪ ਸਿੰਚਾਈ ਅਤੇ ਨਮੀ ਸੈਂਸਰਾਂ ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਆਪਣੇ ਖੇਤਾਂ ਵਿੱਚ ਪਾਣੀ ਦੀ ਵਰਤੋਂ ਨੂੰ ਅਨੁਕੂਲ ਬਣਾਉਣਾ ਸਿੱਖੋ।',
+                diseaseAlert: 'ਉੱਤਰੀ ਖੇਤਰਾਂ ਵਿੱਚ ਲੇਟ ਬਲਾਈਟ ਚੇਤਾਵਨੀ',
+                diseaseDescription: 'ਪੰਜਾਬ ਅਤੇ ਹਰਿਆਣਾ ਦੇ ਕਿਸਾਨਾਂ ਨੂੰ ਆਲੂ ਅਤੇ ਟਮਾਟਰ ਦੀਆਂ ਫਸਲਾਂ ਵਿੱਚ ਲੇਟ ਬਲਾਈਟ ਦੇ ਲੱਛਣਾਂ ਲਈ ਦੇਖਣਾ ਚਾਹੀਦਾ ਹੈ।',
+                marketOpportunity: 'ਜੈਵਿਕ ਕਣਕ ਦੀ ਉੱਚ ਮੰਗ',
+                marketDetails: 'ਜੈਵਿਕ ਕਣਕ ਦੀਆਂ ਕੀਮਤਾਂ ਇਸ ਹਫ਼ਤੇ 25% ਵਧੀਆਂ ਹਨ। ਤੁਰੰਤ ਵਿਕਰੀ ਦੇ ਮੌਕਿਆਂ ਲਈ ਚੰਡੀਗੜ੍ਹ ਅਤੇ ਦਿੱਲੀ ਮੰਡੀਆਂ ਵਿੱਚ ਸਥਾਨਕ ਖਰੀਦਦਾਰਾਂ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।'
+            }
+        };
+
+        let currentLanguage = 'en';
+        let scheduleType = 'weekly';
+
+        // Tab functionality
+        function showTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Language selection
+        document.querySelectorAll('.language-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.language-option').forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                currentLanguage = this.dataset.lang;
+                updateContentForLanguage();
+            });
+        });
+
+        function updateContentForLanguage() {
+            const lang = translations[currentLanguage];
+            if (lang) {
+                document.getElementById('tipsTitle').value = lang.tipsTitle;
+                document.getElementById('tipsContent').value = lang.tipsContent;
+                document.getElementById('alertDescription').value = lang.diseaseDescription;
+                document.getElementById('opportunityDetails').value = lang.marketDetails;
+            }
+        }
+
+        // Schedule selection
+        document.querySelectorAll('.schedule-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.schedule-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                scheduleType = this.dataset.schedule;
+            });
+        });
+
+        // Main functionality
+        function generateNewsletter() {
+            showLoading('Generating newsletter content...');
+            
+            setTimeout(() => {
+                hideLoading();
+                showAlert('Newsletter content generated successfully for all languages!', 'success');
+                updateStats();
+            }, 2000);
+        }
+
+        function sendTestNewsletter() {
+            showLoading('Sending test newsletter...');
+            
+            setTimeout(() => {
+                hideLoading();
+                showAlert('Test newsletter sent to admin email addresses!', 'success');
+            }, 1500);
+        }
+
+        function sendImmediateAlert() {
+            const alertType = prompt('Enter alert type (disease/weather/market):');
+            if (alertType) {
+                showLoading('Sending emergency alert...');
+                
+                setTimeout(() => {
+                    hideLoading();
+                    showAlert(`Emergency ${alertType} alert sent to all subscribers!`, 'success');
+                }, 1000);
+            }
+        }
+
+        function saveContent() {
+            showLoading('Saving content...');
+            
+            setTimeout(() => {
+                hideLoading();
+                showAlert('Content saved successfully!', 'success');
+            }, 1000);
+        }
+
+        function previewNewsletter() {
+            const previewContent = generatePreviewContent();
+            document.getElementById('previewContent').innerHTML = previewContent;
+            document.getElementById('previewModal').style.display = 'block';
+        }
+
+        function closePreview() {
+            document.getElementById('previewModal').style.display = 'none';
+        }
+
+        function generatePreviewContent() {
+            const lang = translations[currentLanguage];
+            return `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <div style="background: linear-gradient(135deg, #4CAF50, #2E7D32); color: white; padding: 20px; text-align: center;">
+                        <h1>🌾 FarmConnect Weekly</h1>
+                        <p>Your weekly farming newsletter</p>
+                    </div>
+                    
+                    <div style="padding: 20px;">
+                        <h2 style="color: #2E7D32;">💡 ${lang ? lang.tipsTitle : 'Tips of the Week'}</h2>
+                        <p>${lang ? lang.tipsContent : 'Weekly farming tips content...'}</p>
+                        
+                        <h2 style="color: #F44336;">🚨 ${lang ? lang.diseaseAlert : 'Disease Alerts'}</h2>
+                        <p>${lang ? lang.diseaseDescription : 'Disease alert information...'}</p>
+                        
+                        <h2 style="color: #FF9800;">💰 ${lang ? lang.marketOpportunity : 'Market Opportunities'}</h2>
+                        <p>${lang ? lang.marketDetails : 'Market opportunity details...'}</p>
+                        
+                        <div style="background: #f0f8f0; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                            <p style="margin: 0; text-align: center; color: #2E7D32;">
+                                📞 Need help? Call our support: 1800-123-4567<br>
+                                🌐 Visit: www.farmconnect.com
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadRecipients() {
+            const regionFilter = document.getElementById('regionFilter').value;
+            const languageFilter = document.getElementById('languageFilter').value;
+            
+            showLoading('Loading recipients...');
+            
+            setTimeout(() => {
+                let filteredRecipients = mockRecipients;
+                
+                if (regionFilter) {
+                    filteredRecipients = filteredRecipients.filter(r => r.region.toLowerCase().includes(regionFilter.toLowerCase()));
+                }
+                
+                if (languageFilter) {
+                    filteredRecipients = filteredRecipients.filter(r => r.language === languageFilter);
+                }
+                
+                displayRecipients(filteredRecipients);
+                hideLoading();
+            }, 1000);
+        }
+
+        function displayRecipients(recipients) {
+            const recipientList = document.getElementById('recipientList');
+            
+            if (recipients.length === 0) {
+                recipientList.innerHTML = '<p style="text-align: center; padding: 2rem;">No recipients found matching the criteria.</p>';
+                return;
+            }
+            
+            const recipientHTML = recipients.map(recipient => `
+                <div class="recipient-item">
+                    <div>
+                        <strong>${recipient.name}</strong><br>
+                        <small>${recipient.email} | ${recipient.phone}</small><br>
+                        <small>Language: ${recipient.language.toUpperCase()} | Region: ${recipient.region}</small>
+                    </div>
+                    <button class="btn btn-danger" onclick="removeRecipient(${recipient.id})" style="padding: 5px 10px; font-size: 0.8rem;">Remove</button>
+                </div>
+            `).join('');
+            
+            recipientList.innerHTML = recipientHTML;
+        }
+
+        function addSubscriber() {
+            const name = document.getElementById('newSubscriberName').value;
+            const email = document.getElementById('newSubscriberEmail').value;
+            const phone = document.getElementById('newSubscriberPhone').value;
+            const language = document.getElementById('newSubscriberLanguage').value;
+            const region = document.getElementById('newSubscriberRegion').value;
+            
+            if (!name || !email || !phone || !region) {
+                showAlert('Please fill in all required fields!', 'error');
+                return;
+            }
+            
+            showLoading('Adding subscriber...');
+            
+            setTimeout(() => {
+                const newSubscriber = {
+                    id: mockRecipients.length + 1,
+                    name, email, phone, language, region
+                };
+                
+                mockRecipients.push(newSubscriber);
+                
+                // Clear form
+                document.getElementById('newSubscriberName').value = '';
+                document.getElementById('newSubscriberEmail').value = '';
+                document.getElementById('newSubscriberPhone').value = '';
+                document.getElementById('newSubscriberRegion').value = '';
+                
+                hideLoading();
+                showAlert('Subscriber added successfully!', 'success');
+                updateStats();
+            }, 1000);
+        }
+
+        function removeRecipient(id) {
+            if (confirm('Are you sure you want to remove this subscriber?')) {
+                showLoading('Removing subscriber...');
+                
+                setTimeout(() => {
+                    const index = mockRecipients.findIndex(r => r.id === id);
+                    if (index !== -1) {
+                        mockRecipients.splice(index, 1);
+                        loadRecipients(); // Refresh the list
+                        showAlert('Subscriber removed successfully!', 'success');
+                        updateStats();
+                    }
+                    hideLoading();
+                }, 500);
+            }
+        }
+
+        function saveSchedule() {
+            showLoading('Saving schedule...');
+            
+            setTimeout(() => {
+                hideLoading();
+                showAlert('Newsletter schedule updated successfully!', 'success');
+            }, 1000);
+        }
+
+        function updateStats() {
+            document.getElementById('totalSubscribers').textContent = mockRecipients.length.toLocaleString();
+            
+            // Animate the number change
+            const totalElement = document.getElementById('totalSubscribers');
+            totalElement.style.transform = 'scale(1.2)';
+            totalElement.style.color = '#4CAF50';
+            
+            setTimeout(() => {
+                totalElement.style.transform = 'scale(1)';
+                totalElement.style.color = 'white';
+            }, 500);
+        }
+
+        // Utility functions
+        function showLoading(message) {
+            const loadingHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>${message}</p>
+                </div>
+            `;
+            
+            // Find the active tab and show loading
+            const activeTab = document.querySelector('.tab-content.active');
+            const existingLoading = activeTab.querySelector('.loading-overlay');
+            
+            if (!existingLoading) {
+                const loadingOverlay = document.createElement('div');
+                loadingOverlay.className = 'loading-overlay';
+                loadingOverlay.style.cssText = `
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(255, 255, 255, 0.9);
+                    z-index: 100;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                `;
+                loadingOverlay.innerHTML = loadingHTML;
+                activeTab.style.position = 'relative';
+                activeTab.appendChild(loadingOverlay);
+            }
+        }
+
+        function hideLoading() {
+            document.querySelectorAll('.loading-overlay').forEach(overlay => {
+                overlay.remove();
+            });
+        }
+
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            alertDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 1000;
+                min-width: 300px;
+                animation: slideIn 0.3s ease-out;
+            `;
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.style.animation = 'slideIn 0.3s ease-out reverse';
+                setTimeout(() => alertDiv.remove(), 300);
+            }, 3000);
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            updateContentForLanguage();
+            loadRecipients();
+            
+            // Add click events for tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabName = this.textContent.toLowerCase().split(' ')[1];
+                    showTab(tabName);
+                });
+            });
+        });
+
+        // Mock API calls simulation
+        const mockAPI = {
+            async sendNewsletter(recipients, content, language) {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve({
+                            success: true,
+                            sent: recipients.length,
+                            language: language
+                        });
+                    }, Math.random() * 2000 + 1000);
+                });
+            },
+            
+            async sendSMS(phoneNumber, message, language) {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve({
+                            success: Math.random() > 0.1, // 90% success rate
+                            phoneNumber: phoneNumber,
+                            language: language
+                        });
+                    }, Math.random() * 1000 + 500);
+                });
+            },
+            
+            async getWeatherAlerts(region) {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        const alerts = [
+                            { type: 'rain', severity: 'moderate', region: region },
+                            { type: 'drought', severity: 'high', region: region }
+                        ];
+                        resolve(alerts[Math.floor(Math.random() * alerts.length)]);
+                    }, 1000);
+                });
+            },
+            
+            async getMarketPrices(crop, region) {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve({
+                            crop: crop,
+                            region: region,
+                            price: Math.floor(Math.random() * 1000) + 500,
+                            change: Math.floor(Math.random() * 20) - 10
+                        });
+                    }, 800);
+                });
+            }
+        };
+
+        // Advanced features
+        async function sendAutomatedNewsletter() {
+            showLoading('Preparing automated newsletter...');
+            
+            const languages = ['en', 'hi', 'pa', 'te', 'ta', 'bn'];
+            const results = [];
+            
+            for (const lang of languages) {
+                const langRecipients = mockRecipients.filter(r => r.language === lang);
+                if (langRecipients.length > 0) {
+                    const content = generateNewsletterContent(lang);
+                    const result = await mockAPI.sendNewsletter(langRecipients, content, lang);
+                    results.push(result);
+                    
+                    // Send SMS notifications
+                    for (const recipient of langRecipients) {
+                        const smsContent = generateSMSContent(lang);
+                        await mockAPI.sendSMS(recipient.phone, smsContent, lang);
+                    }
+                }
+            }
+            
+            hideLoading();
+            const totalSent = results.reduce((sum, r) => sum + r.sent, 0);
+            showAlert(`Newsletter sent to ${totalSent} subscribers in ${results.length} languages!`, 'success');
+        }
+
+        function generateNewsletterContent(language) {
+            const content = translations[language] || translations['en'];
+            return {
+                subject: `FarmConnect Weekly - ${new Date().toLocaleDateString()}`,
+                tips: content.tipsContent,
+                alerts: content.diseaseDescription,
+                market: content.marketDetails
+            };
+        }
+
+        function generateSMSContent(language) {
+            const content = translations[language] || translations['en'];
+            return `FarmConnect: ${content.tipsTitle}. Check email for full newsletter. Reply STOP to unsubscribe.`;
+        }
+
+        // Regional disease monitoring
+        async function checkRegionalAlerts() {
+            const regions = ['Punjab', 'Haryana', 'Uttar Pradesh', 'Bihar', 'West Bengal'];
+            
+            for (const region of regions) {
+                const alert = await mockAPI.getWeatherAlerts(region);
+                if (alert.severity === 'high') {
+                    await sendEmergencyAlert(region, alert);
+                }
+            }
+        }
+
+        async function sendEmergencyAlert(region, alert) {
+            const regionalRecipients = mockRecipients.filter(r => r.region === region);
+            const alertMessage = `URGENT: ${alert.type.toUpperCase()} alert for ${region}. Take immediate precautions.`;
+            
+            for (const recipient of regionalRecipients) {
+                await mockAPI.sendSMS(recipient.phone, alertMessage, recipient.language);
+            }
+            
+            showAlert(`Emergency alert sent to ${regionalRecipients.length} farmers in ${region}`, 'warning');
+        }
+
+        // Market price monitoring
+        async function updateMarketPrices() {
+            const crops = ['wheat', 'rice', 'cotton', 'sugarcane', 'maize'];
+            const regions = ['Punjab', 'Haryana', 'Uttar Pradesh'];
+            
+            for (const crop of crops) {
+                for (const region of regions) {
+                    const priceData = await mockAPI.getMarketPrices(crop, region);
+                    if (Math.abs(priceData.change) > 15) {
+                        await notifyPriceChange(crop, region, priceData);
+                    }
+                }
+            }
+        }
+
+        async function notifyPriceChange(crop, region, priceData) {
+            const relevantFarmers = mockRecipients.filter(r => r.region === region);
+            const direction = priceData.change > 0 ? 'increased' : 'decreased';
+            const message = `${crop.toUpperCase()} price ${direction} by ${Math.abs(priceData.change)}% in ${region}. Current: ₹${priceData.price}/kg`;
+            
+            for (const farmer of relevantFarmers) {
+                await mockAPI.sendSMS(farmer.phone, message, farmer.language);
+            }
+        }
+
+        // Automated scheduling
+        setInterval(async () => {
+            const now = new Date();
+            if (now.getDay() === 0 && now.getHours() === 8 && now.getMinutes() === 0) { // Sunday 8 AM
+                await sendAutomatedNewsletter();
+            }
+        }, 60000); // Check every minute
+
+        // Background monitoring
+        setInterval(checkRegionalAlerts, 3600000); // Check every hour
+        setInterval(updateMarketPrices, 1800000); // Check every 30 minutes
+    </script>
+</body>
+</html>

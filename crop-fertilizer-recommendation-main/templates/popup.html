@@ -1,0 +1,378 @@
+{% extends "base.html" %}
+
+{% block title %}Government Schemes for Farmers{% endblock %}
+
+{% block content %}
+<style>
+    .schemes-page {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 20px 0;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        position: relative;
+    }
+
+    .login-btn {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        background: #4CAF50;
+        color: white;
+        padding: 10px 25px;
+        border: none;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: background 0.3s;
+    }
+
+    .login-btn:hover {
+        background: #2E7D32;
+        text-decoration: none;
+        color: white;
+    }
+
+    .page-header h1 {
+        color: #2E7D32;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        font-weight: 700;
+    }
+
+    .page-header p {
+        color: #666;
+        font-size: 1.2rem;
+    }
+
+    .schemes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+    }
+
+    .scheme-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+        border-left: 5px solid #4CAF50;
+    }
+
+    .scheme-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    .scheme-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .scheme-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #4CAF50, #2E7D32);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 24px;
+        margin-right: 15px;
+    }
+
+    .scheme-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #2E7D32;
+        margin: 0;
+    }
+
+    .scheme-amount {
+        background: #E8F5E8;
+        color: #2E7D32;
+        padding: 6px 15px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        display: inline-block;
+        margin: 10px 0;
+    }
+
+    .scheme-desc {
+        color: #555;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        font-size: 1rem;
+    }
+
+    .scheme-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .scheme-btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        font-size: 0.95rem;
+    }
+
+    .btn-primary {
+        background: #4CAF50;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #2E7D32;
+        text-decoration: none;
+        color: white;
+    }
+
+    .btn-secondary {
+        background: #fff;
+        color: #4CAF50;
+        border: 2px solid #4CAF50;
+    }
+
+    .btn-secondary:hover {
+        background: #4CAF50;
+        color: white;
+        text-decoration: none;
+    }
+
+    .highlight-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #FF6B35;
+        color: white;
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .continue-section {
+        text-align: center;
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .continue-btn {
+        background: linear-gradient(135deg, #FF6B35, #F7931E);
+        color: white;
+        padding: 15px 40px;
+        border: none;
+        border-radius: 25px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.3s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .continue-btn:hover {
+        transform: scale(1.05);
+        text-decoration: none;
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .schemes-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .page-header h1 {
+            font-size: 2rem;
+        }
+        
+        .login-btn {
+            position: static;
+            margin-top: 15px;
+            display: inline-block;
+        }
+        
+        .scheme-header {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .scheme-icon {
+            margin-right: 0;
+            margin-bottom: 10px;
+        }
+    }
+</style>
+
+<div class="schemes-page">
+    <div class="container">
+        <div class="page-header">
+            <a href="{{ url_for('login') }}" class="login-btn">Login</a>
+            
+            <h1>Government Schemes for Farmers</h1>
+            <p>Explore financial aid, insurance, and support programs available for Indian farmers</p>
+        </div>
+        
+
+        <div class="schemes-grid">
+            <!-- PM-KISAN Scheme -->
+            <div class="scheme-card" style="position: relative;">
+                <div class="highlight-badge">Most Popular</div>
+                <div class="scheme-header">
+                    <div class="scheme-icon">💰</div>
+                    <h3 class="scheme-title">PM-KISAN</h3>
+                </div>
+                <div class="scheme-amount">₹6,000 per year</div>
+                <p class="scheme-desc">Direct income support provided to small and marginal landholding farmers in three equal installments of ₹2,000 each.</p>
+                <div class="scheme-actions">
+                    <a href="https://pmkisan.gov.in" target="_blank" class="scheme-btn btn-primary">Apply Online</a>
+                    <a href="https://pmkisan.gov.in/beneficiaryStatus.aspx" target="_blank" class="scheme-btn btn-secondary">Check Status</a>
+                </div>
+            </div>
+
+            <!-- PMFBY Crop Insurance -->
+            <div class="scheme-card">
+                <div class="scheme-header">
+                    <div class="scheme-icon">🛡️</div>
+                    <h3 class="scheme-title">PMFBY - Crop Insurance</h3>
+                </div>
+                <div class="scheme-amount">Premium: 2% for Kharif, 1.5% for Rabi</div>
+                <p class="scheme-desc">Comprehensive crop insurance scheme providing financial support against yield losses due to natural calamities, pests and diseases.</p>
+                <div class="scheme-actions">
+                    <a href="https://pmfby.gov.in" target="_blank" class="scheme-btn btn-primary">Enroll Now</a>
+                    <a href="https://pmfby.gov.in/companyLoginPage" target="_blank" class="scheme-btn btn-secondary">Track Claim</a>
+                </div>
+            </div>
+
+            <!-- PMKSY Irrigation -->
+            <div class="scheme-card">
+                <div class="scheme-header">
+                    <div class="scheme-icon">💧</div>
+                    <h3 class="scheme-title">PMKSY - Har Khet Ko Pani</h3>
+                </div>
+                <div class="scheme-amount">Up to 90% subsidy</div>
+                <p class="scheme-desc">Micro-irrigation scheme focused on water use efficiency. Achieve "more crop per drop" through drip and sprinkler irrigation systems.</p>
+                <div class="scheme-actions">
+                    <a href="https://pmksy.gov.in" target="_blank" class="scheme-btn btn-primary">Apply</a>
+                    <a href="https://pmksy.gov.in/MicroHomePage.aspx" target="_blank" class="scheme-btn btn-secondary">Learn More</a>
+                </div>
+            </div>
+
+            <!-- KUSUM Solar Scheme -->
+            <div class="scheme-card" style="position: relative;">
+                <div class="highlight-badge">Green Energy</div>
+                <div class="scheme-header">
+                    <div class="scheme-icon">☀️</div>
+                    <h3 class="scheme-title">KUSUM - Solar Pumps</h3>
+                </div>
+                <div class="scheme-amount">60% central + state subsidy</div>
+                <p class="scheme-desc">Solar irrigation pumps and grid-connected solar power plants. Reduce electricity bills and earn additional income.</p>
+                <div class="scheme-actions">
+                    <a href="https://kusum.online" target="_blank" class="scheme-btn btn-primary">Register</a>
+                    <a href="https://mnre.gov.in/solar/schemes/kusum/" target="_blank" class="scheme-btn btn-secondary">Guidelines</a>
+                </div>
+            </div>
+
+            <!-- PKVY Organic Farming -->
+            <div class="scheme-card">
+                <div class="scheme-header">
+                    <div class="scheme-icon">🌱</div>
+                    <h3 class="scheme-title">PKVY - Organic Farming</h3>
+                </div>
+                <div class="scheme-amount">₹50,000 per hectare</div>
+                <p class="scheme-desc">Support for organic farming through cluster approach. Includes training, inputs, certification, and marketing assistance.</p>
+                <div class="scheme-actions">
+                    <a href="https://pgsindia-ncof.gov.in" target="_blank" class="scheme-btn btn-primary">Join Cluster</a>
+                    <a href="https://www.ncof.dacnet.nic.in" target="_blank" class="scheme-btn btn-secondary">Find Center</a>
+                </div>
+            </div>
+
+            <!-- Agriculture Infrastructure Fund -->
+            <div class="scheme-card">
+                <div class="scheme-header">
+                    <div class="scheme-icon">🏗️</div>
+                    <h3 class="scheme-title">Agriculture Infrastructure Fund</h3>
+                </div>
+                <div class="scheme-amount">3% interest subvention + credit guarantee</div>
+                <p class="scheme-desc">Financing facility for post-harvest infrastructure like cold storage, warehouses, processing units, and supply chain projects.</p>
+                <div class="scheme-actions">
+                    <a href="https://agriinfra.dac.gov.in" target="_blank" class="scheme-btn btn-primary">Apply for Loan</a>
+                    <a href="https://agriinfra.dac.gov.in/Statistics/PublicDashboard.aspx" target="_blank" class="scheme-btn btn-secondary">View Progress</a>
+                </div>
+            </div>
+
+            <!-- Soil Health Card -->
+            <div class="scheme-card">
+                <div class="scheme-header">
+                    <div class="scheme-icon">🧪</div>
+                    <h3 class="scheme-title">Soil Health Card Scheme</h3>
+                </div>
+                <div class="scheme-amount">Free soil testing</div>
+                <p class="scheme-desc">Get your soil tested for free and receive personalized fertilizer recommendations to improve soil health and crop productivity.</p>
+                <div class="scheme-actions">
+                    <a href="https://soilhealth.dac.gov.in" target="_blank" class="scheme-btn btn-primary">Register Land</a>
+                    <a href="https://soilhealth.dac.gov.in/PublicReports/StateWise" target="_blank" class="scheme-btn btn-secondary">View Reports</a>
+                </div>
+            </div>
+
+            <!-- eNAM Online Trading -->
+            <div class="scheme-card">
+                <div class="scheme-header">
+                    <div class="scheme-icon">📱</div>
+                    <h3 class="scheme-title">eNAM - Online Market</h3>
+                </div>
+                <div class="scheme-amount">Better price discovery</div>
+                <p class="scheme-desc">National Agriculture Market platform for transparent price discovery and online trading of agricultural commodities.</p>
+                <div class="scheme-actions">
+                    <a href="https://enam.gov.in/web/" target="_blank" class="scheme-btn btn-primary">Register to Trade</a>
+                    <a href="https://enam.gov.in/web/dhanyalakshmi/price-report" target="_blank" class="scheme-btn btn-secondary">Check Prices</a>
+                </div>
+            </div>
+
+            <!-- PMMSY Fisheries -->
+            <div class="scheme-card">
+                <div class="scheme-header">
+                    <div class="scheme-icon">🐟</div>
+                    <h3 class="scheme-title">PMMSY - Fisheries Development</h3>
+                </div>
+                <div class="scheme-amount">60% subsidy for general, 90% for SC/ST</div>
+                <p class="scheme-desc">Infrastructure development for fisheries including fish ponds, hatcheries, feed mills, cold storage and marketing facilities.</p>
+                <div class="scheme-actions">
+                    <a href="https://pmmsy.dof.gov.in" target="_blank" class="scheme-btn btn-primary">Apply</a>
+                    <a href="https://pmmsy.dof.gov.in/Dashboard/PublicDashboard" target="_blank" class="scheme-btn btn-secondary">Dashboard</a>
+                </div>
+            </div>
+        </div>
+
+       
+    </div>
+</div>
+{% endblock %}

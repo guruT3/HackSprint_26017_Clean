@@ -1,0 +1,992 @@
+{% extends "base.html" %}
+
+{% block title %}Smart Farm Location & Soil Intelligence - AGRI MITRA{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+    /* ── DESIGN SYSTEM & CSS VARIABLES ── */
+    :root {
+        --primary-dark: #123d1f;
+        --primary: #1f6030;
+        --primary-light: #3a7d44;
+        --primary-pale: #eef7f0;
+        --accent-orange: #e8621a;
+        --accent-orange-hover: #d05312;
+        --accent-amber: #f59e0b;
+        --accent-blue: #0284c7;
+        --bg-page: #f6f8f6;
+        --card-bg: #ffffff;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --border-color: #e2ece4;
+        --shadow-sm: 0 4px 12px rgba(18, 61, 31, 0.04);
+        --shadow-md: 0 10px 30px rgba(18, 61, 31, 0.08);
+        --shadow-lg: 0 20px 40px rgba(18, 61, 31, 0.12);
+        --radius-lg: 20px;
+        --radius-md: 14px;
+        --radius-sm: 10px;
+    }
+
+    body {
+        background-color: var(--bg-page);
+        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    }
+
+    .smart-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 32px 20px 80px;
+        color: var(--text-dark);
+    }
+
+    /* ── HERO BANNER ── */
+    .smart-hero {
+        position: relative;
+        background: linear-gradient(135deg, #0f361a 0%, #1f6030 55%, #e8621a 120%);
+        border-radius: var(--radius-lg);
+        color: #fff;
+        padding: 44px clamp(24px, 5vw, 60px);
+        margin-bottom: 32px;
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+    }
+
+    .smart-hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .hero-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        padding: 6px 14px;
+        border-radius: 30px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        margin-bottom: 16px;
+    }
+
+    .smart-hero h1 {
+        margin: 0 0 12px;
+        font-size: clamp(2rem, 3.8vw, 2.9rem);
+        font-weight: 800;
+        line-height: 1.2;
+        letter-spacing: -0.5px;
+    }
+
+    .smart-hero p {
+        max-width: 720px;
+        margin: 0;
+        color: rgba(255, 255, 255, 0.92);
+        font-size: 1.08rem;
+        line-height: 1.6;
+        font-weight: 400;
+    }
+
+    /* ── STEP BADGES ── */
+    .step-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--primary-pale);
+        color: var(--primary-dark);
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+        border: 1px solid rgba(31, 96, 48, 0.15);
+    }
+
+    /* ── GRID & CARDS ── */
+    .smart-grid {
+        display: grid;
+        grid-template-columns: minmax(320px, 0.95fr) minmax(340px, 1.05fr);
+        gap: 28px;
+    }
+
+    .smart-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 28px;
+        box-shadow: var(--shadow-md);
+        margin-bottom: 28px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .smart-card:hover {
+        box-shadow: var(--shadow-lg);
+    }
+
+    .smart-card h2 {
+        color: var(--primary-dark);
+        font-size: 1.35rem;
+        margin: 0 0 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+        letter-spacing: -0.3px;
+    }
+
+    /* ── NOTICE BOXES ── */
+    .privacy-note {
+        background: #f0fdf4;
+        border-left: 4px solid var(--primary-light);
+        padding: 14px 16px;
+        border-radius: 8px;
+        margin: 18px 0;
+        font-size: 0.92rem;
+        color: #166534;
+        line-height: 1.5;
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+    }
+
+    .warning-banner {
+        background: #fffbe6;
+        border: 1px solid #ffe58f;
+        border-left: 5px solid var(--accent-orange);
+        padding: 16px 18px;
+        border-radius: var(--radius-sm);
+        margin: 20px 0;
+        font-size: 0.96rem;
+        color: #873800;
+        font-weight: 600;
+        line-height: 1.55;
+        box-shadow: 0 4px 12px rgba(232, 98, 26, 0.08);
+    }
+
+    /* ── BUTTONS ── */
+    .smart-button {
+        border: none;
+        border-radius: var(--radius-sm);
+        background: linear-gradient(135deg, var(--accent-orange), #f47933);
+        color: #ffffff;
+        padding: 14px 22px;
+        min-height: 50px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        box-shadow: 0 6px 18px rgba(232, 98, 26, 0.25);
+    }
+
+    .smart-button:hover {
+        background: linear-gradient(135deg, var(--accent-orange-hover), var(--accent-orange));
+        transform: translateY(-2px);
+        box-shadow: 0 10px 24px rgba(232, 98, 26, 0.35);
+    }
+
+    .smart-button:active {
+        transform: translateY(0);
+    }
+
+    .smart-button.secondary {
+        background: #f1f5f2;
+        color: var(--primary-dark);
+        border: 1px solid #cbdacf;
+        box-shadow: none;
+    }
+
+    .smart-button.secondary:hover {
+        background: var(--primary-pale);
+        border-color: var(--primary-light);
+        transform: translateY(-1px);
+    }
+
+    .smart-button:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    /* ── STATUS & PULSE ── */
+    .status-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 16px;
+    }
+
+    .pulse-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #94a3b8;
+        display: inline-block;
+        flex-shrink: 0;
+    }
+
+    .pulse-dot.active {
+        background: #22c55e;
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+        animation: pulseAnimation 1.6s infinite;
+    }
+
+    .pulse-dot.error {
+        background: #ef4444;
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+        animation: pulseAnimation 1.6s infinite;
+    }
+
+    @keyframes pulseAnimation {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    }
+
+    .status {
+        font-weight: 700;
+        color: var(--primary-dark);
+        font-size: 0.98rem;
+    }
+
+    .status.error {
+        color: #dc2626;
+    }
+
+    /* ── LOCATION METRICS ── */
+    .location-data {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+        margin-top: 20px;
+    }
+
+    .data-item {
+        background: #f8faf9;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 14px 16px;
+        transition: border-color 0.2s;
+    }
+
+    .data-item:hover {
+        border-color: var(--primary-light);
+    }
+
+    .data-item small {
+        display: block;
+        color: var(--text-muted);
+        font-size: 0.76rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+    }
+
+    .data-item strong {
+        display: block;
+        margin-top: 4px;
+        font-size: 1.1rem;
+        color: var(--text-dark);
+        font-weight: 800;
+    }
+
+    /* ── MAP CONTAINER ── */
+    #farm-map {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        min-height: 300px;
+        max-height: 480px;
+        border-radius: var(--radius-md);
+        margin-top: 16px;
+        background: #e7efe9;
+        overflow: hidden;
+        border: 2px solid var(--border-color);
+        box-shadow: inset 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    /* ── FORM & INPUTS ── */
+    .soil-test-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 16px;
+        margin-top: 18px;
+    }
+
+    .soil-test label {
+        display: block;
+        color: #334155;
+        font-size: 0.85rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    .soil-test input, .soil-test select {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: var(--radius-sm);
+        font: inherit;
+        font-size: 0.95rem;
+        background: #ffffff;
+        box-sizing: border-box;
+        transition: all 0.2s ease;
+        color: var(--text-dark);
+    }
+
+    .soil-test input:focus, .soil-test select:focus {
+        outline: none;
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 3px rgba(58, 125, 68, 0.15);
+    }
+
+    /* ── SOIL PROFILE GRID ── */
+    .soil-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+        margin-top: 18px;
+    }
+
+    .soil-row {
+        background: #f8faf9;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 14px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .soil-row span {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .soil-row strong {
+        color: var(--primary-dark);
+        font-size: 1.05rem;
+        font-weight: 800;
+    }
+
+    .soil-note {
+        background: var(--primary-pale);
+        border-left: 4px solid var(--primary-light);
+        padding: 14px 16px;
+        margin-top: 20px;
+        font-size: 0.92rem;
+        color: #14532d;
+        border-radius: 6px;
+        line-height: 1.5;
+    }
+
+    /* ── CROP ROTATION DISPLAY ── */
+    .rotation-card {
+        margin-top: 32px;
+        border-top: 4px solid var(--primary-light);
+    }
+
+    .rotation-hero-box {
+        background: linear-gradient(135deg, #f0fdf4 0%, #e6f4ea 100%);
+        border: 1px solid #bbf7d0;
+        border-radius: var(--radius-md);
+        padding: 24px;
+        margin-top: 20px;
+    }
+
+    .rotation-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+
+    .score-badge {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+        color: #ffffff;
+        padding: 10px 20px;
+        border-radius: 30px;
+        font-weight: 800;
+        font-size: 1.15rem;
+        box-shadow: 0 6px 16px rgba(31, 96, 48, 0.25);
+    }
+
+    .reasons-list {
+        list-style: none;
+        padding: 0;
+        margin: 18px 0 0;
+    }
+
+    .reasons-list li {
+        padding: 10px 0;
+        border-bottom: 1px dashed #cbd5e1;
+        color: #1e293b;
+        font-size: 0.98rem;
+        font-weight: 500;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .reasons-list li:last-child {
+        border-bottom: none;
+    }
+
+    /* ── SCORE BREAKDOWN ── */
+    .score-breakdown {
+        margin-top: 24px;
+        background: #ffffff;
+        padding: 20px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border-color);
+    }
+
+    .breakdown-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 6px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #334155;
+    }
+
+    .breakdown-bar-bg {
+        width: 100%;
+        height: 10px;
+        background: #e2e8f0;
+        border-radius: 6px;
+        overflow: hidden;
+        margin-bottom: 14px;
+    }
+
+    .breakdown-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary-light), var(--accent-orange));
+        border-radius: 6px;
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ── ALTERNATIVE CROPS GRID ── */
+    .alt-crops-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 18px;
+        margin-top: 20px;
+    }
+
+    .alt-crop-card {
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 18px;
+        transition: all 0.2s ease;
+    }
+
+    .alt-crop-card:hover {
+        border-color: var(--primary-light);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .alt-crop-card h4 {
+        margin: 0 0 8px;
+        color: var(--primary-dark);
+        font-size: 1.1rem;
+        font-weight: 800;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .alt-crop-card p {
+        margin: 0;
+        font-size: 0.88rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+    }
+
+    .chip-badge {
+        background: var(--primary-pale);
+        color: var(--primary-dark);
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 700;
+    }
+
+    .muted {
+        color: var(--text-muted);
+    }
+
+    @media (max-width: 768px) {
+        .smart-page { padding: 16px 12px 60px; }
+        .smart-grid { grid-template-columns: 1fr; gap: 20px; }
+        .smart-card { padding: 20px; }
+        .soil-test-grid { grid-template-columns: 1fr 1fr; }
+        .location-data { grid-template-columns: 1fr 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="smart-page">
+    <!-- HERO HEADER -->
+    <div class="smart-hero">
+        <div class="hero-pill">✨ Smart Agricultural Intelligence</div>
+        <h1>🌾 Smart Farm Location &amp; Soil Intelligence</h1>
+        <p>Detect your exact field position via GPS, inspect regional soil characteristics or laboratory test data, and receive explainable Crop Rotation recommendations tailored for your land.</p>
+    </div>
+
+    <!-- MAIN GRID: LOCATION & MAP -->
+    <div class="smart-grid">
+        <!-- STEP 1: FARM LOCATION CARD -->
+        <section class="smart-card" aria-labelledby="location-heading">
+            <div class="step-badge">Step 1: Farm Location</div>
+            <h2 id="location-heading">📍 Farm Location</h2>
+            <p class="muted">Click below to allow your phone or browser to request your exact farm location coordinates.</p>
+            
+            <div class="privacy-note">
+                <span style="font-size: 1.2rem;">🔒</span>
+                <div>
+                    <strong>Privacy &amp; Precision Disclaimer:</strong> Your GPS location is requested only on-demand to identify your farm's agro-climatic zone. GPS identifies position—it does not measure soil directly.
+                </div>
+            </div>
+
+            <button class="smart-button" id="detect-location" type="button">
+                <span>📍</span> Detect My Location
+            </button>
+
+            <div class="status-container">
+                <div class="pulse-dot" id="status-pulse"></div>
+                <div class="status" id="location-status" role="status">Location: Not detected</div>
+            </div>
+
+            <div class="location-data" id="location-data" hidden>
+                <div class="data-item"><small>Latitude</small><strong id="latitude">-</strong></div>
+                <div class="data-item"><small>Longitude</small><strong id="longitude">-</strong></div>
+                <div class="data-item"><small>GPS Accuracy</small><strong id="accuracy">-</strong></div>
+                <div class="data-item"><small>Signal Quality</small><strong id="accuracy-quality">-</strong></div>
+            </div>
+
+            <div class="actions">
+                <button class="smart-button" id="confirm-location" type="button" disabled>✓ Confirm Farm Location</button>
+                <button class="smart-button secondary" id="retry-location" type="button" hidden>🔄 Retry Location</button>
+            </div>
+        </section>
+
+        <!-- STEP 2: FARM MAP CARD -->
+        <section class="smart-card" aria-labelledby="map-heading">
+            <div class="step-badge">Step 2: Interactive Field Map</div>
+            <h2 id="map-heading">🗺️ Field Center Marker</h2>
+            <p class="muted">Phone location reflects where you stand. Drag the marker directly to the center of your farm field before confirming.</p>
+            <div id="farm-map" aria-label="Map showing farm location"></div>
+        </section>
+    </div>
+
+    <!-- STEP 3: LABORATORY SOIL TEST SECTION -->
+    <section class="smart-card soil-test" aria-labelledby="soil-test-heading">
+        <div class="step-badge">Step 3: Laboratory Field Data</div>
+        <h2 id="soil-test-heading">🧪 Enter Laboratory Soil Test (Optional)</h2>
+        <p class="muted">Have an official soil test report? Enter your lab values below. Laboratory measurements take top priority over regional geospatial estimates.</p>
+        
+        <div class="soil-test-grid">
+            <label>Soil pH<input id="soil-ph" type="number" min="0" max="14" step="0.01" placeholder="e.g. 6.4"></label>
+            <label>Nitrogen (kg/ha)<input id="soil-nitrogen" type="number" min="0" step="0.01" placeholder="e.g. 42"></label>
+            <label>Phosphorus (kg/ha)<input id="soil-phosphorus" type="number" min="0" step="0.01" placeholder="e.g. 25"></label>
+            <label>Potassium (kg/ha)<input id="soil-potassium" type="number" min="0" step="0.01" placeholder="e.g. 40"></label>
+            <label>Organic Carbon (%)<input id="soil-organic-carbon" type="number" min="0" step="0.01" placeholder="e.g. 0.8"></label>
+            <label>EC (dS/m)<input id="soil-ec" type="number" min="0" step="0.01" placeholder="e.g. 0.4"></label>
+        </div>
+    </section>
+
+    <!-- STEP 4: SOIL INTELLIGENCE OUTPUT -->
+    <section class="smart-card soil-profile" id="soil-results" hidden aria-labelledby="soil-heading">
+        <div class="step-badge">Soil Profile Intelligence</div>
+        <h2 id="soil-heading">🌱 Regional Soil Profile</h2>
+        <div id="address-result" style="font-weight: 700; color: var(--primary-dark); margin-bottom: 16px; font-size: 1.05rem;"></div>
+        <div class="soil-grid" id="soil-grid"></div>
+        <div class="soil-note" id="soil-note"></div>
+    </section>
+
+    <!-- STEP 5: CROP ROTATION RECOMMENDATION -->
+    <section class="smart-card rotation-card" aria-labelledby="rotation-heading">
+        <div class="step-badge">Step 4: Agronomic Intelligence</div>
+        <h2 id="rotation-heading">🔄 Crop Rotation &amp; Next Crop Recommendation</h2>
+        <p class="muted">Select your previous crop, season, and irrigation availability to generate multi-factor rotation scoring for your land.</p>
+        
+        <div class="soil-test-grid" style="margin-bottom: 20px;">
+            <label>Previous Crop Grown
+                <select id="prev-crop">
+                    <option value="Wheat">Wheat</option>
+                    <option value="Rice">Rice (Paddy)</option>
+                    <option value="Maize">Maize</option>
+                    <option value="Cotton">Cotton</option>
+                    <option value="Potato">Potato</option>
+                    <option value="Tomato">Tomato</option>
+                    <option value="Chickpea">Chickpea</option>
+                    <option value="Groundnut">Groundnut</option>
+                </select>
+            </label>
+            
+            <label>Upcoming Growing Season
+                <select id="upcoming-season">
+                    <option value="Kharif">Kharif (Monsoon)</option>
+                    <option value="Rabi">Rabi (Winter)</option>
+                    <option value="Zaid">Zaid (Summer)</option>
+                </select>
+            </label>
+
+            <label>Irrigation Infrastructure
+                <select id="irrigation-access">
+                    <option value="Yes">Yes (Canal / Borewell / Drip)</option>
+                    <option value="No">No (Rainfed / Un-irrigated)</option>
+                </select>
+            </label>
+        </div>
+
+        <button class="smart-button" id="calculate-rotation" type="button">
+            <span>🔄</span> Calculate Smart Crop Rotation
+        </button>
+
+        <!-- CONTINUOUS CROPPING WARNING BANNER -->
+        <div class="warning-banner" id="continuous-warning" hidden></div>
+
+        <!-- RECOMMENDATION OUTPUT DISPLAY -->
+        <div id="rotation-output" hidden style="margin-top: 24px;">
+            <div class="rotation-hero-box">
+                <div class="rotation-header">
+                    <div>
+                        <h3 style="margin: 0; font-size: 1.5rem; color: var(--primary-dark);">🌱 Recommended Next Crop: <span id="rec-crop-name" style="color: var(--accent-orange); font-weight: 800;">-</span></h3>
+                        <p id="rec-crop-family" class="muted" style="margin: 6px 0 0; font-size: 0.95rem;"></p>
+                    </div>
+                    <div class="score-badge">Rotation Score: <span id="rec-crop-score">0</span>/100</div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4 style="margin: 0 0 10px; color: var(--primary-dark); font-size: 1.05rem;">Why this crop is recommended for your field:</h4>
+                    <ul class="reasons-list" id="rec-reasons"></ul>
+                </div>
+            </div>
+
+            <!-- SCORE BREAKDOWN -->
+            <div class="score-breakdown">
+                <h4 style="margin: 0 0 16px; color: var(--primary-dark); font-size: 1.05rem;">📊 Multi-Factor Agronomic Scoring Breakdown:</h4>
+                <div id="score-bars"></div>
+            </div>
+
+            <!-- ALTERNATIVE CROPS -->
+            <div style="margin-top: 28px;">
+                <h4 style="margin: 0 0 16px; color: var(--primary-dark); font-size: 1.1rem;">🌱 Other Suitable Crop Rotation Choices:</h4>
+                <div class="alt-crops-grid" id="alt-crops"></div>
+            </div>
+        </div>
+    </section>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(() => {
+    const detectButton = document.getElementById('detect-location');
+    const confirmButton = document.getElementById('confirm-location');
+    const retryButton = document.getElementById('retry-location');
+    const status = document.getElementById('location-status');
+    const statusPulse = document.getElementById('status-pulse');
+    const locationData = document.getElementById('location-data');
+    const soilResults = document.getElementById('soil-results');
+    const calculateRotationBtn = document.getElementById('calculate-rotation');
+
+    let position = null;
+    let marker = null;
+    let currentSoilProfile = {};
+
+    // Initialize Map centered on India baseline
+    const map = L.map('farm-map').setView([20.5937, 78.9629], 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    window.addEventListener('load', () => map.invalidateSize());
+    window.addEventListener('resize', () => map.invalidateSize());
+
+    function setStatus(message, isError = false, isActive = false) {
+        status.textContent = message;
+        status.classList.toggle('error', isError);
+        if (statusPulse) {
+            statusPulse.className = 'pulse-dot' + (isError ? ' error' : (isActive ? ' active' : ''));
+        }
+    }
+
+    function accuracyQuality(value) {
+        if (value < 20) return 'Excellent (< 20 m)';
+        if (value <= 50) return 'Good (20–50 m)';
+        if (value <= 100) return 'Moderate (50–100 m)';
+        return 'Low (> 100 m)';
+    }
+
+    function showPosition(currentPosition) {
+        const coords = currentPosition.coords;
+        position = {
+            latitude: coords.latitude,
+            longitude: coords.longitude,
+            accuracy: coords.accuracy,
+            timestamp: currentPosition.timestamp
+        };
+
+        document.getElementById('latitude').textContent = position.latitude.toFixed(6);
+        document.getElementById('longitude').textContent = position.longitude.toFixed(6);
+        document.getElementById('accuracy').textContent = `${Math.round(position.accuracy)} meters`;
+        document.getElementById('accuracy-quality').textContent = accuracyQuality(position.accuracy);
+        
+        locationData.hidden = false;
+        
+        if (position.accuracy > 100) {
+            setStatus('Location detected. GPS accuracy is low (>100m). Try moving to an open area and detect location again.', false, true);
+        } else {
+            setStatus('✓ Location detected successfully', false, true);
+        }
+
+        confirmButton.disabled = false;
+        retryButton.hidden = false;
+        detectButton.disabled = false;
+
+        const point = [position.latitude, position.longitude];
+        map.setView(point, 16);
+        map.invalidateSize();
+
+        if (marker) {
+            marker.setLatLng(point);
+        } else {
+            marker = L.marker(point, {draggable: true}).addTo(map);
+        }
+        
+        marker.bindPopup('<b>Farm Location</b><br>Drag marker to exact field center if needed.').openPopup();
+        
+        marker.on('dragend', () => {
+            const newPt = marker.getLatLng();
+            position.latitude = newPt.lat;
+            position.longitude = newPt.lng;
+            setStatus('Marker moved to field center position. Click "Confirm Farm Location" when ready.', false, true);
+        });
+    }
+
+    function locationError(error) {
+        const messages = {
+            1: 'Location permission was denied. Please allow location access in browser settings, or enter farm location manually.',
+            2: "Unable to detect location. Please check phone GPS settings.",
+            3: 'Location detection timed out. Please try again in an open area.'
+        };
+        setStatus(messages[error.code] || 'Unable to detect location. Please try again.', true);
+        detectButton.disabled = false;
+        retryButton.hidden = false;
+    }
+
+    detectButton.addEventListener('click', () => {
+        if (!navigator.geolocation) {
+            setStatus('Geolocation API is not supported by your browser.', true);
+            return;
+        }
+        detectButton.disabled = true;
+        setStatus('📍 Detecting location...', false, true);
+        navigator.geolocation.getCurrentPosition(showPosition, locationError, {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0
+        });
+    });
+
+    retryButton.addEventListener('click', () => detectButton.click());
+
+    confirmButton.addEventListener('click', async () => {
+        if (!position) return;
+        confirmButton.disabled = true;
+        setStatus('🌍 Identifying farm region...', false, true);
+
+        try {
+            const soilTest = {
+                ph: document.getElementById('soil-ph').value,
+                nitrogen: document.getElementById('soil-nitrogen').value,
+                phosphorus: document.getElementById('soil-phosphorus').value,
+                potassium: document.getElementById('soil-potassium').value,
+                organic_carbon: document.getElementById('soil-organic-carbon').value,
+                ec: document.getElementById('soil-ec').value
+            };
+
+            const response = await fetch('/api/farm/location', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({...position, soil_test: soilTest})
+            });
+
+            const data = await response.json();
+            if (!response.ok || !data.success) {
+                throw new Error(data.error || 'Location could not be processed.');
+            }
+
+            setStatus('✓ Region identified. 🌱 Soil profile ready', false, true);
+            renderSoilResults(data);
+            currentSoilProfile = data.soil || {};
+
+            // Auto-trigger crop rotation calculation
+            calculateRotation();
+
+        } catch (err) {
+            setStatus(err.message || 'Unable to process farm location. Please try again.', true);
+        } finally {
+            confirmButton.disabled = false;
+        }
+    });
+
+    function renderSoilResults(data) {
+        const address = data.address || {};
+        const addressParts = [address.village, address.district, address.state, address.country].filter(Boolean);
+        
+        document.getElementById('address-result').textContent = addressParts.length
+            ? `📍 Region: ${addressParts.join(', ')}`
+            : 'Location detected successfully. Address information is currently unavailable.';
+
+        const soil = data.soil || {};
+        const fields = [
+            ['Soil Type', soil.type],
+            ['Texture', soil.texture],
+            ['pH', soil.ph],
+            ['Nitrogen (kg/ha)', soil.nitrogen],
+            ['Phosphorus (kg/ha)', soil.phosphorus],
+            ['Potassium (kg/ha)', soil.potassium],
+            ['Organic Carbon (%)', soil.organic_carbon],
+            ['Electrical Conductivity (EC)', soil.ec]
+        ];
+
+        document.getElementById('soil-grid').innerHTML = fields.map(([label, val]) => `
+            <div class="soil-row">
+                <span>${label}</span>
+                <strong>${val ?? 'Not available'}</strong>
+            </div>
+        `).join('');
+
+        const soilNote = document.getElementById('soil-note');
+        if (soil.available) {
+            soilNote.innerHTML = `<strong>Source:</strong> ${soil.source || 'Regional Soil Dataset'} | <strong>Confidence:</strong> <span class="chip-badge">${soil.confidence || 'Medium'}</span><br style="margin-bottom:6px;">${soil.notice || ''}`;
+        } else {
+            soilNote.innerHTML = `<strong>Source:</strong> Unavailable<br>No laboratory soil test values were entered. GPS coordinates identify location but do not detect soil directly. Enter a laboratory soil test above for field-level accuracy.`;
+        }
+
+        soilResults.hidden = false;
+    }
+
+    async function calculateRotation() {
+        const prevCrop = document.getElementById('prev-crop').value;
+        const season = document.getElementById('upcoming-season').value;
+        const irrigation = document.getElementById('irrigation-access').value;
+
+        const payload = {
+            previous_crop: prevCrop,
+            soil_profile: currentSoilProfile,
+            season: season,
+            irrigation: irrigation
+        };
+
+        try {
+            const resp = await fetch('/api/crop-rotation', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+
+            const data = await resp.json();
+            if (!data.success) return;
+
+            // Continuous Cropping Warning
+            const warnBanner = document.getElementById('continuous-warning');
+            if (data.continuous_cropping_warning && data.continuous_cropping_warning.detected) {
+                warnBanner.innerHTML = `<span style="font-size:1.2rem; margin-right:6px;">⚠️</span> ${data.continuous_cropping_warning.message}`;
+                warnBanner.hidden = false;
+            } else {
+                warnBanner.hidden = true;
+            }
+
+            const recs = data.recommendations || [];
+            if (recs.length === 0) return;
+
+            const best = recs[0];
+            document.getElementById('rec-crop-name').textContent = best.crop;
+            document.getElementById('rec-crop-family').textContent = `Family: ${best.family} • ${best.description || ''}`;
+            document.getElementById('rec-crop-score').textContent = best.overall_score;
+
+            // Reasons
+            const reasonsUl = document.getElementById('rec-reasons');
+            reasonsUl.innerHTML = (best.reasons || []).map(r => `<li><span style="color:var(--primary-light); font-weight:bold;">✓</span> ${r.replace('[+]', '').trim()}</li>`).join('') || '<li>✓ Compatible crop option for current conditions.</li>';
+
+            // Score breakdown bars
+            const scores = best.scores || {};
+            const scoreLabels = [
+                ['Soil Suitability (30%)', scores.soil_suitability || 0],
+                ['Rotation Benefit (25%)', scores.rotation_benefit || 0],
+                ['Water Suitability (15%)', scores.water_suitability || 0],
+                ['Season Suitability (15%)', scores.season_suitability || 0],
+                ['Weather Suitability (10%)', scores.weather_suitability || 0],
+                ['Nutrient Compatibility (5%)', scores.nutrient_compatibility || 0]
+            ];
+
+            document.getElementById('score-bars').innerHTML = scoreLabels.map(([label, val]) => `
+                <div>
+                    <div class="breakdown-row">
+                        <span>${label}</span>
+                        <strong>${val}/100</strong>
+                    </div>
+                    <div class="breakdown-bar-bg">
+                        <div class="breakdown-bar-fill" style="width: ${val}%;"></div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Alternatives
+            const altsDiv = document.getElementById('alt-crops');
+            const alts = recs.slice(1);
+            altsDiv.innerHTML = alts.map(item => `
+                <div class="alt-crop-card">
+                    <h4><span>${item.crop}</span> <span class="chip-badge">${item.overall_score}/100</span></h4>
+                    <p style="margin-bottom: 6px; font-weight:700; color:var(--text-dark);">${item.family}</p>
+                    <p>${(item.reasons && item.reasons[0]) ? item.reasons[0].replace('[+]', '').trim() : item.description}</p>
+                </div>
+            `).join('');
+
+            document.getElementById('rotation-output').hidden = false;
+
+        } catch (err) {
+            console.error('Error calculating crop rotation:', err);
+        }
+    }
+
+    calculateRotationBtn.addEventListener('click', calculateRotation);
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,669 @@
+{% extends "base.html" %}
+{% block title %}Crop Prediction{% endblock %}
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Hind:wght@300;400;500;600&display=swap');
+
+    :root {
+        --leaf:   #2d7a3a;
+        --sprout: #4caf50;
+        --soil:   #4a2c0a;
+        --bark:   #6b3f1a;
+        --hay:    #c8a84b;
+        --sun:    #f5c842;
+        --sky:    #e8f5e9;
+        --cream:  #fdf9ef;
+        --red:    #c0392b;
+        --orange: #e67e22;
+        --blue:   #2980b9;
+        --shadow: rgba(74,44,10,0.12);
+    }
+
+    body { font-family: 'Hind', sans-serif; background: var(--cream); }
+
+    /* HERO */
+    .pred-hero {
+        background: linear-gradient(135deg, #1b5e20 0%, #4a2c0a 100%);
+        padding: 50px 32px 70px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .pred-hero::after {
+        content: '';
+        position: absolute;
+        bottom: -1px; left: 0; right: 0;
+        height: 50px;
+        background: var(--cream);
+        clip-path: ellipse(55% 100% at 50% 100%);
+    }
+
+    .pred-hero h1 {
+        font-family: 'Baloo 2', cursive;
+        font-size: clamp(1.8rem, 4vw, 2.8rem);
+        font-weight: 800;
+        color: #fff;
+        position: relative;
+    }
+
+    .pred-hero h1 span { color: var(--sun); }
+    .pred-hero p { color: rgba(255,255,255,0.8); margin-top: 8px; font-size: 1rem; position: relative; }
+
+    /* LAYOUT */
+    .pred-wrap {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 44px 20px 80px;
+    }
+
+    /* CARD */
+    .card {
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 4px 28px var(--shadow);
+        border: 1.5px solid #f0e8d8;
+        overflow: hidden;
+        margin-bottom: 28px;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, var(--leaf), #1b5e20) !important;
+        padding: 20px 28px;
+    }
+
+    .card-header h5 {
+        font-family: 'Baloo 2', cursive;
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .card-body { padding: 32px 28px; }
+
+    /* FORM */
+    .form-label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.88rem;
+        color: var(--bark);
+        margin-bottom: 7px;
+    }
+
+    .form-control {
+        display: block;
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e0d8c8;
+        border-radius: 12px;
+        font-family: 'Hind', sans-serif;
+        font-size: 0.95rem;
+        background: var(--cream);
+        color: #2c3e50;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        outline: none;
+    }
+
+    .form-control:focus {
+        border-color: var(--sprout);
+        box-shadow: 0 0 0 3px rgba(76,175,80,0.12);
+        background: #fff;
+    }
+
+    .row { display: flex; flex-wrap: wrap; margin: 0 -10px; }
+    .col-md-4, .col-md-6 { padding: 0 10px; }
+    .col-md-6 { flex: 0 0 50%; max-width: 50%; }
+    .col-md-4 { flex: 0 0 33.33%; max-width: 33.33%; }
+    .mb-3 { margin-bottom: 20px; }
+    .mb-0 { margin-bottom: 0; }
+    .text-center { text-align: center; }
+    .text-white { color: #fff; }
+
+    @media (max-width: 600px) {
+        .col-md-6, .col-md-4 { flex: 0 0 100%; max-width: 100%; }
+        .card-body { padding: 20px; }
+    }
+
+    /* NPK LIVE BAR */
+    .npk-section { margin-bottom: 26px; }
+
+    .npk-legend {
+        display: flex;
+        gap: 18px;
+        margin-bottom: 10px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--bark);
+        flex-wrap: wrap;
+    }
+
+    .npk-legend span { display: flex; align-items: center; gap: 6px; }
+    .dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+
+    .npk-bar-wrap {
+        height: 12px;
+        border-radius: 100px;
+        background: #e0d8c8;
+        overflow: hidden;
+        display: flex;
+        gap: 2px;
+    }
+
+    .npk-seg { border-radius: 100px; transition: flex 0.4s ease; }
+    .seg-n { background: #4caf50; }
+    .seg-p { background: #ff9800; }
+    .seg-k { background: #2196f3; }
+
+    /* BUTTON */
+    .btn-success {
+        background: linear-gradient(135deg, var(--leaf), #1b5e20) !important;
+        border: none !important;
+        padding: 14px 52px;
+        border-radius: 14px;
+        font-family: 'Baloo 2', cursive;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #fff !important;
+        cursor: pointer;
+        transition: all 0.25s;
+        box-shadow: 0 6px 20px rgba(45,122,58,0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-success:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(45,122,58,0.4); }
+    .btn-success:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+    .spin {
+        width: 18px; height: 18px;
+        border: 2.5px solid rgba(255,255,255,0.3);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        display: none;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── RESULTS ── */
+    #results { margin-top: 4px; }
+
+    .top-banner {
+        background: linear-gradient(135deg, var(--leaf), #1b5e20);
+        border-radius: 20px;
+        padding: 34px 28px;
+        color: #fff;
+        text-align: center;
+        margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
+        animation: fadeUp 0.5s ease;
+    }
+
+    .top-banner::before {
+        content: '🌾';
+        position: absolute;
+        font-size: 90px;
+        opacity: 0.07;
+        right: -10px; top: -10px;
+        pointer-events: none;
+    }
+
+    .big-emoji { font-size: 3rem; margin-bottom: 10px; }
+
+    .top-banner h2 {
+        font-family: 'Baloo 2', cursive;
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-bottom: 4px;
+    }
+
+    .top-banner .sub { opacity: 0.85; font-size: 0.95rem; }
+
+    .conf-bar-bg {
+        height: 8px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 100px;
+        margin: 16px auto 0;
+        overflow: hidden;
+        max-width: 340px;
+    }
+
+    .conf-bar-fill {
+        height: 100%;
+        background: var(--sun);
+        border-radius: 100px;
+        transition: width 1.2s ease;
+        width: 0%;
+    }
+
+    .sec-title {
+        font-family: 'Baloo 2', cursive;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--soil);
+        margin: 4px 0 14px;
+        padding-bottom: 10px;
+        border-bottom: 2.5px dashed #d4c9a8;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .rec-card {
+        background: #fff;
+        border-radius: 18px;
+        padding: 24px;
+        margin-bottom: 16px;
+        box-shadow: 0 3px 18px var(--shadow);
+        border: 1.5px solid #f0e8d8;
+        transition: transform 0.2s;
+        animation: fadeUp 0.4s ease;
+    }
+
+    .rec-card:hover { transform: translateY(-3px); }
+
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(18px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .rec-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .rec-name {
+        font-family: 'Baloo 2', cursive;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--soil);
+    }
+
+    .conf-pill {
+        padding: 5px 16px;
+        border-radius: 100px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        background: var(--sky);
+        color: var(--leaf);
+    }
+
+    /* NPK bars */
+    .npk-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 9px;
+    }
+
+    .npk-label {
+        width: 28px; height: 28px;
+        border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #fff;
+        flex-shrink: 0;
+    }
+
+    .lbl-n { background: #4caf50; }
+    .lbl-p { background: #ff9800; }
+    .lbl-k { background: #2196f3; }
+
+    .bar-outer {
+        flex: 1;
+        height: 8px;
+        background: #e8ede9;
+        border-radius: 100px;
+        overflow: hidden;
+    }
+
+    .bar-inner {
+        height: 100%;
+        border-radius: 100px;
+        transition: width 0.9s ease;
+    }
+
+    .bar-ok     { background: #4caf50; }
+    .bar-add    { background: #ff9800; }
+    .bar-excess { background: #f44336; }
+
+    .val-text {
+        font-size: 0.77rem;
+        color: #90a4ae;
+        white-space: nowrap;
+        min-width: 58px;
+        text-align: right;
+    }
+
+    .npk-tag {
+        font-size: 0.76rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 100px;
+        white-space: nowrap;
+    }
+
+    .tag-ok     { background: #e8f5e9; color: var(--leaf); }
+    .tag-add    { background: #fff3e0; color: var(--orange); }
+    .tag-excess { background: #fdecea; color: var(--red); }
+
+    /* Advice */
+    .advice-row { display: flex; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+
+    .fert-box, .water-box {
+        flex: 1;
+        min-width: 200px;
+        border-radius: 12px;
+        padding: 14px 16px;
+    }
+
+    .fert-box  { background: #fffde7; border-left: 4px solid var(--hay); }
+    .water-box { background: #e3f2fd; border-left: 4px solid var(--blue); }
+
+    .fert-box h6  { font-family: 'Baloo 2', cursive; color: #7c5c00; margin-bottom: 6px; font-size: 0.92rem; }
+    .water-box h6 { font-family: 'Baloo 2', cursive; color: #1a5276; margin-bottom: 6px; font-size: 0.92rem; }
+    .fert-box p, .water-box p { font-size: 0.83rem; line-height: 1.55; margin: 0; }
+    .fert-box p  { color: #6d4c00; }
+    .water-box p { color: #154360; }
+
+    .err-box {
+        background: #fdecea;
+        border: 1.5px solid #e57373;
+        border-radius: 14px;
+        padding: 16px 20px;
+        color: var(--red);
+        font-size: 0.92rem;
+        margin-top: 16px;
+    }
+</style>
+
+<!-- HERO -->
+<div class="pred-hero">
+    <h1>🌱 Crop & <span>NPK</span> Prediction</h1>
+    <p>Enter your soil data — get the best crop with fertilizer & water advice</p>
+</div>
+
+<div class="pred-wrap">
+
+    <!-- ── INPUT CARD (your exact structure) ── -->
+    <div class="card">
+        <div class="card-header text-white">
+            <h5 class="mb-0">🌱 Enter Soil & Weather Parameters</h5>
+        </div>
+        <div class="card-body">
+
+            <!-- Live NPK ratio bar -->
+            <div class="npk-section">
+                <div class="npk-legend">
+                    <span><div class="dot" style="background:#4caf50"></div> N – Nitrogen</span>
+                    <span><div class="dot" style="background:#ff9800"></div> P – Phosphorus</span>
+                    <span><div class="dot" style="background:#2196f3"></div> K – Potassium</span>
+                </div>
+                <div class="npk-bar-wrap">
+                    <div class="npk-seg seg-n" id="barN" style="flex:1"></div>
+                    <div class="npk-seg seg-p" id="barP" style="flex:1"></div>
+                    <div class="npk-seg seg-k" id="barK" style="flex:1"></div>
+                </div>
+            </div>
+
+            <form id="prediction-form" onsubmit="submitForm(event)">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="N" class="form-label">Nitrogen (N) — kg/ha</label>
+                        <input type="number" class="form-control" id="N" name="N" required
+                               placeholder="Enter N value" min="0" max="200" oninput="updateBar()">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="P" class="form-label">Phosphorus (P) — kg/ha</label>
+                        <input type="number" class="form-control" id="P" name="P" required
+                               placeholder="Enter P value" min="0" max="200" oninput="updateBar()">
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="K" class="form-label">Potassium (K) — kg/ha</label>
+                        <input type="number" class="form-control" id="K" name="K" required
+                               placeholder="Enter K value" min="0" max="200" oninput="updateBar()">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="ph" class="form-label">pH Level</label>
+                        <input type="number" class="form-control" id="ph" step="0.1" name="ph" required
+                               placeholder="e.g., 6.5" min="0" max="14">
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="temperature" class="form-label">Temperature (°C)</label>
+                        <input type="number" class="form-control" id="temperature" step="0.1"
+                               name="temperature" required placeholder="e.g., 25.5" min="0" max="50">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="humidity" class="form-label">Humidity (%)</label>
+                        <input type="number" class="form-control" id="humidity" step="0.1"
+                               name="humidity" required placeholder="e.g., 65.0" min="0" max="100">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="rainfall" class="form-label">Rainfall (mm)</label>
+                        <input type="number" class="form-control" id="rainfall" step="0.1"
+                               name="rainfall" required placeholder="e.g., 150.0" min="0" max="300">
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-success" id="predictBtn">
+                        <div class="spin" id="spinner"></div>
+                        <span id="btnText">🔍 Predict Best Crop</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="results"></div>
+
+</div>
+
+<script>
+    // Live NPK bar
+    function updateBar() {
+        const n = parseFloat(document.getElementById('N').value) || 0;
+        const p = parseFloat(document.getElementById('P').value) || 0;
+        const k = parseFloat(document.getElementById('K').value) || 0;
+        const t = n + p + k || 1;
+        document.getElementById('barN').style.flex = (n / t * 100);
+        document.getElementById('barP').style.flex = (p / t * 100);
+        document.getElementById('barK').style.flex = (k / t * 100);
+    }
+
+    // Crop emojis
+    const EMOJIS = {
+        rice:'🌾', wheat:'🌿', maize:'🌽', corn:'🌽', cotton:'🌸',
+        sugarcane:'🎋', coffee:'☕', tea:'🍵', coconut:'🥥', papaya:'🍈',
+        banana:'🍌', grape:'🍇', watermelon:'🍉', apple:'🍎', orange:'🍊',
+        mango:'🥭', lentil:'🫘', chickpea:'🫘', potato:'🥔', tomato:'🍅',
+        onion:'🧅', soybean:'🫘', groundnut:'🥜', jute:'🌿',
+    };
+
+    function getEmoji(name) {
+        const k = name.toLowerCase();
+        for (const [key, val] of Object.entries(EMOJIS)) {
+            if (k.includes(key)) return val;
+        }
+        return '🌱';
+    }
+
+    // Submit
+    async function submitForm(e) {
+        e.preventDefault();
+        const data = {
+            N:           parseFloat(document.getElementById('N').value),
+            P:           parseFloat(document.getElementById('P').value),
+            K:           parseFloat(document.getElementById('K').value),
+            ph:          parseFloat(document.getElementById('ph').value),
+            temperature: parseFloat(document.getElementById('temperature').value),
+            humidity:    parseFloat(document.getElementById('humidity').value),
+            rainfall:    parseFloat(document.getElementById('rainfall').value),
+        };
+
+        // Loading state
+        document.getElementById('predictBtn').disabled = true;
+        document.getElementById('spinner').style.display = 'block';
+        document.getElementById('btnText').textContent = 'Analysing soil…';
+        document.getElementById('results').innerHTML = '';
+
+        try {
+            const res  = await fetch('/api/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const json = await res.json();
+
+            if (json.status === 'success') {
+                renderResults(json);
+            } else {
+                document.getElementById('results').innerHTML =
+                    `<div class="err-box">⚠️ ${json.error || json.message || 'Prediction failed.'}</div>`;
+            }
+        } catch(err) {
+            document.getElementById('results').innerHTML =
+                `<div class="err-box">⚠️ Network error — make sure Flask server is running.</div>`;
+        } finally {
+            document.getElementById('predictBtn').disabled = false;
+            document.getElementById('spinner').style.display = 'none';
+            document.getElementById('btnText').textContent = '🔍 Predict Best Crop';
+        }
+    }
+
+    // Render results
+    function renderResults(data) {
+        const recs = data.recommendations;
+        if (!recs || recs.length === 0) {
+            document.getElementById('results').innerHTML =
+                `<div class="err-box">⚠️ No recommendations returned.</div>`;
+            return;
+        }
+
+        const top = recs[0];
+        const em  = getEmoji(top.crop);
+
+        let html = `
+        <div class="top-banner">
+            <div class="big-emoji">${em}</div>
+            <h2>${top.crop}</h2>
+            <div class="sub">Best crop for your soil — ${top.confidence}% confidence</div>
+            <div class="conf-bar-bg">
+                <div class="conf-bar-fill" id="topBar"></div>
+            </div>
+        </div>
+        <div class="sec-title">📊 Top 3 Crop Recommendations</div>`;
+
+        recs.forEach((r, i) => { html += buildRecCard(r, i); });
+        document.getElementById('results').innerHTML = html;
+
+        // Animate top confidence bar
+        setTimeout(() => {
+            const tb = document.getElementById('topBar');
+            if (tb) tb.style.width = top.confidence + '%';
+        }, 100);
+
+        // Animate NPK bars
+        setTimeout(() => {
+            recs.forEach((r, i) => {
+                const cur   = r.current_values || {};
+                const ideal = r.ideal_values   || {};
+                ['N','P','K'].forEach(n => {
+                    const bar = document.getElementById(`b_${i}_${n}`);
+                    if (!bar) return;
+                    const pct = ideal[n] > 0 ? Math.min(100, (cur[n] / ideal[n]) * 100) : 50;
+                    bar.style.width = pct + '%';
+                });
+            });
+        }, 200);
+
+        document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function buildRecCard(r, i) {
+        const cur   = r.current_values            || {};
+        const ideal = r.ideal_values              || {};
+        const ferts = r.fertilizer_recommendations || [];
+        const water = r.water_management;
+        const em    = getEmoji(r.crop);
+
+        // NPK status rows
+        let npkHTML = '';
+        const colors = { N:'lbl-n', P:'lbl-p', K:'lbl-k' };
+        ['N','P','K'].forEach(n => {
+            const c    = cur[n]   !== undefined ? cur[n]   : '?';
+            const id   = ideal[n] !== undefined ? ideal[n] : '?';
+            const diff = c - id;
+            let barCls, tagCls, tagTxt;
+            if (diff > 5)       { barCls='bar-excess'; tagCls='tag-excess'; tagTxt=`Excess +${diff.toFixed(0)}`; }
+            else if (diff < -5) { barCls='bar-add';    tagCls='tag-add';    tagTxt=`Need ${Math.abs(diff).toFixed(0)} more`; }
+            else                { barCls='bar-ok';     tagCls='tag-ok';     tagTxt='✅ Good'; }
+
+            npkHTML += `
+            <div class="npk-row">
+                <div class="npk-label ${colors[n]}">${n}</div>
+                <div class="bar-outer">
+                    <div class="bar-inner ${barCls}" id="b_${i}_${n}" style="width:0%"></div>
+                </div>
+                <span class="val-text">${c} / ${id}</span>
+                <span class="npk-tag ${tagCls}">${tagTxt}</span>
+            </div>`;
+        });
+
+        // Fertilizer advice
+        let fertHTML = '';
+        if (ferts.length > 0) {
+            const perfect = ferts.find(f => f.type === 'perfect');
+            if (perfect) {
+                fertHTML = `<div class="fert-box"><h6>✅ NPK is Perfect!</h6><p>Your soil nutrients are ideal for ${r.crop}. No changes needed.</p></div>`;
+            } else {
+                let lines = '';
+                ferts.filter(f => f.type === 'add').forEach(f =>
+                    lines += `➕ Add <b>${f.amount} kg/ha</b> of ${f.nutrient} — use <b>${f.fertilizer}</b><br>`);
+                ferts.filter(f => f.type === 'excess').forEach(f =>
+                    lines += `⬇️ Reduce ${f.nutrient} by ${f.amount} kg/ha — ${f.note}<br>`);
+                fertHTML = `<div class="fert-box"><h6>🧪 Fertilizer Advice</h6><p>${lines}</p></div>`;
+            }
+        }
+
+        // Water advice
+        let waterHTML = '';
+        if (water) {
+            let icon, msg;
+            if (water.type === 'deficit')     { icon='💧'; msg=`Need <b>${water.amount}mm</b> more water. ${water.note}`; }
+            else if (water.type === 'excess') { icon='🌊'; msg=`Excess water by <b>${water.amount}mm</b>. ${water.note}`; }
+            else                              { icon='✅'; msg=`Rainfall is perfect. ${water.note}`; }
+            waterHTML = `<div class="water-box"><h6>${icon} Water Advice</h6><p>${msg}</p></div>`;
+        }
+
+        return `
+        <div class="rec-card">
+            <div class="rec-header">
+                <div class="rec-name">${em} ${r.crop}</div>
+                <span class="conf-pill">⭐ ${r.confidence}% match</span>
+            </div>
+            ${npkHTML}
+            <div class="advice-row">
+                ${fertHTML}
+                ${waterHTML}
+            </div>
+        </div>`;
+    }
+</script>
+
+{% endblock %}

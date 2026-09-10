@@ -1,0 +1,696 @@
+{% extends "base.html" %}
+
+{% block title %}Market Price{% endblock %}
+
+{% block extra_css %}
+<style>
+    .market-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .market-header {
+        background: linear-gradient(135deg, #60f75b, #59f04e);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px 15px 0 0;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .market-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .market-body {
+        background: white;
+        padding: 2rem;
+        border-radius: 0 0 15px 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .price-filters {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        border: 1px solid #e9ecef;
+    }
+
+    .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        align-items: end;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .filter-group label {
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #495057;
+    }
+
+    .form-control {
+        padding: 0.75rem;
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #FF6B35;
+        box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+    }
+
+    .btn {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(45deg, #FF6B35, #F7931E);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+
+    .price-table-container {
+        background: rgb(47, 235, 154);
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e9ecef;
+    }
+
+    .price-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+    }
+
+    .price-table thead {
+        background: linear-gradient(45deg, #FF6B35, #F7931E);
+        color: rgb(255, 255, 255);
+    }
+
+    .price-table th,
+    .price-table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .price-table th {
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .price-table tbody tr:hover {
+        background-color: #41586f;
+        transition: background-color 0.2s ease;
+    }
+
+    .price-cell {
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .price-increase {
+        color: #28a745;
+    }
+
+    .price-decrease {
+        color: #dc3545;
+    }
+
+    .price-stable {
+        color: #6c757d;
+    }
+
+    .trend-icon {
+        margin-left: 0.5rem;
+    }
+
+    .crop-icon {
+        width: 32px;
+        height: 32px;
+        background: #f8f9fa;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.75rem;
+        font-size: 1.2rem;
+    }
+
+    .market-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        border-left: 4px solid #FF6B35;
+    }
+
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #FF6B35;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .last-updated {
+        text-align: center;
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-top: 1rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .alert {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+        border: 1px solid transparent;
+    }
+
+    .alert-info {
+        background-color: #d1ecf1;
+        border-color: #bee5eb;
+        color: #0c5460;
+    }
+
+    .loading {
+        display: none;
+        text-align: center;
+        padding: 2rem;
+        color: #6c757d;
+    }
+
+    .spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #FF6B35;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 768px) {
+        .filter-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .market-header h1 {
+            font-size: 2rem;
+        }
+        
+        .market-stats {
+            grid-template-columns: 1fr;
+        }
+        
+        .price-table {
+            font-size: 0.85rem;
+        }
+        
+        .price-table th,
+        .price-table td {
+            padding: 0.75rem 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="market-container">
+    <div class="market-header">
+        <h1>
+            <i class="fas fa-chart-line"></i>
+            Market Prices
+        </h1>
+        <p>Real-time agricultural commodity prices and market trends</p>
+    </div>
+
+    <div class="market-body">
+        <!-- Market Statistics -->
+        <div class="market-stats">
+            <div class="stat-card">
+                <div class="stat-value" id="totalCrops">10</div>
+                <div class="stat-label">Total Commodities</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgPrice">₹2,485</div>
+                <div class="stat-label">Average Price/Qtl</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="priceIncreases">6</div>
+                <div class="stat-label">Price Increases</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="marketVolatility">Medium</div>
+                <div class="stat-label">Market Volatility</div>
+            </div>
+        </div>
+
+        <!-- Price Filters -->
+        <div class="price-filters">
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label for="cropFilter">Filter by Crop</label>
+                    <select id="cropFilter" class="form-control">
+                        <option value="">All Crops</option>
+                        <option value="wheat">Wheat</option>
+                        <option value="rice">Rice</option>
+                        <option value="maize">Maize</option>
+                        <option value="cotton">Cotton</option>
+                        <option value="sugarcane">Sugarcane</option>
+                        <option value="potato">Potato</option>
+                        <option value="tomato">Tomato</option>
+                        <option value="onion">Onion</option>
+                        <option value="soybean">Soybean</option>
+                        <option value="groundnut">Groundnut</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="priceRange">Price Range</label>
+                    <select id="priceRange" class="form-control">
+                        <option value="">All Prices</option>
+                        <option value="low">Below ₹2,000</option>
+                        <option value="medium">₹2,000 - ₹4,000</option>
+                        <option value="high">Above ₹4,000</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="trendFilter">Price Trend</label>
+                    <select id="trendFilter" class="form-control">
+                        <option value="">All Trends</option>
+                        <option value="increase">Increasing</option>
+                        <option value="decrease">Decreasing</option>
+                        <option value="stable">Stable</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <button onclick="applyFilters()" class="btn btn-primary">
+                        <i class="fas fa-filter"></i>
+                        Apply Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <strong>Note:</strong> Prices are indicative market rates per quintal (100 kg). Actual prices may vary based on location, quality, and market conditions.
+        </div>
+
+        <!-- Loading indicator -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Loading market prices...</p>
+        </div>
+
+        <!-- Price Table -->
+        <div class="price-table-container">
+            <table class="price-table" id="priceTable">
+                <thead>
+                    <tr>
+                        <th>Commodity</th>
+                        <th>Current Price (₹/Qtl)</th>
+                        <th>Previous Price (₹/Qtl)</th>
+                        <th>Change</th>
+                        <th>Trend</th>
+                        <th>Quality Grade</th>
+                        <th>Market</th>
+                    </tr>
+                </thead>
+                <tbody id="priceTableBody">
+                    <!-- Price data will be populated here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="last-updated">
+            <i class="fas fa-clock"></i>
+            Last Updated: <span id="lastUpdated">Today, 10:30 AM</span>
+            <br>
+            <small>Prices are updated every 30 minutes during market hours</small>
+        </div>
+    </div>
+</div>
+
+<script>
+// Market price data with trends and variations
+const marketPriceData = [
+    {
+        name: 'Wheat',
+        icon: '🌾',
+        currentPrice: 2100,
+        previousPrice: 2050,
+        quality: 'Grade A',
+        market: 'Delhi APMC',
+        category: 'cereals'
+    },
+    {
+        name: 'Rice',
+        icon: '🍚',
+        currentPrice: 2200,
+        previousPrice: 2180,
+        quality: 'Basmati',
+        market: 'Haryana',
+        category: 'cereals'
+    },
+    {
+        name: 'Maize',
+        icon: '🌽',
+        currentPrice: 1800,
+        previousPrice: 1850,
+        quality: 'Grade B',
+        market: 'Punjab APMC',
+        category: 'cereals'
+    },
+    {
+        name: 'Cotton',
+        icon: '☁️',
+        currentPrice: 5500,
+        previousPrice: 5350,
+        quality: 'Medium Staple',
+        market: 'Gujarat',
+        category: 'cash_crops'
+    },
+    {
+        name: 'Sugarcane',
+        icon: '🎋',
+        currentPrice: 350,
+        previousPrice: 345,
+        quality: 'Fresh',
+        market: 'UP Sugar Mills',
+        category: 'cash_crops'
+    },
+    {
+        name: 'Potato',
+        icon: '🥔',
+        currentPrice: 1200,
+        previousPrice: 1350,
+        quality: 'Grade I',
+        market: 'West Bengal',
+        category: 'vegetables'
+    },
+    {
+        name: 'Tomato',
+        icon: '🍅',
+        currentPrice: 2500,
+        previousPrice: 2200,
+        quality: 'Fresh',
+        market: 'Karnataka',
+        category: 'vegetables'
+    },
+    {
+        name: 'Onion',
+        icon: '🧅',
+        currentPrice: 1800,
+        previousPrice: 1750,
+        quality: 'Grade A',
+        market: 'Maharashtra',
+        category: 'vegetables'
+    },
+    {
+        name: 'Soybean',
+        icon: '🫘',
+        currentPrice: 4200,
+        previousPrice: 4150,
+        quality: 'FAQ',
+        market: 'MP APMC',
+        category: 'oilseeds'
+    },
+    {
+        name: 'Groundnut',
+        icon: '🥜',
+        currentPrice: 5200,
+        previousPrice: 5100,
+        quality: 'Bold',
+        market: 'Rajasthan',
+        category: 'oilseeds'
+    }
+];
+
+let filteredData = [...marketPriceData];
+
+// Calculate price change and trend
+function calculateTrend(current, previous) {
+    const change = current - previous;
+    const changePercent = ((change / previous) * 100).toFixed(2);
+    
+    if (change > 0) {
+        return {
+            change: `+₹${change}`,
+            changePercent: `+${changePercent}%`,
+            trend: 'increase',
+            class: 'price-increase',
+            icon: '📈'
+        };
+    } else if (change < 0) {
+        return {
+            change: `₹${change}`,
+            changePercent: `${changePercent}%`,
+            trend: 'decrease',
+            class: 'price-decrease',
+            icon: '📉'
+        };
+    } else {
+        return {
+            change: '₹0',
+            changePercent: '0%',
+            trend: 'stable',
+            class: 'price-stable',
+            icon: '➡️'
+        };
+    }
+}
+
+// Format currency
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        maximumFractionDigits: 0
+    }).format(amount);
+}
+
+// Render price table
+function renderPriceTable(data = filteredData) {
+    const tableBody = document.getElementById('priceTableBody');
+    
+    tableBody.innerHTML = data.map(item => {
+        const trendData = calculateTrend(item.currentPrice, item.previousPrice);
+        
+        return `
+            <tr>
+                <td>
+                    <div style="display: flex; align-items: center;">
+                        <span class="crop-icon">${item.icon}</span>
+                        <strong>${item.name}</strong>
+                    </div>
+                </td>
+                <td>
+                    <span class="price-cell">${formatCurrency(item.currentPrice)}</span>
+                </td>
+                <td>${formatCurrency(item.previousPrice)}</td>
+                <td class="${trendData.class}">
+                    ${trendData.change}<br>
+                    <small>(${trendData.changePercent})</small>
+                </td>
+                <td>
+                    <span class="${trendData.class}">
+                        ${trendData.icon}
+                        <span class="trend-icon">${trendData.trend.charAt(0).toUpperCase() + trendData.trend.slice(1)}</span>
+                    </span>
+                </td>
+                <td>${item.quality}</td>
+                <td>${item.market}</td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// Update market statistics
+function updateMarketStats(data = filteredData) {
+    const totalCrops = data.length;
+    const avgPrice = Math.round(data.reduce((sum, item) => sum + item.currentPrice, 0) / totalCrops);
+    const priceIncreases = data.filter(item => item.currentPrice > item.previousPrice).length;
+    
+    let volatility = 'Low';
+    const volatilityRatio = priceIncreases / totalCrops;
+    if (volatilityRatio > 0.6) volatility = 'High';
+    else if (volatilityRatio > 0.4) volatility = 'Medium';
+    
+    document.getElementById('totalCrops').textContent = totalCrops;
+    document.getElementById('avgPrice').textContent = formatCurrency(avgPrice);
+    document.getElementById('priceIncreases').textContent = priceIncreases;
+    document.getElementById('marketVolatility').textContent = volatility;
+}
+
+// Apply filters
+function applyFilters() {
+    const cropFilter = document.getElementById('cropFilter').value.toLowerCase();
+    const priceRange = document.getElementById('priceRange').value;
+    const trendFilter = document.getElementById('trendFilter').value;
+    
+    // Show loading
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('priceTable').style.opacity = '0.5';
+    
+    setTimeout(() => {
+        filteredData = marketPriceData.filter(item => {
+            // Crop filter
+            if (cropFilter && !item.name.toLowerCase().includes(cropFilter)) {
+                return false;
+            }
+            
+            // Price range filter
+            if (priceRange) {
+                if (priceRange === 'low' && item.currentPrice >= 2000) return false;
+                if (priceRange === 'medium' && (item.currentPrice < 2000 || item.currentPrice > 4000)) return false;
+                if (priceRange === 'high' && item.currentPrice <= 4000) return false;
+            }
+            
+            // Trend filter
+            if (trendFilter) {
+                const trend = calculateTrend(item.currentPrice, item.previousPrice).trend;
+                if (trend !== trendFilter) return false;
+            }
+            
+            return true;
+        });
+        
+        renderPriceTable(filteredData);
+        updateMarketStats(filteredData);
+        
+        // Hide loading
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('priceTable').style.opacity = '1';
+    }, 800);
+}
+
+// Initialize page
+function initializePage() {
+    renderPriceTable();
+    updateMarketStats();
+    
+    // Update last updated time
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('en-IN', { 
+        hour12: true, 
+        hour: '2-digit', 
+        minute: '2-digit'
+    });
+    const dateString = now.toLocaleDateString('en-IN', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    
+    document.getElementById('lastUpdated').textContent = `${dateString}, ${timeString}`;
+}
+
+// Auto-refresh prices every 5 minutes (simulation)
+function autoRefreshPrices() {
+    setInterval(() => {
+        // Simulate small price changes
+        marketPriceData.forEach(item => {
+            item.previousPrice = item.currentPrice;
+            const changePercent = (Math.random() - 0.5) * 0.1; // ±5% change
+            item.currentPrice = Math.round(item.currentPrice * (1 + changePercent));
+        });
+        
+        renderPriceTable(filteredData);
+        updateMarketStats(filteredData);
+        
+        // Update timestamp
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('en-IN', { 
+            hour12: true, 
+            hour: '2-digit', 
+            minute: '2-digit'
+        });
+        const dateString = now.toLocaleDateString('en-IN', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        
+        document.getElementById('lastUpdated').textContent = `${dateString}, ${timeString}`;
+    }, 300000); // 5 minutes
+}
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    initializePage();
+    autoRefreshPrices();
+});
+
+// Reset filters
+function resetFilters() {
+    document.getElementById('cropFilter').value = '';
+    document.getElementById('priceRange').value = '';
+    document.getElementById('trendFilter').value = '';
+    filteredData = [...marketPriceData];
+    renderPriceTable();
+    updateMarketStats();
+}
+</script>
+{% endblock %}

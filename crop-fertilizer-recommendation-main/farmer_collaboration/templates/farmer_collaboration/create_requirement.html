@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Requirement — Farmer Connect</title>
+    <link rel="stylesheet" href="{{ url_for('farmer_collaboration.static', filename='css/farmer_connect.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="fc-container">
+    <div class="fc-navbar">
+        <a href="{{ url_for('farmer_collaboration.requirements') }}" class="fc-brand">← Back to Requirements</a>
+    </div>
+
+    <div style="max-width:700px; margin:0 auto;" class="fc-card">
+        <h2 style="margin-top:0; font-size:1.5rem; color:#0f172a;">📋 Post Your Requirement (Seeds, Equipment, Labour, Buyer)</h2>
+        
+        <form action="{{ url_for('farmer_collaboration.create_requirement') }}" method="POST">
+            <div style="margin-bottom:14px;">
+                <label style="font-weight:700; display:block; margin-bottom:4px;">Requirement Title:</label>
+                <input type="text" name="title" required placeholder="e.g. Need 100 kg certified wheat seeds" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+            </div>
+
+            <div style="margin-bottom:14px;">
+                <label style="font-weight:700; display:block; margin-bottom:4px;">Category:</label>
+                <select name="category" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+                    {% for cat in categories %}
+                    <option value="{{ cat }}">{{ cat }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="display:flex; gap:12px; margin-bottom:14px;">
+                <div style="flex:1;">
+                    <label style="font-weight:700; display:block; margin-bottom:4px;">Quantity Needed:</label>
+                    <input type="number" step="any" name="quantity" required placeholder="100" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+                </div>
+                <div style="flex:1;">
+                    <label style="font-weight:700; display:block; margin-bottom:4px;">Unit:</label>
+                    <select name="unit" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+                        {% for u in units %}
+                        <option value="{{ u }}">{{ u }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div style="display:flex; gap:12px; margin-bottom:14px;">
+                <div style="flex:1;">
+                    <label style="font-weight:700; display:block; margin-bottom:4px;">Maximum Budget (₹):</label>
+                    <input type="number" step="any" name="budget" required placeholder="5000" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+                </div>
+                <div style="flex:1;">
+                    <label style="font-weight:700; display:block; margin-bottom:4px;">Required By Date:</label>
+                    <input type="date" name="by_date" value="2026-09-30" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+                </div>
+            </div>
+
+            <div style="margin-bottom:14px;">
+                <label style="font-weight:700; display:block; margin-bottom:4px;">Location (District, State):</label>
+                <input type="text" name="location" required value="Bargarh, Odisha" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label style="font-weight:700; display:block; margin-bottom:4px;">Detailed Requirement Description:</label>
+                <textarea name="description" rows="4" placeholder="Explain your exact requirement, preferred brand, or delivery location..." style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1;"></textarea>
+            </div>
+
+            <button type="submit" class="fc-btn fc-btn-primary" style="background:#b45309; color:#fff; width:100%; justify-content:center; padding:12px; font-size:1rem;">Post Farmer Requirement</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

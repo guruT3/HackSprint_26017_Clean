@@ -1,0 +1,308 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh;">
+    <!-- Header Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="text-center text-white">
+                <h1 class="display-4 mb-3">
+                    <i class="fas fa-seedling me-3"></i>Agricultural Services Hub
+                </h1>
+                <p class="lead">Choose from our comprehensive agricultural tools and services</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Three Main Service Cards -->
+    <div class="row g-4 justify-content-center">
+        
+        <!-- Market Price Card -->
+        <div class="col-lg-4 col-md-6">
+            <div class="service-card h-100" onclick="redirectTo('/marketprices')">
+                <div class="card shadow-lg h-100 border-0" style="border-radius: 25px; cursor: pointer; transition: all 0.4s ease; background: linear-gradient(145deg, #28a745, #20c997);">
+                    <div class="card-body d-flex flex-column align-items-center text-center p-5 text-white">
+                        <div class="service-icon mb-4">
+                            <i class="fas fa-chart-line fa-5x mb-3"></i>
+                        </div>
+                        <h3 class="card-title mb-4 fw-bold">Market Price Trends</h3>
+                        <p class="card-text mb-4 lead">
+                            Get real-time market prices, price predictions, and market analysis for all major crops. Stay updated with the latest agricultural commodity trends.
+                        </p>
+                        <ul class="list-unstyled text-start mb-4">
+                            <li class="mb-2"><i class="fas fa-check-circle me-2"></i>Live Price Updates</li>
+                            <li class="mb-2"><i class="fas fa-check-circle me-2"></i>Price Predictions</li>
+                            <li class="mb-2"><i class="fas fa-check-circle me-2"></i>Historical Data</li>
+                            <li class="mb-2"><i class="fas fa-check-circle me-2"></i>Market News</li>
+                        </ul>
+                        <div class="mt-auto">
+                            <div class="btn btn-light btn-lg px-4 py-2 shadow">
+                                <i class="fas fa-arrow-right me-2"></i>Explore Prices
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-overlay">
+                        <div class="overlay-content">
+                            <i class="fas fa-external-link-alt fa-3x"></i>
+                            <h4 class="mt-3">Click to Access</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agricultural Calculator Card -->
+        <div class="col-lg-4 col-md-6">
+            <div class="service-card h-100" onclick="redirectTo('/ac')">
+                <div class="card shadow-lg h-100 border-0" style="border-radius: 25px; cursor: pointer; transition: all 0.4s ease; background: linear-gradient(145deg, #007bff, #6f42c1);">
+                    <div class="card-body d-flex flex-column align-items-center text-center p-5 text-white">
+                        <div class="service-icon mb-4">
+                            <i class="fas fa-calculator fa-5x mb-3"></i>
+                        </div>
+                        <h3 class="card-title mb-4 fw-bold">Agricultural Calculator</h3>
+                        <p class="card-text mb-4 lead">
+                            Comprehensive financial calculators for farming operations. Calculate profits, loans, subsidies, insurance, and plan your agricultural investments.
+                        </p>
+                        <ul class="list-unstyled text-start mb-4">
+                            <li class="mb-2"><i class="fas fa-check-circle me-2"></i>Profit/Loss Calculator</li>
+                            <li class="mb-2"><i class="fas fa-check-circle me-2"></i>Loan EMI Calculator</li>
+                            <li class="mb-2"><i class="fas fa-check-circle me-2"></i>Subsidy Calculator</li>
+                            <li class="mb-2"><i class="fas fa-check-circle me-2"></i>Insurance Calculator</li>
+                        </ul>
+                        <div class="mt-auto">
+                            <div class="btn btn-light btn-lg px-4 py-2 shadow">
+                                <i class="fas fa-arrow-right me-2"></i>Start Calculating
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-overlay">
+                        <div class="overlay-content">
+                            <i class="fas fa-external-link-alt fa-3x"></i>
+                            <h4 class="mt-3">Click to Access</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Chatbot Card -->
+        <div class="col-lg-4 col-md-6">
+            <div class="service-card h-100" onclick="redirectTo('https://cdn.botpress.cloud/webchat/v3.2/shareable.html?configUrl=https://files.bpcontent.cloud/2025/09/06/17/20250906174319-NTZF1IAF.json')">
+                <div class="card shadow-lg h-100 border-0" style="border-radius: 25px; cursor: pointer; transition: all 0.4s ease; background: linear-gradient(145deg, #17a2b8, #fd7e14);">
+                    <div class="card-body d-flex flex-column align-items-center text-center p-5 text-white">
+                        <div class="service-icon mb-4">
+                            <i class="fas fa-robot fa-5x mb-3"></i>
+                        </div>
+                        <h3 class="card-title mb-4 fw-bold">AI Financial Chatbot</h3>
+                        <p class="card-text mb-4 lead">
+                            Get instant answers to your agricultural finance questions. Our AI assistant provides expert guidance on farming investments, loans, and schemes.
+                        </p>
+                        <ul class="list-unstyled text-start mb-4">
+                            <li class="mb-2"><i class="fas fa-check-circle me-2"></i>24/7 AI Assistance</li>
+                            <li class="mb-2"><i class="fas fa-check-circle me-2"></i>Financial Advice</li>
+                            <li class="mb-2"><i class="fas fa-check-circle me-2"></i>Scheme Information</li>
+                            <li class="mb-2"><i class="fas fa-check-circle me-2"></i>Investment Guidance</li>
+                        </ul>
+                        <div class="mt-auto">
+                            <div class="btn btn-light btn-lg px-4 py-2 shadow">
+                                <i class="fas fa-arrow-right me-2"></i>Chat with AI
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-overlay">
+                        <div class="overlay-content">
+                            <i class="fas fa-external-link-alt fa-3x"></i>
+                            <h4 class="mt-3">Click to Access</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Information Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card shadow-lg" style="border-radius: 20px; backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.95);">
+                <div class="card-body text-center p-5">
+                    <h4 class="mb-4 text-primary">Why Choose Our Agricultural Services?</h4>
+                    <div class="row g-4">
+                        <div class="col-md-3">
+                            <div class="feature-item">
+                                <i class="fas fa-database fa-3x text-success mb-3"></i>
+                                <h6 class="fw-bold">Real-time Data</h6>
+                                <p class="small text-muted">Latest market information updated every hour</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="feature-item">
+                                <i class="fas fa-brain fa-3x text-info mb-3"></i>
+                                <h6 class="fw-bold">AI Powered</h6>
+                                <p class="small text-muted">Machine learning algorithms for accurate predictions</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="feature-item">
+                                <i class="fas fa-mobile-alt fa-3x text-warning mb-3"></i>
+                                <h6 class="fw-bold">Mobile Friendly</h6>
+                                <p class="small text-muted">Access from anywhere, anytime on any device</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="feature-item">
+                                <i class="fas fa-shield-alt fa-3x text-danger mb-3"></i>
+                                <h6 class="fw-bold">Secure & Reliable</h6>
+                                <p class="small text-muted">Bank-grade security for your financial data</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Redirect function
+function redirectTo(url) {
+    window.location.href = url;
+}
+
+// Add hover effects and animations
+document.addEventListener('DOMContentLoaded', function() {
+    const serviceCards = document.querySelectorAll('.service-card');
+    
+    serviceCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.querySelector('.card').style.transform = 'translateY(-15px) scale(1.02)';
+            this.querySelector('.card').style.boxShadow = '0 25px 50px rgba(0,0,0,0.3)';
+            this.querySelector('.card-overlay').style.opacity = '1';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.querySelector('.card').style.transform = 'translateY(0) scale(1)';
+            this.querySelector('.card').style.boxShadow = '0 10px 30px rgba(0,0,0,0.2)';
+            this.querySelector('.card-overlay').style.opacity = '0';
+        });
+        
+        // Add click animation
+        card.addEventListener('click', function() {
+            this.querySelector('.card').style.transform = 'translateY(-10px) scale(0.98)';
+            setTimeout(() => {
+                this.querySelector('.card').style.transform = 'translateY(-15px) scale(1.02)';
+            }, 100);
+        });
+    });
+});
+</script>
+
+<style>
+.service-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.service-card .card {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 25px;
+    z-index: 2;
+}
+
+.overlay-content {
+    text-align: center;
+    color: white;
+    transform: translateY(10px);
+    transition: transform 0.3s ease;
+}
+
+.service-card:hover .overlay-content {
+    transform: translateY(0);
+}
+
+.service-icon i {
+    text-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.feature-item {
+    transition: transform 0.3s ease;
+}
+
+.feature-item:hover {
+    transform: translateY(-10px);
+}
+
+/* Gradient text effect */
+.card-title {
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Button hover effects */
+.btn {
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.service-card:hover .btn {
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: #333 !important;
+    transform: scale(1.05);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .service-card .card {
+        margin-bottom: 2rem;
+    }
+    
+    .service-icon i {
+        font-size: 3rem !important;
+    }
+    
+    .card-body {
+        padding: 2rem !important;
+    }
+}
+
+/* Animation for page load */
+.service-card {
+    opacity: 0;
+    transform: translateY(50px);
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.service-card:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.service-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.service-card:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+{% endblock %}

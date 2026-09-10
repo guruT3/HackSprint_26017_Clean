@@ -1,0 +1,39 @@
+# Environment Configuration for Farm Copilot
+
+# Flask Configuration
+FLASK_ENV=development
+FLASK_DEBUG=True
+FLASK_PORT=5000
+
+# Weather API Configuration
+# Sign up at https://openweathermap.org/api to get your API key
+WEATHER_API_KEY=your_api_key_here
+WEATHER_API_URL=https://api.openweathermap.org/data/2.5/forecast
+
+# ML Model Configuration
+ML_MODEL_PATH=models/
+USE_ML_PREDICTIONS=False  # Set to True when you have trained models
+
+# Database Configuration (Future enhancement)
+# DATABASE_URL=postgresql://user:password@localhost/farm_copilot
+
+# Security (Future enhancement)
+# SECRET_KEY=your_secret_key_here
+# JWT_SECRET_KEY=your_jwt_secret_here
+
+# Logging
+LOG_LEVEL=INFO
+LOG_FILE=farm_copilot.log
+
+# Feature Flags
+ENABLE_WEATHER_API=False
+ENABLE_SMS_NOTIFICATIONS=False
+ENABLE_EMAIL_NOTIFICATIONS=False
+
+# Third-party Integrations (Future)
+# TWILIO_ACCOUNT_SID=your_twilio_sid
+# TWILIO_AUTH_TOKEN=your_twilio_token
+# TWILIO_PHONE_NUMBER=+1234567890
+
+# SENDGRID_API_KEY=your_sendgrid_key
+# NOTIFICATION_EMAIL=alerts@yourfarm.com

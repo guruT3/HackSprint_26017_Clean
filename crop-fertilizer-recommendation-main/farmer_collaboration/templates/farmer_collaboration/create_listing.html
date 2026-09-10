@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Marketplace Listing — Farmer Connect</title>
+    <link rel="stylesheet" href="{{ url_for('farmer_collaboration.static', filename='css/farmer_connect.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="fc-container">
+    <div class="fc-navbar">
+        <a href="{{ url_for('farmer_collaboration.marketplace') }}" class="fc-brand">← Back to Marketplace</a>
+    </div>
+
+    <div style="max-width:700px; margin:0 auto;" class="fc-card">
+        <h2 style="margin-top:0; font-size:1.5rem; color:#0f172a;">🌱 List Agricultural Product / Input for Sale</h2>
+        
+        <form action="{{ url_for('farmer_collaboration.create_listing') }}" method="POST">
+            <div style="margin-bottom:14px;">
+                <label style="font-weight:700; display:block; margin-bottom:4px;">Product Title:</label>
+                <input type="text" name="title" required placeholder="e.g. 500 kg High Yield Swarna Paddy Seeds" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+            </div>
+
+            <div style="margin-bottom:14px;">
+                <label style="font-weight:700; display:block; margin-bottom:4px;">Category:</label>
+                <select name="category" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+                    {% for cat in categories %}
+                    <option value="{{ cat }}">{{ cat }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="display:flex; gap:12px; margin-bottom:14px;">
+                <div style="flex:1;">
+                    <label style="font-weight:700; display:block; margin-bottom:4px;">Quantity:</label>
+                    <input type="number" step="any" name="quantity" required placeholder="500" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+                </div>
+                <div style="flex:1;">
+                    <label style="font-weight:700; display:block; margin-bottom:4px;">Unit:</label>
+                    <select name="unit" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+                        {% for u in units %}
+                        <option value="{{ u }}">{{ u }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div style="display:flex; gap:12px; margin-bottom:14px;">
+                <div style="flex:1;">
+                    <label style="font-weight:700; display:block; margin-bottom:4px;">Price (₹):</label>
+                    <input type="number" step="any" name="price" required placeholder="45" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+                </div>
+                <div style="flex:1;">
+                    <label style="font-weight:700; display:block; margin-bottom:4px;">Price Type:</label>
+                    <select name="price_type" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+                        {% for pt in price_types %}
+                        <option value="{{ pt }}">{{ pt }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div style="margin-bottom:14px;">
+                <label style="font-weight:700; display:block; margin-bottom:4px;">Location (District, State):</label>
+                <input type="text" name="location" required value="Bargarh, Odisha" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label style="font-weight:700; display:block; margin-bottom:4px;">Description / Details:</label>
+                <textarea name="description" rows="4" placeholder="Mention product condition, seed certification, or delivery terms..." style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1;"></textarea>
+            </div>
+
+            <button type="submit" class="fc-btn fc-btn-primary" style="background:#2e7d32; color:#fff; width:100%; justify-content:center; padding:12px; font-size:1rem;">Publish Marketplace Listing</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

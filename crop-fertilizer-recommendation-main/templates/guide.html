@@ -1,0 +1,706 @@
+{% extends "base.html" %}
+
+{% block title %}How to Use Soil Testing Sensor - Easy Guide{% endblock %}
+
+{% block content %}
+<style>
+    .guide-container {
+        max-width: 1100px;
+        margin: 40px auto;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 50px rgba(0,0,0,0.15);
+        overflow: hidden;
+    }
+
+    .header {
+        background: linear-gradient(135deg, #1e5631 0%, #27ae60 100%);
+        color: white;
+        padding: 50px 30px;
+        text-align: center;
+        position: relative;
+    }
+
+    .language-toggle {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: white;
+        color: #27ae60;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 25px;
+        font-size: 1em;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .language-toggle:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        background: #f8f9fa;
+    }
+
+    .language-toggle:active {
+        transform: translateY(0);
+    }
+
+    .header h1 {
+        font-size: 2.5em;
+        margin-bottom: 15px;
+        font-weight: 700;
+    }
+
+    .header p {
+        font-size: 1.2em;
+        opacity: 0.95;
+    }
+
+    .badge {
+        display: inline-block;
+        background: rgba(255,255,255,0.2);
+        padding: 8px 20px;
+        border-radius: 25px;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+
+    .content-area {
+        padding: 50px 40px;
+    }
+
+    .intro-section {
+        background: #f0f8f4;
+        padding: 30px;
+        border-radius: 15px;
+        margin-bottom: 40px;
+        border-left: 5px solid #27ae60;
+    }
+
+    .intro-section h2 {
+        color: #1e5631;
+        margin-bottom: 15px;
+        font-size: 1.8em;
+    }
+
+    .intro-section p {
+        font-size: 1.1em;
+        line-height: 1.8;
+        color: #555;
+    }
+
+    .step {
+        background: #fff;
+        margin-bottom: 30px;
+        border-radius: 15px;
+        padding: 35px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        border-left: 6px solid #27ae60;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .step:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+
+    .step-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #27ae60, #2ecc71);
+        color: white;
+        border-radius: 50%;
+        font-size: 1.5em;
+        font-weight: bold;
+        margin-right: 20px;
+        float: left;
+        box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3);
+    }
+
+    .step-content {
+        overflow: hidden;
+    }
+
+    .step h3 {
+        color: #1e5631;
+        font-size: 1.6em;
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+
+    .step-description {
+        font-size: 1.1em;
+        line-height: 1.8;
+        color: #555;
+        margin-bottom: 15px;
+    }
+
+    .tip-box {
+        background: #fff9e6;
+        border-left: 4px solid #f39c12;
+        padding: 20px;
+        margin-top: 20px;
+        border-radius: 8px;
+        color: #333;
+    }
+
+    .tip-box strong {
+        color: #d68910;
+        display: block;
+        margin-bottom: 8px;
+        font-size: 1.1em;
+    }
+
+    .warning-box {
+        background: #ffebee;
+        border-left: 4px solid #e74c3c;
+        padding: 20px;
+        margin-top: 20px;
+        border-radius: 8px;
+        color: #333;
+    }
+
+    .warning-box strong {
+        color: #c0392b;
+        display: block;
+        margin-bottom: 8px;
+        font-size: 1.1em;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin: 30px 0;
+    }
+
+    .info-card {
+        background: linear-gradient(135deg, #27ae60, #2ecc71);
+        color: white;
+        padding: 25px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(39, 174, 96, 0.2);
+    }
+
+    .info-card h4 {
+        font-size: 1.3em;
+        margin-bottom: 10px;
+    }
+
+    .info-card p {
+        font-size: 1em;
+        opacity: 0.95;
+    }
+
+    .reading-guide {
+        background: #e8f5e9;
+        padding: 30px;
+        border-radius: 15px;
+        margin-top: 40px;
+    }
+
+    .reading-guide h3 {
+        color: #1e5631;
+        font-size: 1.8em;
+        margin-bottom: 25px;
+        text-align: center;
+    }
+
+    .reading-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .reading-table th {
+        background: #27ae60;
+        color: white;
+        padding: 15px;
+        text-align: left;
+        font-size: 1.1em;
+    }
+
+    .reading-table td {
+        padding: 15px;
+        border-bottom: 1px solid #e0e0e0;
+        font-size: 1em;
+        color: #333;
+    }
+
+    .reading-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .reading-table tr:hover {
+        background: #f5f5f5;
+    }
+
+    .status-good {
+        color: #27ae60;
+        font-weight: bold;
+    }
+
+    .status-medium {
+        color: #f39c12;
+        font-weight: bold;
+    }
+
+    .status-bad {
+        color: #e74c3c;
+        font-weight: bold;
+    }
+
+    .maintenance-section {
+        background: #f8f9fa;
+        padding: 30px;
+        border-radius: 15px;
+        margin-top: 40px;
+    }
+
+    .maintenance-section h3 {
+        color: #1e5631;
+        font-size: 1.8em;
+        margin-bottom: 20px;
+    }
+
+    .maintenance-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .maintenance-list li {
+        padding: 15px;
+        margin-bottom: 10px;
+        background: white;
+        border-radius: 8px;
+        border-left: 4px solid #27ae60;
+        font-size: 1.1em;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        color: #333;
+        line-height: 1.6;
+    }
+
+    .maintenance-list li:before {
+        content: "✓ ";
+        color: #27ae60;
+        font-weight: bold;
+        margin-right: 10px;
+        font-size: 1.2em;
+    }
+
+    @media (max-width: 768px) {
+        .header h1 {
+            font-size: 1.8em;
+        }
+
+        .content-area {
+            padding: 30px 20px;
+        }
+
+        .step {
+            padding: 25px 20px;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            font-size: 1.2em;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .language-toggle {
+            position: static;
+            margin: 0 auto 20px;
+        }
+    }
+</style>
+
+<div class="guide-container">
+    <div class="header">
+        <button class="language-toggle" onclick="toggleLanguage()">
+            <span id="lang-icon">🇮🇳</span>
+            <span id="lang-text">हिंदी</span>
+        </button>
+        <div class="badge"></div>
+        <h1 data-en="How to Use Your 4-in-1 Soil Testing Sensor" data-hi="अपने 4-इन-1 मिट्टी परीक्षण सेंसर का उपयोग कैसे करें">How to Use Your 4-in-1 Soil Testing Sensor</h1>
+        <p data-en="Simple step-by-step guide for farmers" data-hi="किसानों के लिए सरल चरण-दर-चरण गाइड">Simple step-by-step guide for farmers</p>
+    </div>
+
+    <div class="content-area">
+        <div class="intro-section">
+            <h2 data-en="What This Tool Does" data-hi="यह उपकरण क्या करता है">What This Tool Does</h2>
+            <p data-en="This sensor helps you know your soil health by checking 4 important things: pH level (acidity), Nitrogen (N), Phosphorus (P), and Potassium (K). This information helps you grow better crops and save money on fertilizers." data-hi="यह सेंसर 4 महत्वपूर्ण चीजों की जांच करके आपकी मिट्टी के स्वास्थ्य को जानने में मदद करता है: pH स्तर (अम्लता), नाइट्रोजन (N), फास्फोरस (P), और पोटैशियम (K)। यह जानकारी आपको बेहतर फसल उगाने और उर्वरकों पर पैसे बचाने में मदद करती है।">This sensor helps you know your soil health by checking 4 important things: pH level (acidity), Nitrogen (N), Phosphorus (P), and Potassium (K). This information helps you grow better crops and save money on fertilizers.</p>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-card">
+                <h4 data-en="📊 pH Level" data-hi="📊 pH स्तर">📊 pH Level</h4>
+                <p data-en="Checks if soil is acidic or alkaline" data-hi="जांचता है कि मिट्टी अम्लीय है या क्षारीय">Checks if soil is acidic or alkaline</p>
+            </div>
+            <div class="info-card">
+                <h4 data-en="🌿 Nitrogen (N)" data-hi="🌿 नाइट्रोजन (N)">🌿 Nitrogen (N)</h4>
+                <p data-en="Helps plants grow green leaves" data-hi="पौधों को हरी पत्तियां उगाने में मदद करता है">Helps plants grow green leaves</p>
+            </div>
+            <div class="info-card">
+                <h4 data-en="🌾 Phosphorus (P)" data-hi="🌾 फास्फोरस (P)">🌾 Phosphorus (P)</h4>
+                <p data-en="Helps roots and flowers grow" data-hi="जड़ों और फूलों को बढ़ने में मदद करता है">Helps roots and flowers grow</p>
+            </div>
+            <div class="info-card">
+                <h4 data-en="🌻 Potassium (K)" data-hi="🌻 पोटैशियम (K)">🌻 Potassium (K)</h4>
+                <p data-en="Makes plants strong and healthy" data-hi="पौधों को मजबूत और स्वस्थ बनाता है">Makes plants strong and healthy</p>
+            </div>
+        </div>
+
+        <!-- Step 1 -->
+        <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+                <h3 data-en="Unbox and Check All Parts" data-hi="बॉक्स खोलें और सभी पार्ट्स जांचें">Unbox and Check All Parts</h3>
+                <div class="step-description">
+                    <p data-en="Open the box carefully and make sure you have:" data-hi="बॉक्स को सावधानी से खोलें और सुनिश्चित करें कि आपके पास है:">Open the box carefully and make sure you have:</p>
+                    <ul style="margin-left: 40px; margin-top: 15px; font-size: 1.1em; line-height: 2;">
+                        <li data-en="Main sensor unit with display screen" data-hi="डिस्प्ले स्क्रीन के साथ मुख्य सेंसर यूनिट">Main sensor unit with display screen</li>
+                        <li data-en="Long probe with 4 metal rods" data-hi="4 धातु की छड़ों के साथ लंबी प्रोब">Long probe with 4 metal rods</li>
+                        <li data-en="Connection cable" data-hi="कनेक्शन केबल">Connection cable</li>
+                        <li data-en="User manual" data-hi="उपयोगकर्ता मैनुअल">User manual</li>
+                    </ul>
+                </div>
+                <div class="tip-box">
+                    <strong data-en="💡 Tip:" data-hi="💡 सुझाव:">💡 Tip:</strong>
+                    <span data-en="Keep all parts in a dry and safe place when not using." data-hi="उपयोग में न होने पर सभी पार्ट्स को सूखी और सुरक्षित जगह पर रखें।">Keep all parts in a dry and safe place when not using.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+                <h3 data-en="Connect the Probe to the Device" data-hi="प्रोब को डिवाइस से कनेक्ट करें">Connect the Probe to the Device</h3>
+                <div class="step-description">
+                    <p data-en="Take the probe (the part with 4 metal rods) and connect it to the main device using the cable. Make sure the connection is tight and secure. You will hear a small click sound when it's properly connected." data-hi="प्रोब (4 धातु की छड़ों वाला भाग) लें और इसे केबल का उपयोग करके मुख्य डिवाइस से कनेक्ट करें। सुनिश्चित करें कि कनेक्शन कसा और सुरक्षित है। जब यह ठीक से कनेक्ट हो जाएगा तो आपको एक छोटी क्लिक की आवाज सुनाई देगी।">Take the probe (the part with 4 metal rods) and connect it to the main device using the cable. Make sure the connection is tight and secure. You will hear a small click sound when it's properly connected.</p>
+                </div>
+                <div class="warning-box">
+                    <strong data-en="⚠️ Important:" data-hi="⚠️ महत्वपूर्ण:">⚠️ Important:</strong>
+                    <span data-en="Do not force the connection. If it doesn't fit easily, check if you're connecting it the right way." data-hi="कनेक्शन को जबरदस्ती न करें। अगर यह आसानी से फिट नहीं होता है, तो जांचें कि आप इसे सही तरीके से कनेक्ट कर रहे हैं या नहीं।">Do not force the connection. If it doesn't fit easily, check if you're connecting it the right way.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+                <h3 data-en="Give Power to the Device" data-hi="डिवाइस को पावर दें">Give Power to the Device</h3>
+                <div class="step-description">
+                    <p data-en="Your device can get power in different ways. Check which type you have:" data-hi="आपका डिवाइस अलग-अलग तरीकों से पावर प्राप्त कर सकता है। जांचें कि आपके पास किस प्रकार का है:">Your device can get power in different ways. Check which type you have:</p>
+                    <ul style="margin-left: 40px; margin-top: 15px; font-size: 1.1em; line-height: 2;">
+                        <li><strong data-en="Battery Powered:" data-hi="बैटरी संचालित:">Battery Powered:</strong> <span data-en="Insert batteries (usually 2-4 AA batteries) in the battery compartment. Open the back cover, put batteries matching the + and - signs, then close the cover." data-hi="बैटरी कम्पार्टमेंट में बैटरी (आमतौर पर 2-4 AA बैटरी) डालें। पीछे का कवर खोलें, + और - संकेतों से मिलान करते हुए बैटरी लगाएं, फिर कवर बंद करें।">Insert batteries (usually 2-4 AA batteries) in the battery compartment. Open the back cover, put batteries matching the + and - signs, then close the cover.</span></li>
+                        <li><strong data-en="Rechargeable Battery:" data-hi="रिचार्जेबल बैटरी:">Rechargeable Battery:</strong> <span data-en="Use the USB charging cable. Connect one end to the device and other end to a phone charger, power bank, or computer. Red light means charging, green light means fully charged. First charge takes 3-4 hours." data-hi="USB चार्जिंग केबल का उपयोग करें। एक सिरा डिवाइस से और दूसरा सिरा फोन चार्जर, पावर बैंक या कंप्यूटर से कनेक्ट करें। लाल रोशनी का मतलब चार्जिंग है, हरी रोशनी का मतलब पूरी तरह चार्ज है। पहली बार चार्ज करने में 3-4 घंटे लगते हैं।">Use the USB charging cable. Connect one end to the device and other end to a phone charger, power bank, or computer. Red light means charging, green light means fully charged. First charge takes 3-4 hours.</span></li>
+                        <li><strong data-en="Direct Power:" data-hi="सीधी बिजली:">Direct Power:</strong> <span data-en="Some models work with adapters. Plug the adapter into electricity socket and connect to the device." data-hi="कुछ मॉडल एडेप्टर के साथ काम करते हैं। एडेप्टर को बिजली के सॉकेट में लगाएं और डिवाइस से कनेक्ट करें।">Some models work with adapters. Plug the adapter into electricity socket and connect to the device.</span></li>
+                    </ul>
+                </div>
+                <div class="warning-box">
+                    <strong data-en="⚠️ Important:" data-hi="⚠️ महत्वपूर्ण:">⚠️ Important:</strong>
+                    <span data-en="Don't mix old and new batteries. Remove batteries if not using device for long time. Don't overcharge rechargeable devices (unplug after green light)." data-hi="पुरानी और नई बैटरी न मिलाएं। लंबे समय तक डिवाइस का उपयोग न करने पर बैटरी निकाल दें। रिचार्जेबल डिवाइस को ओवरचार्ज न करें (हरी रोशनी के बाद अनप्लग करें)।">Don't mix old and new batteries. Remove batteries if not using device for long time. Don't overcharge rechargeable devices (unplug after green light).</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+                <h3 data-en="Turn On the Device" data-hi="डिवाइस चालू करें">Turn On the Device</h3>
+                <div class="step-description">
+                    <p data-en="Press and hold the power button (usually marked as ON/OFF or ⏻) for 2-3 seconds. The screen will light up and show 'Ready' or display numbers like '0.0'. You may hear a small beep sound." data-hi="पावर बटन (आमतौर पर ON/OFF या ⏻ के रूप में चिह्नित) को 2-3 सेकंड के लिए दबाएं और होल्ड करें। स्क्रीन रोशन हो जाएगी और 'Ready' दिखाएगी या '0.0' जैसी संख्या प्रदर्शित करेगी। आपको एक छोटी बीप की आवाज सुनाई दे सकती है।">Press and hold the power button (usually marked as ON/OFF or ⏻) for 2-3 seconds. The screen will light up and show "Ready" or display numbers like "0.0". You may hear a small beep sound.</p>
+                    <p style="margin-top: 15px;" data-en="If the device doesn't turn on:" data-hi="अगर डिवाइस चालू नहीं होता है:">If the device doesn't turn on:</p>
+                    <ul style="margin-left: 40px; margin-top: 10px; font-size: 1.1em; line-height: 2;">
+                        <li data-en="Check if batteries are inserted correctly" data-hi="जांचें कि बैटरी सही ढंग से डाली गई है या नहीं">Check if batteries are inserted correctly</li>
+                        <li data-en="Check if rechargeable battery is charged" data-hi="जांचें कि रिचार्जेबल बैटरी चार्ज है या नहीं">Check if rechargeable battery is charged</li>
+                        <li data-en="Try replacing batteries with new ones" data-hi="नई बैटरी से बदलने का प्रयास करें">Try replacing batteries with new ones</li>
+                        <li data-en="Make sure power adapter is properly connected" data-hi="सुनिश्चित करें कि पावर एडेप्टर ठीक से कनेक्ट है">Make sure power adapter is properly connected</li>
+                    </ul>
+                </div>
+                <div class="tip-box">
+                    <strong data-en="💡 Tip:" data-hi="💡 सुझाव:">💡 Tip:</strong>
+                    <span data-en="Always keep spare batteries with you when going to the field. Charge the device night before testing." data-hi="खेत में जाते समय हमेशा अपने साथ अतिरिक्त बैटरी रखें। परीक्षण से एक रात पहले डिवाइस चार्ज करें।">Always keep spare batteries with you when going to the field. Charge the device night before testing.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="step">
+            <div class="step-number">5</div>
+            <div class="step-content">
+                <h3 data-en="Choose Your Testing Spot" data-hi="अपना परीक्षण स्थान चुनें">Choose Your Testing Spot</h3>
+                <div class="step-description">
+                    <p data-en="Walk to your farm field and choose a good spot to test:" data-hi="अपने खेत में जाएं और परीक्षण के लिए एक अच्छी जगह चुनें:">Walk to your farm field and choose a good spot to test:</p>
+                    <ul style="margin-left: 40px; margin-top: 15px; font-size: 1.1em; line-height: 2;">
+                        <li data-en="Pick a spot in the middle of your field (not near edges)" data-hi="अपने खेत के बीच में एक जगह चुनें (किनारों के पास नहीं)">Pick a spot in the middle of your field (not near edges)</li>
+                        <li data-en="Avoid areas near trees, roads, or water drainage" data-hi="पेड़ों, सड़कों या पानी के निकास के पास के क्षेत्रों से बचें">Avoid areas near trees, roads, or water drainage</li>
+                        <li data-en="Remove any grass, stones, or plant remains from the surface" data-hi="सतह से किसी भी घास, पत्थर या पौधे के अवशेष हटा दें">Remove any grass, stones, or plant remains from the surface</li>
+                        <li data-en="The soil should be slightly moist (not too dry or too wet)" data-hi="मिट्टी थोड़ी नम होनी चाहिए (बहुत सूखी या बहुत गीली नहीं)">The soil should be slightly moist (not too dry or too wet)</li>
+                    </ul>
+                </div>
+                <div class="tip-box">
+                    <strong data-en="💡 Tip:" data-hi="💡 सुझाव:">💡 Tip:</strong>
+                    <span data-en="Test 3-5 different spots in your field and take the average reading for best results." data-hi="सर्वोत्तम परिणामों के लिए अपने खेत में 3-5 अलग-अलग स्थानों पर परीक्षण करें और औसत रीडिंग लें।">Test 3-5 different spots in your field and take the average reading for best results.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 6 -->
+        <div class="step">
+            <div class="step-number">6</div>
+            <div class="step-content">
+                <h3 data-en="Insert the Probe into Soil" data-hi="प्रोब को मिट्टी में डालें">Insert the Probe into Soil</h3>
+                <div class="step-description">
+                    <p data-en="Push the probe straight down into the soil. Make sure:" data-hi="प्रोब को सीधे नीचे मिट्टी में धकेलें। सुनिश्चित करें:">Push the probe straight down into the soil. Make sure:</p>
+                    <ul style="margin-left: 40px; margin-top: 15px; font-size: 1.1em; line-height: 2;">
+                        <li data-en="All 4 metal rods go completely into the soil" data-hi="सभी 4 धातु की छड़ें पूरी तरह से मिट्टी में चली जाएं">All 4 metal rods go completely into the soil</li>
+                        <li data-en="Push it at least 4-6 inches (10-15 cm) deep" data-hi="इसे कम से कम 4-6 इंच (10-15 सेमी) गहराई तक धकेलें">Push it at least 4-6 inches (10-15 cm) deep</li>
+                        <li data-en="The probe should be straight, not tilted" data-hi="प्रोब सीधी होनी चाहिए, झुकी हुई नहीं">The probe should be straight, not tilted</li>
+                        <li data-en="Press firmly but don't force it if soil is too hard" data-hi="मजबूती से दबाएं लेकिन अगर मिट्टी बहुत सख्त है तो जबरदस्ती न करें">Press firmly but don't force it if soil is too hard</li>
+                    </ul>
+                </div>
+                <div class="warning-box">
+                    <strong data-en="⚠️ Important:" data-hi="⚠️ महत्वपूर्ण:">⚠️ Important:</strong>
+                    <span data-en="If soil is too hard, water it lightly and wait 10-15 minutes before testing. Don't bend the metal rods." data-hi="अगर मिट्टी बहुत सख्त है, तो इसे हल्का पानी दें और परीक्षण से पहले 10-15 मिनट प्रतीक्षा करें। धातु की छड़ों को न मोड़ें।">If soil is too hard, water it lightly and wait 10-15 minutes before testing. Don't bend the metal rods.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 7 -->
+        <div class="step">
+            <div class="step-number">7</div>
+            <div class="step-content">
+                <h3 data-en="Wait for Readings" data-hi="रीडिंग के लिए प्रतीक्षा करें">Wait for Readings</h3>
+                <div class="step-description">
+                    <p data-en="After inserting the probe, wait for 30-60 seconds. The device screen will show numbers for each measurement. Don't move the probe while it's reading." data-hi="प्रोब डालने के बाद, 30-60 सेकंड प्रतीक्षा करें। डिवाइस स्क्रीन प्रत्येक माप के लिए संख्या दिखाएगी। रीडिंग के दौरान प्रोब को न हिलाएं।">After inserting the probe, wait for 30-60 seconds. The device screen will show numbers for each measurement. Don't move the probe while it's reading.</p>
+                    <p style="margin-top: 15px;" data-en="The screen will display:" data-hi="स्क्रीन प्रदर्शित करेगी:">The screen will display:</p>
+                    <ul style="margin-left: 40px; margin-top: 15px; font-size: 1.1em; line-height: 2;">
+                        <li><strong>pH:</strong> <span data-en="A number between 3-10" data-hi="3-10 के बीच एक संख्या">A number between 3-10</span></li>
+                        <li><strong>N:</strong> <span data-en="Nitrogen level in mg/kg" data-hi="mg/kg में नाइट्रोजन स्तर">Nitrogen level in mg/kg</span></li>
+                        <li><strong>P:</strong> <span data-en="Phosphorus level in mg/kg" data-hi="mg/kg में फास्फोरस स्तर">Phosphorus level in mg/kg</span></li>
+                        <li><strong>K:</strong> <span data-en="Potassium level in mg/kg" data-hi="mg/kg में पोटैशियम स्तर">Potassium level in mg/kg</span></li>
+                    </ul>
+                </div>
+                <div class="tip-box">
+                    <strong data-en="💡 Tip:" data-hi="💡 सुझाव:">💡 Tip:</strong>
+                    <span data-en="Write down the readings on paper or take a photo of the screen to remember later." data-hi="बाद में याद रखने के लिए रीडिंग को कागज पर लिखें या स्क्रीन की फोटो लें।">Write down the readings on paper or take a photo of the screen to remember later.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 8 -->
+        <div class="step">
+            <div class="step-number">8</div>
+            <div class="step-content">
+                <h3 data-en="Remove the Probe Carefully" data-hi="प्रोब को सावधानी से निकालें">Remove the Probe Carefully</h3>
+                <div class="step-description">
+                    <p data-en="After getting the reading, pull the probe straight up and out of the soil. Clean the metal rods with a soft cloth or tissue to remove soil. Don't leave soil on the rods." data-hi="रीडिंग प्राप्त करने के बाद, प्रोब को सीधे ऊपर खींचें और मिट्टी से बाहर निकालें। मिट्टी हटाने के लिए धातु की छड़ों को एक नरम कपड़े या टिश्यू से साफ करें। छड़ों पर मिट्टी न छोड़ें।">After getting the reading, pull the probe straight up and out of the soil. Clean the metal rods with a soft cloth or tissue to remove soil. Don't leave soil on the rods.</p>
+                </div>
+                <div class="warning-box">
+                    <strong data-en="⚠️ Important:" data-hi="⚠️ महत्वपूर्ण:">⚠️ Important:</strong>
+                    <span data-en="Don't wash the probe with water directly. Just wipe it clean with a dry or slightly damp cloth." data-hi="प्रोब को सीधे पानी से न धोएं। बस इसे सूखे या थोड़े गीले कपड़े से पोंछकर साफ करें।">Don't wash the probe with water directly. Just wipe it clean with a dry or slightly damp cloth.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 9 -->
+        <div class="step">
+            <div class="step-number">9</div>
+            <div class="step-content">
+                <h3 data-en="Understand Your Readings" data-hi="अपनी रीडिंग को समझें">Understand Your Readings</h3>
+                <div class="step-description">
+                    <p data-en="Check the table below to understand what your readings mean:" data-hi="अपनी रीडिंग का क्या अर्थ है, यह समझने के लिए नीचे दी गई तालिका देखें:">Check the table below to understand what your readings mean:</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reading Guide Table -->
+        <div class="reading-guide">
+            <h3 data-en="📖 Reading Guide for Your Soil" data-hi="📖 आपकी मिट्टी के लिए रीडिंग गाइड">📖 Reading Guide for Your Soil</h3>
+            
+            <h4 style="color: #1e5631; margin-top: 30px; margin-bottom: 15px; font-size: 1.4em;" data-en="pH Levels" data-hi="pH स्तर">pH Levels</h4>
+            <table class="reading-table">
+                <thead>
+                    <tr>
+                        <th data-en="pH Value" data-hi="pH मान">pH Value</th>
+                        <th data-en="Soil Type" data-hi="मिट्टी का प्रकार">Soil Type</th>
+                        <th data-en="What to Do" data-hi="क्या करें">What to Do</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="status-bad">3.0 - 5.5</td>
+                        <td data-en="Too Acidic" data-hi="बहुत अम्लीय">Too Acidic</td>
+                        <td data-en="Add lime powder to increase pH" data-hi="pH बढ़ाने के लिए चूना पाउडर डालें">Add lime powder to increase pH</td>
+                    </tr>
+                    <tr>
+                        <td class="status-good">5.5 - 7.5</td>
+                        <td data-en="Good for Most Crops" data-hi="अधिकांश फसलों के लिए अच्छा">Good for Most Crops</td>
+                        <td data-en="Perfect! No action needed" data-hi="बिल्कुल सही! कोई कार्रवाई की जरूरत नहीं">Perfect! No action needed</td>
+                    </tr>
+                    <tr>
+                        <td class="status-bad">7.5 - 10.0</td>
+                        <td data-en="Too Alkaline" data-hi="बहुत क्षारीय">Too Alkaline</td>
+                        <td data-en="Add sulfur or organic compost" data-hi="सल्फर या जैविक खाद डालें">Add sulfur or organic compost</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4 style="color: #1e5631; margin-top: 30px; margin-bottom: 15px; font-size: 1.4em;" data-en="Nitrogen (N) Levels" data-hi="नाइट्रोजन (N) स्तर">Nitrogen (N) Levels</h4>
+            <table class="reading-table">
+                <thead>
+                    <tr>
+                        <th data-en="N Value (mg/kg)" data-hi="N मान (mg/kg)">N Value (mg/kg)</th>
+                        <th data-en="Level" data-hi="स्तर">Level</th>
+                        <th data-en="What to Do" data-hi="क्या करें">What to Do</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="status-bad">0 - 30</td>
+                        <td style="color: #333;" data-en="Low" data-hi="कम">Low</td>
+                        <td style="color: #333;" data-en="Add urea or cow dung manure" data-hi="यूरिया या गोबर की खाद डालें">Add urea or cow dung manure</td>
+                    </tr>
+                    <tr>
+                        <td class="status-medium">30 - 60</td>
+                        <td style="color: #333;" data-en="Medium" data-hi="मध्यम">Medium</td>
+                        <td style="color: #333;" data-en="Add small amount of nitrogen fertilizer" data-hi="थोड़ी मात्रा में नाइट्रोजन उर्वरक डालें">Add small amount of nitrogen fertilizer</td>
+                    </tr>
+                    <tr>
+                        <td class="status-good">60 - 100+</td>
+                        <td style="color: #333;" data-en="Good" data-hi="अच्छा">Good</td>
+                        <td style="color: #333;" data-en="No need to add nitrogen" data-hi="नाइट्रोजन जोड़ने की आवश्यकता नहीं">No need to add nitrogen</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4 style="color: #1e5631; margin-top: 30px; margin-bottom: 15px; font-size: 1.4em;" data-en="Phosphorus (P) Levels" data-hi="फास्फोरस (P) स्तर">Phosphorus (P) Levels</h4>
+            <table class="reading-table">
+                <thead>
+                    <tr>
+                        <th data-en="P Value (mg/kg)" data-hi="P मान (mg/kg)">P Value (mg/kg)</th>
+                        <th data-en="Level" data-hi="स्तर">Level</th>
+                        <th data-en="What to Do" data-hi="क्या करें">What to Do</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="status-bad">0 - 10</td>
+                        <td style="color: #333;" data-en="Low" data-hi="कम">Low</td>
+                        <td style="color: #333;" data-en="Add DAP or bone meal fertilizer" data-hi="DAP या हड्डी की खाद डालें">Add DAP or bone meal fertilizer</td>
+                    </tr>
+                    <tr>
+                        <td class="status-medium">10 - 25</td>
+                        <td style="color: #333;" data-en="Medium" data-hi="मध्यम">Medium</td>
+                        <td style="color: #333;" data-en="Add some phosphorus fertilizer" data-hi="कुछ फास्फोरस उर्वरक डालें">Add some phosphorus fertilizer</td>
+                    </tr>
+                    <tr>
+                        <td class="status-good">25 - 50+</td>
+                        <td style="color: #333;" data-en="Good" data-hi="अच्छा">Good</td>
+                        <td style="color: #333;" data-en="No need to add phosphorus" data-hi="फास्फोरस जोड़ने की आवश्यकता नहीं">No need to add phosphorus</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4 style="color: #1e5631; margin-top: 30px; margin-bottom: 15px; font-size: 1.4em;" data-en="Potassium (K) Levels" data-hi="पोटैशियम (K) स्तर">Potassium (K) Levels</h4>
+            <table class="reading-table">
+                <thead>
+                    <tr>
+                        <th data-en="K Value (mg/kg)" data-hi="K मान (mg/kg)">K Value (mg/kg)</th>
+                        <th data-en="Level" data-hi="स्तर">Level</th>
+                        <th data-en="What to Do" data-hi="क्या करें">What to Do</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="status-bad">0 - 40</td>
+                        <td style="color: #333;" data-en="Low" data-hi="कम">Low</td>
+                        <td style="color: #333;" data-en="Add potash or wood ash" data-hi="पोटाश या लकड़ी की राख डालें">Add potash or wood ash</td>
+                    </tr>
+                    <tr>
+                        <td class="status-medium">40 - 80</td>
+                        <td style="color: #333;" data-en="Medium" data-hi="मध्यम">Medium</td>
+                        <td style="color: #333;" data-en="Add some potassium fertilizer" data-hi="कुछ पोटैशियम उर्वरक डालें">Add some potassium fertilizer</td>
+                    </tr>
+                    <tr>
+                        <td class="status-good">80 - 150+</td>
+                        <td style="color: #333;" data-en="Good" data-hi="अच्छा">Good</td>
+                        <td style="color: #333;" data-en="No need to add potassium" data-hi="पोटैशियम जोड़ने की आवश्यकता नहीं">No need to add potassium</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Maintenance Section -->
+        <div class="maintenance-section">
+            <h3 data-en="🔧 How to Take Care of Your Sensor" data-hi="🔧 अपने सेंसर की देखभाल कैसे करें">🔧 How to Take Care of Your Sensor</h3>
+            <ul class="maintenance-list">
+                <li data-en="Clean the metal probe after every use with a dry cloth" data-hi="हर उपयोग के बाद धातु की प्रोब को सूखे कपड़े से साफ करें">Clean the metal probe after every use with a dry cloth</li>
+                <li data-en="Store the device in a cool, dry place away from direct sunlight" data-hi="डिवाइस को ठंडी, सूखी जगह पर सीधी धूप से दूर रखें">Store the device in a cool, dry place away from direct sunlight</li>
+                <li data-en="Don't drop the device or put heavy things on it" data-hi="डिवाइस को न गिराएं या इस पर भारी चीजें न रखें">Don't drop the device or put heavy things on it</li>
+                <li data-en="Charge the battery regularly, don't let it fully drain" data-hi="बैटरी को नियमित रूप से चार्ज करें, इसे पूरी तरह खाली न होने दें">Charge the battery regularly, don't let it fully drain</li>
+                <li data-en="Keep the probe away from water when not testing" data-hi="परीक्षण नहीं करते समय प्रोब को पानी से दूर रखें">Keep the probe away from water when not testing</li>
+                <li data-en="If device shows wrong readings, clean the probe with alcohol and dry cloth" data-hi="अगर डिवाइस गलत रीडिंग दिखाता है, तो प्रोब को अल्कोहल और सूखे कपड़े से साफ करें">If device shows wrong readings, clean the probe with alcohol and dry cloth</li>
+                <li data-en="Test the device every 2-3 months to make sure it works properly" data-hi="यह सुनिश्चित करने के लिए हर 2-3 महीने में डिवाइस का परीक्षण करें कि यह ठीक से काम करता है">Test the device every 2-3 months to make sure it works properly</li>
+            </ul>
+        </div>
+
+        <!-- Final Tips -->
+        <div class="step" style="background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; border-left: none;">
+            <div class="step-content">
+                <h3 style="color: white; font-size: 1.8em; margin-bottom: 20px;" data-en="🌟 Final Tips for Best Results" data-hi="🌟 सर्वोत्तम परिणामों के लिए अंतिम सुझाव">🌟 Final Tips for Best Results</h3>
+                <ul style="font-size: 1.1em; line-height: 2; margin-left: 20px;">
+                    <li data-en="Test your soil at the same time of day for consistent results" data-hi="सुसंगत परिणामों के लिए दिन के एक ही समय पर अपनी मिट्टी का परीक्षण करें">Test your soil at the same time of day for consistent results</li>
+                    <li data-en="Best time to test is early morning or late afternoon" data-hi="परीक्षण के लिए सबसे अच्छा समय सुबह जल्दी या देर दोपहर है">Best time to test is early morning or late afternoon</li>
+                    <li data-en="Test your soil before planting and after harvest" data-hi="रोपण से पहले और कटाई के बाद अपनी मिट्टी का परीक्षण करें">Test your soil before planting and after harvest</li>
+                    <li data-en="Keep a notebook to track readings over time" data-hi="समय के साथ रीडिंग को ट्रैक करने के लिए एक नोटबुक रखें">Keep a notebook to track readings over time</li>
+                    <li data-en="If readings seem wrong, test again in a different spot" data-hi="अगर रीडिंग गलत लगती है, तो किसी अलग स्थान पर फिर से परीक्षण करें">If readings seem wrong, test again in a different spot</li>
+                    <li data-en="Don't test right after heavy rain or watering" data-hi="भारी बारिश या पानी देने के तुरंत बाद परीक्षण न करें">Don't test right after heavy rain or watering</li>
+                    <li data-en="Share results with your agricultural officer for advice" data-hi="सलाह के लिए अपने कृषि अधिकारी के साथ परिणाम साझा करें">Share results with your agricultural officer for advice</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+let currentLang = 'en';
+
+function toggleLanguage() {
+    currentLang = currentLang === 'en' ? 'hi' : 'en';
+    
+    // Update button text and icon
+    document.getElementById('lang-text').textContent = currentLang === 'en' ? 'हिंदी' : 'English';
+    document.getElementById('lang-icon').textContent = currentLang === 'en' ? '🇮🇳' : '🇬🇧';
+    
+    // Update all elements with data-en and data-hi attributes
+    const elements = document.querySelectorAll('[data-en][data-hi]');
+    elements.forEach(element => {
+        const text = currentLang === 'en' ? element.getAttribute('data-en') : element.getAttribute('data-hi');
+        element.textContent = text;
+    });
+}
+</script>
+
+{% endblock %}

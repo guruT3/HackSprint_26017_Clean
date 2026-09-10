@@ -1,0 +1,1665 @@
+{% extends "base.html" %}
+
+{% block title %}Crop Planner - AGRI MITRA{% endblock %}
+
+{% block extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   FARMER SUPPORT INTELLIGENCE - CROP PLANNER & FARM ANALYTICS DESIGN SYSTEM
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --font-main: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Brand Color Palette */
+  --cp-green: #2e7d32;
+  --cp-green-dark: #1b5e20;
+  --cp-green-light: #e8f5e9;
+  --cp-green-glow: rgba(46, 125, 50, 0.15);
+  --cp-emerald: #10b981;
+
+  --cp-amber: #f57c00;
+  --cp-amber-light: #fff8e1;
+  --cp-red: #ef4444;
+  --cp-red-light: #fef2f2;
+  --cp-blue: #3b82f6;
+  --cp-blue-light: #eff6ff;
+  --cp-purple: #8b5cf6;
+  --cp-purple-light: #f5f3ff;
+  --cp-gray: #6b7280;
+
+  /* Neutrals & Elevation */
+  --cp-text-main: #1e293b;
+  --cp-text-sub: #64748b;
+  --cp-bg: #f8fafc;
+  --cp-card-bg: #ffffff;
+  --cp-border: #e2e8f0;
+  --cp-radius-sm: 8px;
+  --cp-radius: 14px;
+  --cp-radius-lg: 20px;
+
+  /* Shadows & Glassmorphism */
+  --cp-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --cp-shadow-md: 0 4px 16px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+  --cp-shadow-hover: 0 12px 24px -4px rgba(15, 23, 42, 0.08), 0 4px 8px -2px rgba(15, 23, 42, 0.04);
+  --cp-glass-bg: rgba(255, 255, 255, 0.85);
+  --cp-glass-border: rgba(255, 255, 255, 0.6);
+}
+
+.cp-wrap * {
+  box-sizing: border-box;
+}
+
+.cp-wrap {
+  font-family: var(--font-main);
+  background: var(--cp-bg);
+  color: var(--cp-text-main);
+  margin: 0;
+  padding: 20px 20px 80px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+/* ================= 1. GLASSMORPHISM TOP NAVIGATION BAR ================= */
+.cp-top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  background: var(--cp-glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 14px 24px;
+  border-radius: var(--cp-radius-lg);
+  border: 1px solid var(--cp-border);
+  box-shadow: var(--cp-shadow-md);
+  margin-bottom: 28px;
+  position: sticky;
+  top: 12px;
+  z-index: 100;
+}
+
+.cp-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.cp-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+  color: #ffffff;
+  font-size: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(46, 125, 50, 0.25);
+}
+
+.cp-brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.cp-app-title {
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--cp-green-dark);
+  letter-spacing: -0.02em;
+}
+
+.cp-app-sub {
+  font-size: 0.78rem;
+  color: var(--cp-text-sub);
+  font-weight: 500;
+}
+
+.cp-nav-tabs {
+  display: flex;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 30px;
+  gap: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+.cp-nav-btn {
+  background: transparent;
+  border: none;
+  padding: 9px 20px;
+  font-family: var(--font-main);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--cp-text-sub);
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cp-nav-btn.active {
+  background: var(--cp-green);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+}
+
+.cp-nav-btn:hover:not(.active) {
+  background: #e2e8f0;
+  color: var(--cp-text-main);
+}
+
+
+/* ================= 2. CROP PLANNER SECTION & FORMS ================= */
+.cp-header {
+  margin-bottom: 24px;
+}
+
+.cp-header h1 {
+  color: var(--cp-green-dark);
+  margin: 0 0 6px;
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+.cp-sub {
+  color: var(--cp-text-sub);
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.cp-alert {
+  padding: 14px 18px;
+  border-radius: var(--cp-radius);
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+.cp-alert-error {
+  background: #fef2f2;
+  color: var(--cp-red);
+  border: 1px solid #fecaca;
+}
+
+.cp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.cp-card {
+  background: var(--cp-card-bg);
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-radius);
+  padding: 20px;
+  box-shadow: var(--cp-shadow-md);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cp-card:hover {
+  box-shadow: var(--cp-shadow-hover);
+}
+
+.cp-card legend {
+  font-weight: 700;
+  color: var(--cp-green-dark);
+  padding: 0 8px;
+  font-size: 1.05rem;
+}
+
+.cp-card label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+  margin: 12px 0 5px;
+}
+
+.cp-card input, .cp-card select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-radius-sm);
+  font-family: var(--font-main);
+  font-size: 0.92rem;
+  color: var(--cp-text-main);
+  background: #f8fafc;
+  transition: all 0.2s ease;
+}
+
+.cp-card input:focus, .cp-card select:focus {
+  outline: none;
+  border-color: var(--cp-green);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px var(--cp-green-glow);
+}
+
+.req { color: var(--cp-red); font-weight: bold; }
+.opt { color: var(--cp-text-sub); font-weight: 500; font-size: 0.8em; }
+.cp-hint { font-size: 0.82rem; color: var(--cp-text-sub); margin: 4px 0 10px; }
+
+.cp-checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+  gap: 8px;
+}
+
+.cp-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin: 0 !important;
+  cursor: pointer;
+}
+.cp-checkbox input {
+  width: 16px !important;
+  height: 16px !important;
+  accent-color: var(--cp-green);
+}
+
+.cp-submit {
+  display: block;
+  margin: 28px auto 0;
+  padding: 14px 40px;
+  background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 30px;
+  font-family: var(--font-main);
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(46, 125, 50, 0.3);
+  transition: all 0.25s ease;
+}
+
+.cp-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(46, 125, 50, 0.4);
+}
+
+.cp-disclaimer {
+  font-size: 0.78rem;
+  color: var(--cp-text-sub);
+  text-align: center;
+  margin-top: 24px;
+  line-height: 1.6;
+}
+
+.cp-results { margin-top: 36px; }
+.cp-results h2 { color: var(--cp-green-dark); font-weight: 800; font-size: 1.6rem; }
+
+.cp-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.cp-metric-card {
+  background: var(--cp-card-bg);
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-radius);
+  padding: 18px;
+  text-align: center;
+  font-size: 1.7rem;
+  box-shadow: var(--cp-shadow-md);
+  transition: transform 0.2s ease;
+}
+.cp-metric-card:hover { transform: translateY(-3px); }
+.cp-metric-card span { display: block; font-size: 0.78rem; font-weight: 600; color: var(--cp-text-sub); margin-top: 4px; }
+.cp-metric-card strong { display: block; font-size: 1.1rem; color: var(--cp-text-main); margin-top: 4px; font-weight: 800; }
+
+.cp-risk-note { font-size: 0.95rem; font-weight: 500; }
+.risk-low { color: #15803d; font-weight: 700; }
+.risk-medium { color: var(--cp-amber); font-weight: 700; }
+.risk-high { color: var(--cp-red); font-weight: 700; }
+
+.cp-recommend-box {
+  background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+  border: 1px solid #c8e6c9;
+  border-radius: var(--cp-radius);
+  padding: 20px 24px;
+  box-shadow: var(--cp-shadow-sm);
+}
+
+.cp-recommend-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--cp-green-dark);
+  margin-bottom: 6px;
+}
+
+.cp-why { font-weight: 700; margin: 12px 0 6px; color: var(--cp-text-main); }
+
+.cp-table-wrap {
+  overflow-x: auto;
+  margin: 16px 0;
+  border-radius: var(--cp-radius);
+  box-shadow: var(--cp-shadow-md);
+  border: 1px solid var(--cp-border);
+}
+
+.cp-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--cp-card-bg);
+  font-size: 0.9rem;
+}
+
+.cp-table th, .cp-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--cp-border);
+}
+
+.cp-table th {
+  background: #f1f5f9;
+  color: #334155;
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cp-table tr:hover { background: #f8fafc; }
+
+.cp-highlights {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin: 20px 0;
+}
+
+.cp-highlights div {
+  background: #ffffff;
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-radius);
+  padding: 14px;
+  text-align: center;
+  box-shadow: var(--cp-shadow-sm);
+}
+
+.cp-highlights span { display: block; font-size: 0.75rem; font-weight: 600; color: var(--cp-text-sub); }
+.cp-highlights strong { font-size: 1.1rem; color: var(--cp-green-dark); font-weight: 800; }
+
+.cp-insights li { margin-bottom: 8px; line-height: 1.5; color: #334155; }
+
+
+/* ================= 3. 7-DAY ACTIONABLE FARM SCHEDULE ================= */
+.cp-7day-section {
+  background: #ffffff;
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-radius-lg);
+  padding: 24px;
+  margin: 28px 0;
+  box-shadow: var(--cp-shadow-md);
+}
+
+.cp-7day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px dashed var(--cp-border);
+}
+
+.cp-7day-header h3 {
+  margin: 0 0 4px;
+  color: var(--cp-green-dark);
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.cp-7day-sub {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--cp-text-sub);
+}
+
+.cp-btn-secondary {
+  background: #f1f8e9;
+  color: var(--cp-green-dark);
+  border: 1px solid #c8e6c9;
+  padding: 9px 18px;
+  border-radius: 25px;
+  font-family: var(--font-main);
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cp-btn-secondary:hover {
+  background: #c8e6c9;
+  transform: translateX(2px);
+}
+
+.cp-task-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cp-task-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid var(--cp-border);
+  border-left: 5px solid var(--cp-amber);
+  border-radius: var(--cp-radius);
+  padding: 14px 18px;
+  transition: all 0.25s ease;
+}
+
+.cp-task-card.completed {
+  border-left-color: var(--cp-emerald);
+  background: #f0fdf4;
+}
+
+.cp-task-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.task-chk {
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  accent-color: var(--cp-green);
+}
+
+.cp-task-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.cp-day-badge {
+  background: #e2e8f0;
+  color: #334155;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+.cp-task-name {
+  font-weight: 700;
+  font-size: 0.98rem;
+  color: var(--cp-text-main);
+}
+
+.cp-task-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: var(--cp-text-sub);
+}
+
+.cp-cat-tag {
+  background: #eff6ff;
+  color: #2563eb;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+
+.prio-tag {
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.prio-high { background: #fef2f2; color: #dc2626; }
+.prio-medium { background: #fffbe6; color: #d97706; }
+.prio-low { background: #f0fdf4; color: #16a34a; }
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.status-completed { background: #dcfce7; color: #15803d; }
+.status-pending { background: #fef3c7; color: #b45309; }
+.status-overdue { background: #fee2e2; color: #b91c1c; }
+.status-skipped { background: #f1f5f9; color: #64748b; }
+
+
+/* ================= 4. FARM ANALYTICS DASHBOARD ================= */
+.analytics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.analytics-header h2 {
+  margin: 0 0 4px;
+  color: var(--cp-green-dark);
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.analytics-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.cp-btn-export, .cp-btn-print, .cp-btn-add {
+  background: #ffffff;
+  border: 1px solid var(--cp-border);
+  padding: 9px 16px;
+  border-radius: var(--cp-radius-sm);
+  font-family: var(--font-main);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--cp-shadow-sm);
+}
+
+.cp-btn-export:hover, .cp-btn-print:hover {
+  background: #f8fafc;
+  border-color: var(--cp-green);
+  color: var(--cp-green-dark);
+}
+
+.cp-btn-add {
+  background: var(--cp-green);
+  color: #ffffff;
+  border: none;
+}
+
+.cp-btn-add:hover {
+  background: var(--cp-green-dark);
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+}
+
+/* Analytics Toolbar */
+.analytics-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  background: #ffffff;
+  padding: 14px 20px;
+  border-radius: var(--cp-radius);
+  border: 1px solid var(--cp-border);
+  margin-bottom: 24px;
+  box-shadow: var(--cp-shadow-md);
+}
+
+.period-selector {
+  display: flex;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 24px;
+  border: 1px solid #e2e8f0;
+}
+
+.period-btn {
+  border: none;
+  background: transparent;
+  padding: 7px 16px;
+  font-family: var(--font-main);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--cp-text-sub);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.period-btn.active {
+  background: var(--cp-green);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(46, 125, 50, 0.25);
+}
+
+.date-navigator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-arrow, .btn-today {
+  background: #f8fafc;
+  border: 1px solid var(--cp-border);
+  padding: 6px 14px;
+  border-radius: var(--cp-radius-sm);
+  font-family: var(--font-main);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-arrow:hover, .btn-today:hover {
+  background: #e2e8f0;
+  color: var(--cp-text-main);
+}
+
+.current-period-label {
+  font-weight: 800;
+  color: var(--cp-green-dark);
+  font-size: 1rem;
+  min-width: 160px;
+  text-align: center;
+}
+
+.crop-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.crop-filter-group select {
+  padding: 7px 12px;
+  border-radius: var(--cp-radius-sm);
+  border: 1px solid var(--cp-border);
+  font-family: var(--font-main);
+  font-size: 0.88rem;
+  background: #f8fafc;
+}
+
+/* KPI Cards Grid */
+.kpi-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.kpi-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #ffffff;
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-radius);
+  padding: 18px;
+  box-shadow: var(--cp-shadow-md);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kpi-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--cp-shadow-hover);
+}
+.cp-location-wrap{
+    display:flex;
+    gap:10px;
+    align-items:center;
+}
+
+.cp-location-wrap input{
+    flex:1;
+}
+
+.cp-gps-btn{
+    width:48px;
+    height:42px;
+    border:none;
+    border-radius:8px;
+    background:#2e7d32;
+    color:#fff;
+    cursor:pointer;
+    font-size:18px;
+}
+
+.cp-gps-btn:hover{
+    background:#1b5e20;
+}
+
+.kpi-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.icon-planned { background: #ecfdf5; }
+.icon-completed { background: #dcfce7; }
+.icon-rate { background: #eff6ff; }
+.icon-pending { background: #fffbe6; }
+.icon-overdue { background: #fef2f2; }
+
+.kpi-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.kpi-label { font-size: 0.8rem; color: var(--cp-text-sub); font-weight: 600; }
+.kpi-value { font-size: 1.45rem; color: var(--cp-text-main); font-weight: 800; line-height: 1.2; margin: 2px 0; }
+.kpi-subtext { font-size: 0.74rem; color: #94a3b8; font-weight: 500; }
+
+.kpi-trend { font-size: 0.74rem; font-weight: 700; }
+.trend-up { color: #16a34a; }
+.trend-down { color: #dc2626; }
+.trend-neutral { color: var(--cp-gray); }
+
+
+/* Score Gauge & Insights Section */
+.score-insights-row {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.score-card {
+  background: #ffffff;
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-radius);
+  padding: 20px;
+  box-shadow: var(--cp-shadow-md);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.score-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.score-header h3 { margin: 0; font-size: 1.1rem; color: var(--cp-green-dark); font-weight: 800; }
+.score-badge { font-size: 0.72rem; background: var(--cp-green-light); color: var(--cp-green-dark); padding: 3px 10px; border-radius: 12px; font-weight: 700; }
+
+.score-body {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin: 16px 0;
+}
+
+.score-gauge {
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+}
+
+.circular-chart {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.circle-bg { fill: none; stroke: #f1f5f9; stroke-width: 3.8; }
+.circle-stroke { fill: none; stroke-width: 3.8; stroke-linecap: round; stroke: var(--cp-green); transition: stroke-dasharray 0.6s ease; }
+.percentage { fill: var(--cp-green-dark); font-weight: 800; font-size: 0.52rem; text-anchor: middle; font-family: var(--font-main); }
+
+.score-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 100%;
+}
+
+.score-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--cp-text-sub);
+  font-weight: 500;
+}
+
+.score-item strong { color: var(--cp-text-main); font-weight: 700; }
+
+.score-footer {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 10px;
+}
+
+/* Dynamic Insights Card */
+.insights-card {
+  background: #ffffff;
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-radius);
+  padding: 20px;
+  box-shadow: var(--cp-shadow-md);
+}
+
+.insights-card h3 { margin: 0 0 4px; color: var(--cp-green-dark); font-size: 1.15rem; font-weight: 800; }
+
+.insights-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.insight-item {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  border-radius: var(--cp-radius-sm);
+  border-left: 4px solid var(--cp-green);
+  background: #f8fafc;
+}
+
+.insight-positive { border-left-color: var(--cp-emerald); background: #f0fdf4; }
+.insight-warning { border-left-color: var(--cp-amber); background: #fffbe6; }
+.insight-pattern { border-left-color: var(--cp-blue); background: #eff6ff; }
+.insight-recommendation { border-left-color: var(--cp-purple); background: #f5f3ff; }
+
+.insight-icon { font-size: 1.4rem; flex-shrink: 0; }
+.insight-content strong { display: block; font-size: 0.88rem; color: var(--cp-text-main); font-weight: 700; margin-bottom: 3px; }
+.insight-content p { margin: 0; font-size: 0.8rem; color: var(--cp-text-sub); line-height: 1.4; }
+
+
+/* Visual Charts Grid */
+.analytics-charts-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.analytics-chart-box {
+  background: #ffffff;
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-radius);
+  padding: 20px;
+  box-shadow: var(--cp-shadow-md);
+}
+
+.chart-box-header {
+  margin-bottom: 16px;
+}
+
+.chart-box-header h3 { margin: 0 0 2px; color: var(--cp-green-dark); font-size: 1.1rem; font-weight: 800; }
+.chart-subtitle { font-size: 0.8rem; color: var(--cp-text-sub); }
+
+.canvas-wrap {
+  position: relative;
+  height: 290px;
+  width: 100%;
+}
+
+
+/* ================= 5. GITHUB-STYLE 365-DAY ACTIVITY HEATMAP ================= */
+.heatmap-card {
+  background: #ffffff;
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-radius);
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: var(--cp-shadow-md);
+  position: relative;
+}
+
+.heatmap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.heatmap-header h3 { margin: 0 0 2px; color: var(--cp-green-dark); font-size: 1.15rem; font-weight: 800; }
+
+.heatmap-legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: var(--cp-text-sub);
+  font-weight: 600;
+}
+
+.heat-box {
+  width: 13px;
+  height: 13px;
+  border-radius: 3px;
+}
+
+/* GitHub Matrix Color Palette */
+.level-0 { background: #ebedf0; }
+.level-1 { background: #9be9a8; }
+.level-2 { background: #40c463; }
+.level-3 { background: #30a14e; }
+.level-4 { background: #216e39; }
+
+.heatmap-wrapper {
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+.heatmap-grid {
+  display: grid;
+  grid-template-rows: repeat(7, 13px);
+  grid-auto-flow: column;
+  grid-auto-columns: 13px;
+  gap: 4px;
+}
+
+.heat-cell {
+  width: 13px;
+  height: 13px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.heat-cell:hover {
+  transform: scale(1.4);
+  z-index: 10;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.heatmap-tooltip {
+  position: absolute;
+  display: none;
+  background: #0f172a;
+  color: #ffffff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.76rem;
+  pointer-events: none;
+  z-index: 100;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+  font-family: var(--font-main);
+  line-height: 1.4;
+}
+
+
+/* Category & Status Breakdown Row */
+.breakdown-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.breakdown-card {
+  background: #ffffff;
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-radius);
+  padding: 20px;
+  box-shadow: var(--cp-shadow-md);
+}
+
+.breakdown-card h3 { margin: 0 0 2px; color: var(--cp-green-dark); font-size: 1.1rem; font-weight: 800; }
+
+.category-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.cat-bar-item {
+  cursor: pointer;
+}
+
+.cat-bar-item:hover .cat-name { color: var(--cp-green); }
+
+.cat-bar-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  margin-bottom: 4px;
+}
+
+.cat-name { font-weight: 700; color: var(--cp-text-main); }
+.cat-count { color: var(--cp-text-sub); font-weight: 500; }
+
+.cat-progress-track {
+  height: 9px;
+  background: #f1f5f9;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.cat-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2e7d32 0%, #43a047 100%);
+  border-radius: 5px;
+  transition: width 0.4s ease;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.status-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border-radius: var(--cp-radius-sm);
+  border: 1px solid var(--cp-border);
+  background: #f8fafc;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.status-box:hover {
+  background: #f1f5f9;
+  transform: translateY(-2px);
+}
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.status-dot.green { background: #16a34a; box-shadow: 0 0 8px rgba(22, 163, 74, 0.4); }
+.status-dot.yellow { background: var(--cp-amber); box-shadow: 0 0 8px rgba(245, 124, 0, 0.4); }
+.status-dot.red { background: var(--cp-red); box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
+.status-dot.gray { background: var(--cp-gray); }
+
+.status-box strong { font-size: 0.88rem; flex-grow: 1; color: var(--cp-text-main); }
+.status-count { font-weight: 800; font-size: 1.1rem; color: var(--cp-text-main); }
+
+
+/* ================= 6. INTERACTIVE ACTIVITY HISTORY TABLE ================= */
+.activity-table-card {
+  background: #ffffff;
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-radius);
+  padding: 20px;
+  box-shadow: var(--cp-shadow-md);
+}
+
+.table-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.table-card-header h3 { margin: 0 0 2px; color: var(--cp-green-dark); font-size: 1.15rem; font-weight: 800; }
+
+.table-filter-bar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.table-filter-bar input, .table-filter-bar select {
+  padding: 8px 14px;
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-radius-sm);
+  font-family: var(--font-main);
+  font-size: 0.88rem;
+  background: #f8fafc;
+}
+
+.table-filter-bar input { min-width: 220px; flex-grow: 1; }
+
+.btn-reset-filters {
+  background: #f8fafc;
+  border: 1px solid var(--cp-border);
+  padding: 8px 14px;
+  border-radius: var(--cp-radius-sm);
+  font-family: var(--font-main);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-reset-filters:hover { background: #e2e8f0; }
+
+.tbl-status-select {
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--cp-border);
+  font-family: var(--font-main);
+  font-size: 0.82rem;
+  font-weight: 600;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.table-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--cp-border);
+}
+
+.page-btn {
+  background: #ffffff;
+  border: 1px solid var(--cp-border);
+  padding: 7px 16px;
+  border-radius: var(--cp-radius-sm);
+  font-family: var(--font-main);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.page-btn:hover:not(:disabled) { background: #f8fafc; border-color: var(--cp-green); }
+
+.page-info { font-size: 0.85rem; color: var(--cp-text-sub); font-weight: 600; }
+
+.text-center { text-align: center; }
+.empty-state-row { text-align: center; padding: 30px !important; color: var(--cp-text-sub); font-style: italic; font-size: 0.95rem; }
+
+
+/* ================= 7. MODAL DIALOGS ================= */
+.cp-modal-backdrop {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.cp-modal-card {
+  background: #ffffff;
+  border-radius: var(--cp-radius-lg);
+  width: 90%;
+  max-width: 500px;
+  padding: 24px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--cp-border);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.modal-header h3 { margin: 0; color: var(--cp-green-dark); font-size: 1.2rem; font-weight: 800; }
+.modal-close { background: none; border: none; font-size: 1.6rem; cursor: pointer; color: var(--cp-text-sub); }
+
+.modal-body label { display: block; font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 12px; }
+.modal-body input, .modal-body select, .modal-body textarea {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-radius-sm);
+  margin-top: 5px;
+  font-family: var(--font-main);
+  font-size: 0.9rem;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.btn-cancel { background: #f8fafc; border: 1px solid var(--cp-border); padding: 9px 18px; border-radius: var(--cp-radius-sm); font-family: var(--font-main); font-weight: 600; cursor: pointer; }
+.btn-save { background: var(--cp-green); color: #ffffff; border: none; padding: 9px 22px; border-radius: var(--cp-radius-sm); font-family: var(--font-main); font-weight: 700; cursor: pointer; }
+
+
+/* ================= 8. RESPONSIVE MEDIA QUERIES ================= */
+@media (max-width: 960px) {
+  .score-insights-row { grid-template-columns: 1fr; }
+  .analytics-charts-row { grid-template-columns: 1fr; }
+  .breakdown-row { grid-template-columns: 1fr; }
+  .analytics-toolbar { flex-direction: column; align-items: stretch; }
+  .date-navigator { justify-content: center; }
+}
+
+@media (max-width: 640px) {
+  .cp-top-nav { flex-direction: column; align-items: stretch; text-align: center; }
+  .cp-brand { justify-content: center; }
+  .cp-nav-tabs { justify-content: center; }
+  .period-selector { justify-content: center; }
+  .kpi-cards-grid { grid-template-columns: 1fr 1fr; }
+  .status-grid { grid-template-columns: 1fr; }
+  .cp-header h1 { font-size: 1.5rem; }
+  .cp-metric-card { font-size: 1.4rem; }
+}
+
+@media print {
+  .cp-top-nav, .analytics-toolbar, .analytics-actions, .table-filter-bar, .table-pagination, .cp-btn-add { display: none !important; }
+  body { background: #ffffff; }
+  .cp-wrap { max-width: 100%; padding: 0; }
+  .score-insights-row, .analytics-charts-row, .breakdown-row { page-break-inside: avoid; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cp-wrap">
+  <!-- Top Level Navigation Header (page-local Planner / Analytics tabs) -->
+  <header class="cp-top-nav">
+    <div class="cp-brand">
+      <span class="cp-logo">🌾</span>
+      <div class="cp-brand-text">
+        <span class="cp-app-title">Farmer Support Intelligence</span>
+        <span class="cp-app-sub">AI Crop Planning Platform</span>
+      </div>
+    </div>
+  </header>
+
+  {% if error %}
+    <div class="cp-alert cp-alert-error">{{ error }}</div>
+  {% endif %}
+
+  <!-- ================= TAB 1: CROP PLANNER ================= -->
+  <section id="secPlanner" class="cp-tab-content">
+    <div class="cp-header">
+      <h1>🌾 Crop Planning &amp; Profitability Intelligence</h1>
+      <p class="cp-sub">Enter your farm and crop details to get AI-based yield, profit, and actionable 7-day planning guidance.</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('crop_planner') }}" class="cp-form" id="cpForm">
+      <div class="cp-grid">
+
+        <fieldset class="cp-card">
+          <legend>Farm Information</legend>
+
+          <label>Farm area (acres) <span class="req">*</span>
+            <input type="number" step="0.01" min="0.01" name="farm_area" required
+                   value="{{ farm_input.farm_area if farm_input else '' }}">
+          </label>
+
+          <label>Soil type <span class="req">*</span>
+            <select name="soil_type" required>
+              {% for s in ["Alluvial","Black","Red","Laterite","Sandy","Clay","Loamy"] %}
+                <option value="{{ s }}" {% if farm_input and farm_input.soil_type==s %}selected{% endif %}>{{ s }}</option>
+              {% endfor %}
+            </select>
+          </label>
+
+          <label>Irrigation available <span class="req">*</span>
+            <select name="irrigation" required>
+              <option value="Yes" {% if farm_input and farm_input.irrigation=="Yes" %}selected{% endif %}>Yes</option>
+              <option value="No" {% if farm_input and farm_input.irrigation=="No" %}selected{% endif %}>No</option>
+            </select>
+          </label>
+
+          <label>Season <span class="req">*</span>
+            <select name="season" required>
+              {% for s in ["Kharif","Rabi","Zaid"] %}
+                <option value="{{ s }}" {% if farm_input and farm_input.season==s %}selected{% endif %}>{{ s }}</option>
+              {% endfor %}
+            </select>
+          </label>
+          <label>Farm Location <span class="opt">(Auto Detect)</span></label>
+
+<div class="cp-location-wrap">
+    <input
+        type="text"
+        id="farm_location"
+        name="farm_location"
+        placeholder="Click 📍 to detect location"
+        value="{{ farm_input.farm_location if farm_input else '' }}">
+
+    <button type="button" id="gpsBtn" class="cp-gps-btn">
+        📍
+    </button>
+</div>
+
+<p class="cp-hint">
+    Click the location button to auto-fill your current location.
+</p>
+
+<label>Region <span class="opt">(optional)</span>
+    <select name="region">
+        {% for r in ["North","South","East","West","Central","North-East"] %}
+        <option value="{{ r }}">{{ r }}</option>
+        {% endfor %}
+    </select>
+</label>
+
+          <label>Region <span class="opt">(optional)</span>
+            <select name="region">
+              {% for r in ["North","South","East","West","Central","North-East"] %}
+                <option value="{{ r }}">{{ r }}</option>
+              {% endfor %}
+            </select>
+          </label>
+
+          <label>Previous crop <span class="opt">(optional)</span>
+            <input type="text" name="previous_crop" placeholder="e.g. Wheat">
+          </label>
+        </fieldset>
+
+        <fieldset class="cp-card">
+          <legend>Crop &amp; Cost Information</legend>
+
+          <label>Crop name <span class="req">*</span>
+            <select name="crop" required>
+              {% for c in crops %}
+                <option value="{{ c }}">{{ c }}</option>
+              {% endfor %}
+            </select>
+          </label>
+
+          <label>Current / expected market price (Rs. per quintal) <span class="req">*</span>
+            <input type="number" step="0.01" min="0" name="market_price" required>
+          </label>
+
+          <label>Seed cost (Rs./acre) <span class="req">*</span>
+            <input type="number" step="0.01" min="0" name="seed_cost" required>
+          </label>
+
+          <label>Fertilizer cost (Rs./acre) <span class="req">*</span>
+            <input type="number" step="0.01" min="0" name="fertilizer_cost" required>
+          </label>
+
+          <label>Pesticide cost (Rs./acre) <span class="req">*</span>
+            <input type="number" step="0.01" min="0" name="pesticide_cost" required>
+          </label>
+
+          <label>Labour cost (Rs./acre) <span class="req">*</span>
+            <input type="number" step="0.01" min="0" name="labour_cost" required>
+          </label>
+
+          <label>Irrigation cost (Rs./acre) <span class="req">*</span>
+            <input type="number" step="0.01" min="0" name="irrigation_cost" required>
+          </label>
+
+          <label>Machinery cost (Rs./acre) <span class="req">*</span>
+            <input type="number" step="0.01" min="0" name="machinery_cost" required>
+          </label>
+
+          <label>Other cultivation cost (Rs./acre) <span class="req">*</span>
+            <input type="number" step="0.01" min="0" name="other_cost" required>
+          </label>
+
+          <label>Previous yield (quintals/acre) <span class="opt">(optional)</span>
+            <input type="number" step="0.01" min="0" name="previous_yield">
+          </label>
+
+          <label>Farming experience (years) <span class="opt">(optional)</span>
+            <input type="number" step="1" min="0" name="farming_experience">
+          </label>
+        </fieldset>
+
+        <fieldset class="cp-card">
+          <legend>Environmental Information <span class="opt">(optional)</span></legend>
+
+          <label>Average rainfall (mm)
+            <input type="number" step="0.1" min="0" name="rainfall">
+          </label>
+          <label>Average temperature (°C)
+            <input type="number" step="0.1" name="temperature">
+          </label>
+          <label>Soil pH
+            <input type="number" step="0.01" min="0" max="14" name="soil_ph">
+          </label>
+          <label>Soil moisture (%)
+            <input type="number" step="0.1" min="0" max="100" name="soil_moisture">
+          </label>
+        </fieldset>
+
+        <fieldset class="cp-card">
+          <legend>Compare Crops</legend>
+          <p class="cp-hint">Select crops to include in the comparison table (default: common crops).</p>
+          <div class="cp-checkbox-grid">
+            {% for c in crops %}
+              <label class="cp-checkbox">
+                <input type="checkbox" name="compare_crops" value="{{ c }}"
+                  {% if not selected_crops or c in selected_crops %}checked{% endif %}>
+                {{ c }}
+              </label>
+            {% endfor %}
+          </div>
+        </fieldset>
+
+        <fieldset class="cp-card">
+          <legend>Forecast Input <span class="opt">(optional)</span></legend>
+          <label>Previous years' price or yield (comma separated, oldest first)
+            <input type="text" name="price_history" placeholder="e.g. 1800, 1950, 2050, 2150">
+          </label>
+        </fieldset>
+      </div>
+
+      <button type="submit" class="cp-submit">Generate Crop Plan </button>
+    </form>
+
+    <p class="cp-disclaimer">
+      These predictions are estimates generated from the available input information and should be used as
+      decision-support guidance, not as guaranteed agricultural, financial, or market predictions.<br>
+      The current MVP uses synthetically generated training data for demonstration. Predictions should be
+      recalibrated with real regional agricultural and market data before real-world deployment.
+    </p>
+
+    {% if submitted and primary_result %}
+    <section class="cp-results" id="cpResults">
+      <h2>Results for {{ primary_result.crop }}</h2>
+
+      <div class="cp-cards">
+        <div class="cp-metric-card">🌾<span>Predicted Yield</span><strong>{{ primary_result.predicted_yield_per_acre }} q/acre</strong></div>
+        <div class="cp-metric-card">💰<span>Expected Revenue</span><strong>Rs. {{ "{:,.0f}".format(primary_result.revenue) }}</strong></div>
+        <div class="cp-metric-card">💵<span>Total Cost</span><strong>Rs. {{ "{:,.0f}".format(primary_result.total_cost) }}</strong></div>
+        <div class="cp-metric-card">📈<span>Expected Profit</span><strong>Rs. {{ "{:,.0f}".format(primary_result.profit) }}</strong></div>
+        <div class="cp-metric-card">📊<span>ROI</span><strong>{{ primary_result.roi_percent }}%</strong></div>
+        <div class="cp-metric-card">⚖️<span>Break-even Price</span><strong>Rs. {{ primary_result.break_even_price }}</strong></div>
+      </div>
+
+      <p class="cp-risk-note">Risk level: <strong class="risk-{{ primary_result.risk_label|lower }}">{{ primary_result.risk_label }}</strong> ({{ primary_result.risk_score }}/100)</p>
+
+      <!-- Interactive 7-Day Farm Schedule Section -->
+      {% if farm_plan_7days %}
+      <div class="cp-7day-section" id="cp7DayPlan">
+        <div class="cp-7day-header">
+          <div>
+            <h3>📅 7-Day Actionable Farm Plan for {{ primary_result.crop }}</h3>
+            <p class="cp-7day-sub">Daily tasks automatically scheduled for your crop cycle. Mark tasks as completed to track progress!</p>
+          </div>
+        </div>
+
+        <div class="cp-task-grid">
+          {% for task in farm_plan_7days %}
+          <div class="cp-task-card {% if task.status == 'completed' %}completed{% endif %}" id="task-card-{{ task.activity_id }}">
+            <div class="cp-task-left">
+              <input type="checkbox" class="task-chk" id="chk-{{ task.activity_id }}"
+                     {% if task.status == 'completed' %}checked{% endif %}
+                     onchange="toggleTaskStatusInline({{ task.activity_id }}, this.checked)">
+              <div class="cp-task-details">
+                <div class="cp-task-title-row">
+                  <span class="cp-day-badge">Day {{ task.day_number }}</span>
+                  <span class="cp-task-name">{{ task.activity_name }}</span>
+                </div>
+                <div class="cp-task-meta-row">
+                  <span class="cp-meta-item">📁 {{ task.category }}</span>
+                  <span class="cp-meta-item">📅 {{ task.planned_date }}</span>
+                  <span class="prio-tag prio-{{ task.priority }}">{{ task.priority | upper }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="cp-task-right">
+              <span class="status-badge status-{{ task.status }}" id="badge-{{ task.activity_id }}">
+                {{ task.status | capitalize }}
+              </span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      {% if best_overall %}
+      <div class="cp-recommend">
+        <h3>Recommended Crop</h3>
+        <div class="cp-recommend-box">
+          <div class="cp-recommend-title">🌾 {{ best_overall.crop }}</div>
+          <p>Expected Profit: <strong>Rs. {{ "{:,.0f}".format(best_overall.profit) }}</strong> &nbsp;|&nbsp;
+             ROI: <strong>{{ best_overall.roi_percent }}%</strong> &nbsp;|&nbsp;
+             Risk: <strong class="risk-{{ best_overall.risk_label|lower }}">{{ best_overall.risk_label }}</strong></p>
+          <p class="cp-why">Why?</p>
+          <ul>
+            {% for reason in recommend_reasons %}<li>{{ reason }}</li>{% endfor %}
+          </ul>
+        </div>
+      </div>
+      {% endif %}
+
+      <h3>Crop Comparison</h3>
+      <div class="cp-table-wrap">
+        <table class="cp-table" id="cpTable">
+          <thead>
+            <tr>
+              <th>Crop</th><th>Predicted Yield</th><th>Market Price</th><th>Total Cost</th>
+              <th>Revenue</th><th>Profit</th><th>ROI</th><th>Risk</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in comparison_results %}
+            <tr>
+              <td>{{ r.crop }}</td>
+              <td>{{ r.predicted_yield_per_acre }}</td>
+              <td>Rs. {{ "{:,.0f}".format(r.expected_market_price) }}</td>
+              <td>Rs. {{ "{:,.0f}".format(r.total_cost) }}</td>
+              <td>Rs. {{ "{:,.0f}".format(r.revenue) }}</td>
+              <td>Rs. {{ "{:,.0f}".format(r.profit) }}</td>
+              <td>{{ r.roi_percent }}%</td>
+              <td><span class="risk-{{ r.risk_label|lower }}">{{ r.risk_label }}</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="cp-highlights">
+        <div><span>Best Expected Profit</span><strong>{{ best_profit.crop }}</strong></div>
+        <div><span>Best ROI</span><strong>{{ best_roi.crop }}</strong></div>
+        <div><span>Lowest Risk</span><strong>{{ lowest_risk.crop }}</strong></div>
+        <div><span>Best Overall</span><strong>{{ best_overall.crop }}</strong></div>
+      </div>
+
+      <h3>Planning Insights</h3>
+      <ul class="cp-insights">
+        {% for insight in insights %}<li>{{ insight }}</li>{% endfor %}
+      </ul>
+
+      {% if forecast_result %}
+      <h3>Forecast</h3>
+      {% if forecast_result.forecast %}
+        <p>Trend: <strong>{{ forecast_result.trend }}</strong>. Next periods forecast:
+          {% for v in forecast_result.forecast %}{{ v }}{% if not loop.last %}, {% endif %}{% endfor %}
+        </p>
+      {% endif %}
+      <p class="cp-hint">{{ forecast_result.note }}</p>
+      {% endif %}
+    </section>
+    {% endif %}
+  </section>
+
+  {% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const gpsBtn = document.getElementById("gpsBtn");
+    const locationInput = document.getElementById("farm_location");
+
+    if (!gpsBtn || !locationInput) return;
+
+    gpsBtn.addEventListener("click", function () {
+
+        if (!navigator.geolocation) {
+            alert("Geolocation is not supported by your browser.");
+            return;
+        }
+
+        gpsBtn.disabled = true;
+        gpsBtn.innerHTML = "⏳";
+
+        navigator.geolocation.getCurrentPosition(
+
+            async function (position) {
+
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+
+                try {
+
+                    const response = await fetch(
+                        `/get-location?lat=${lat}&lon=${lon}`
+                    );
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        locationInput.value = data.location;
+                        gpsBtn.innerHTML = "✅";
+                    } else {
+                        alert(data.message || "Unable to detect location.");
+                        gpsBtn.innerHTML = "📍";
+                    }
+
+                } catch (err) {
+                    alert("Server error while fetching location.");
+                    gpsBtn.innerHTML = "📍";
+                }
+
+                gpsBtn.disabled = false;
+
+            },
+
+            function () {
+                alert("Please allow location permission.");
+                gpsBtn.innerHTML = "📍";
+                gpsBtn.disabled = false;
+            }
+
+        );
+
+    });
+
+});
+</script>
+{% endblock %}
+
+</div>
+{% endblock %}

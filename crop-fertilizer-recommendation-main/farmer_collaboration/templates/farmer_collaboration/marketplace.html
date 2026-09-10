@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agri Marketplace — Farmer Connect</title>
+    <link rel="stylesheet" href="{{ url_for('farmer_collaboration.static', filename='css/farmer_connect.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="fc-container">
+    <div class="fc-navbar">
+        <a href="{{ url_for('farmer_collaboration.dashboard') }}" class="fc-brand">🌾 Farmer Connect</a>
+        <div class="fc-nav-links">
+            <a href="{{ url_for('farmer_collaboration.dashboard') }}" class="fc-nav-link">Dashboard</a>
+            <a href="{{ url_for('farmer_collaboration.community') }}" class="fc-nav-link">👨‍🌾 Community</a>
+            <a href="{{ url_for('farmer_collaboration.marketplace') }}" class="fc-nav-link active">🛒 Marketplace</a>
+            <a href="{{ url_for('farmer_collaboration.requirements') }}" class="fc-nav-link">📋 Requirements</a>
+            <a href="{{ url_for('farmer_collaboration.mandi_hub') }}" class="fc-nav-link">🏪 Mandi Hub</a>
+        </div>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+        <h2>🛒 Agri Marketplace (Seeds, Fertilizers, Equipment & Produce)</h2>
+        <a href="{{ url_for('farmer_collaboration.create_listing') }}" class="fc-btn fc-btn-primary" style="background:#2e7d32; color:#fff;">➕ Create Product Listing</a>
+    </div>
+
+    <!-- Category Filter Bar -->
+    <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:12px; margin-bottom:20px;">
+        <a href="{{ url_for('farmer_collaboration.marketplace') }}" class="fc-badge fc-badge-green" style="text-decoration:none; padding:8px 14px;">All Products</a>
+        {% for cat in categories %}
+        <a href="{{ url_for('farmer_collaboration.marketplace', category=cat) }}" class="fc-badge fc-badge-blue" style="text-decoration:none; padding:8px 14px;">{{ cat }}</a>
+        {% endfor %}
+    </div>
+
+    <!-- Marketplace Grid -->
+    <div class="fc-grid-3">
+        {% for item in listings %}
+        <div class="fc-card">
+            <div>
+                <div class="fc-card-header">
+                    <span class="fc-badge fc-badge-green">{{ item.category }}</span>
+                    <span class="fc-verified">✓ {{ item.rating }}★</span>
+                </div>
+                <h3 class="fc-card-title"><a href="{{ url_for('farmer_collaboration.listing_detail', listing_id=item.id) }}" style="color:#0f172a; text-decoration:none;">{{ item.title }}</a></h3>
+                <div class="fc-card-meta">
+                    <span>👨‍🌾 Seller: {{ item.seller }}</span>
+                </div>
+                <div class="fc-card-meta">
+                    <span>📍 Location: {{ item.location }}</span>
+                </div>
+                <div class="fc-card-meta">
+                    <span>📦 Qty Available: {{ item.quantity }} {{ item.unit }}</span>
+                </div>
+                <div class="fc-price-tag">₹{{ item.price }} <span style="font-size:0.8rem; font-weight:500; color:#64748b;">/ {{ item.unit }} ({{ item.price_type }})</span></div>
+            </div>
+            <div style="margin-top:16px; display:flex; gap:8px;">
+                <a href="{{ url_for('farmer_collaboration.listing_detail', listing_id=item.id) }}" class="fc-btn fc-btn-secondary" style="background:#f1f5f9; color:#0f172a; flex:1; text-align:center;">View Details</a>
+                <button onclick="FarmerConnectUI.openInquiryModal('{{ item.title }}', '{{ item.seller }}')" class="fc-btn fc-btn-primary" style="background:#2e7d32; color:#fff; flex:1;">Contact Seller</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script src="{{ url_for('farmer_collaboration.static', filename='js/farmer_connect.js') }}"></script>
+</body>
+</html>

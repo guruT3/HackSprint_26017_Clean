@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Talk – Agri Mitra Community</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --forest:        #0D2818;
+            --forest-mid:    #14381F;
+            --forest-card:   #1A4A28;
+            --forest-light:  #1F5C30;
+            --green-bright:  #22C55E;
+            --green-neon:    #4ADE80;
+            --green-muted:   #86EFAC;
+            --amber:         #F59E0B;
+            --amber-light:   #FCD34D;
+            --red:           #EF4444;
+            --border:        rgba(34,197,94,.12);
+            --border-bright: rgba(34,197,94,.35);
+            --text:          #BBF7D0;
+            --text-bright:   #ECFDF5;
+            --text-dim:      #4B7A5E;
+            --radius:        16px;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--forest);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── BACKGROUND TEXTURE ── */
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background-image: radial-gradient(circle at 1px 1px, rgba(34,197,94,.04) 1px, transparent 0);
+            background-size: 36px 36px;
+            pointer-events: none; z-index: 0;
+        }
+
+        /* ── PAGE HEADER ── */
+        .page-header {
+            position: relative;
+            background: linear-gradient(135deg, #060F0A 0%, #0D2818 50%, #0A2215 100%);
+            border-bottom: 1px solid var(--border-bright);
+            padding: 3.5rem 2rem 2.5rem;
+            text-align: center;
+            overflow: hidden;
+        }
+        .page-header::before {
+            content: '';
+            position: absolute; inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(34,197,94,.1) 0%, transparent 55%),
+                radial-gradient(ellipse at 80% 50%, rgba(245,158,11,.07) 0%, transparent 55%);
+            pointer-events: none;
+        }
+        .page-header .badge {
+            display: inline-flex; align-items: center; gap: .5rem;
+            background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.25);
+            color: var(--green-neon); border-radius: 50px;
+            padding: .35rem 1rem; font-size: .75rem; font-weight: 700;
+            letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 1rem;
+            position: relative; z-index: 1;
+        }
+        .page-header .badge .dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--green-bright);
+            animation: blink 1.4s ease-in-out infinite;
+            box-shadow: 0 0 6px var(--green-bright);
+        }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+        .page-header h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 800; color: var(--text-bright);
+            position: relative; z-index: 1; margin-bottom: .6rem;
+        }
+        .page-header h1 span {
+            background: linear-gradient(90deg, var(--green-neon), var(--amber-light));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .page-header p {
+            color: var(--text-dim); font-size: 1rem;
+            position: relative; z-index: 1;
+        }
+        .header-stats {
+            display: flex; justify-content: center; gap: 2.5rem;
+            margin-top: 2rem; position: relative; z-index: 1;
+            padding-top: 1.5rem; border-top: 1px solid var(--border);
+        }
+        .hstat { text-align: center; }
+        .hstat .n {
+            font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800;
+            background: linear-gradient(135deg, var(--green-neon), var(--amber));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .hstat .l { font-size: .7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: .8px; margin-top: .15rem; }
+
+        /* ── LAYOUT ── */
+        .main-layout {
+            max-width: 1200px; margin: 0 auto;
+            padding: 2.5rem 1.5rem;
+            display: grid; grid-template-columns: 340px 1fr;
+            gap: 2rem; position: relative; z-index: 1;
+        }
+        @media (max-width: 900px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar { order: -1; }
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar { display: flex; flex-direction: column; gap: 1.25rem; }
+
+        .panel {
+            background: rgba(26,74,40,.4);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        .panel-head {
+            padding: 1.1rem 1.4rem;
+            border-bottom: 1px solid var(--border);
+            font-family: 'Syne', sans-serif; font-weight: 700; font-size: .88rem;
+            color: var(--text-bright); display: flex; align-items: center; gap: .5rem;
+        }
+        .panel-body { padding: 1.4rem; }
+
+        /* New Post Form */
+        .form-group { margin-bottom: 1rem; }
+        .form-group label {
+            display: block; font-size: .78rem; font-weight: 600;
+            color: var(--text-dim); letter-spacing: .5px; text-transform: uppercase; margin-bottom: .45rem;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            background: rgba(13,40,24,.6);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: .75rem 1rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .88rem; color: var(--text-bright);
+            transition: border-color .25s, box-shadow .25s;
+            outline: none;
+        }
+        .form-group input::placeholder,
+        .form-group textarea::placeholder { color: var(--text-dim); }
+        .form-group select option { background: #0D2818; color: var(--text-bright); }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: var(--green-bright);
+            box-shadow: 0 0 0 3px rgba(34,197,94,.12);
+        }
+        .form-group textarea { resize: vertical; min-height: 100px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+
+        .btn-post {
+            width: 100%;
+            background: linear-gradient(135deg, var(--green-bright), #16A34A);
+            color: #fff; border: none; border-radius: 10px;
+            padding: .85rem 1.5rem; font-family: 'DM Sans', sans-serif;
+            font-weight: 700; font-size: .95rem; cursor: pointer;
+            transition: all .25s; display: flex; align-items: center; justify-content: center; gap: .5rem;
+            box-shadow: 0 6px 24px rgba(34,197,94,.3);
+            margin-top: .25rem;
+        }
+        .btn-post:hover {
+            background: linear-gradient(135deg, var(--green-neon), var(--green-bright));
+            transform: translateY(-2px); box-shadow: 0 10px 30px rgba(34,197,94,.45);
+        }
+        .btn-post:active { transform: translateY(0); }
+
+        /* Category Filter Pills */
+        .cat-pills { display: flex; flex-direction: column; gap: .5rem; }
+        .cat-pill {
+            display: flex; align-items: center; gap: .75rem;
+            padding: .6rem .9rem; border-radius: 10px;
+            border: 1px solid transparent;
+            cursor: pointer; transition: all .22s; font-size: .85rem; font-weight: 500;
+            color: var(--text-dim); background: transparent;
+            text-align: left; width: 100%;
+        }
+        .cat-pill .icon { font-size: 1rem; flex-shrink: 0; }
+        .cat-pill .cnt {
+            margin-left: auto; font-size: .72rem; font-weight: 700;
+            background: rgba(34,197,94,.1); color: var(--green-muted);
+            border-radius: 50px; padding: .15rem .55rem;
+        }
+        .cat-pill:hover { background: rgba(34,197,94,.07); color: var(--text); border-color: var(--border); }
+        .cat-pill.active { background: rgba(34,197,94,.12); color: var(--green-neon); border-color: var(--border-bright); }
+
+        /* Trending */
+        .trending-item {
+            display: flex; align-items: flex-start; gap: .75rem;
+            padding: .75rem 0; border-bottom: 1px solid var(--border); cursor: pointer;
+        }
+        .trending-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .trending-item:hover .t-title { color: var(--green-neon); }
+        .t-num {
+            font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 800;
+            color: var(--border-bright); min-width: 28px; line-height: 1.2;
+        }
+        .t-title { font-size: .83rem; font-weight: 600; color: var(--text); line-height: 1.45; transition: color .2s; }
+        .t-meta { font-size: .72rem; color: var(--text-dim); margin-top: .2rem; }
+
+        /* ── FEED ── */
+        .feed { display: flex; flex-direction: column; gap: 1.25rem; }
+
+        /* Feed toolbar */
+        .feed-toolbar {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 1rem; flex-wrap: wrap;
+        }
+        .feed-title {
+            font-family: 'Syne', sans-serif; font-size: 1.25rem;
+            font-weight: 800; color: var(--text-bright);
+            display: flex; align-items: center; gap: .5rem;
+        }
+        .live-badge {
+            font-size: .65rem; font-weight: 700; letter-spacing: 1px;
+            text-transform: uppercase; background: rgba(34,197,94,.12);
+            color: var(--green-neon); border: 1px solid rgba(34,197,94,.25);
+            padding: .2rem .6rem; border-radius: 50px;
+        }
+        .sort-tabs { display: flex; gap: .4rem; }
+        .sort-tab {
+            padding: .45rem .9rem; border-radius: 8px; border: 1px solid var(--border);
+            background: transparent; color: var(--text-dim); cursor: pointer;
+            font-family: 'DM Sans', sans-serif; font-size: .8rem; font-weight: 600; transition: all .2s;
+        }
+        .sort-tab:hover { color: var(--text); border-color: var(--border-bright); }
+        .sort-tab.active { background: rgba(34,197,94,.12); color: var(--green-neon); border-color: var(--border-bright); }
+
+        /* Post Card */
+        .post-card {
+            background: rgba(26,74,40,.38);
+            border: 1px solid var(--border);
+            border-radius: var(--radius); overflow: hidden;
+            backdrop-filter: blur(8px);
+            transition: border-color .25s, transform .25s, box-shadow .25s;
+            animation: slideIn .4s ease both;
+        }
+        @keyframes slideIn { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+        .post-card:hover {
+            border-color: var(--border-bright); transform: translateY(-3px);
+            box-shadow: 0 16px 40px rgba(0,0,0,.35), 0 0 24px rgba(34,197,94,.05);
+        }
+        .post-top-bar {
+            height: 3px;
+            background: linear-gradient(90deg, var(--green-bright), var(--amber));
+            transform: scaleX(0); transform-origin: left;
+            transition: transform .35s;
+        }
+        .post-card:hover .post-top-bar { transform: scaleX(1); }
+
+        .post-inner { padding: 1.5rem 1.6rem; }
+
+        .post-head {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            margin-bottom: 1rem; gap: 1rem;
+        }
+        .post-author { display: flex; align-items: center; gap: .9rem; }
+        .avatar {
+            width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Syne', sans-serif; font-weight: 800; font-size: .95rem;
+            color: #fff; border: 2px solid rgba(255,255,255,.1);
+        }
+        .author-name { font-weight: 700; font-size: .9rem; color: var(--text-bright); }
+        .author-sub { font-size: .75rem; color: var(--text-dim); margin-top: .1rem; }
+
+        .post-right { text-align: right; flex-shrink: 0; }
+        .cat-tag {
+            display: inline-block; font-size: .68rem; font-weight: 700;
+            letter-spacing: .6px; text-transform: uppercase;
+            border-radius: 50px; padding: .22rem .75rem;
+            margin-bottom: .3rem;
+        }
+        .post-time { font-size: .72rem; color: var(--text-dim); }
+
+        .post-title {
+            font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 700;
+            color: var(--text-bright); margin-bottom: .6rem; line-height: 1.4;
+        }
+        .post-body { font-size: .88rem; color: var(--text-dim); line-height: 1.75; margin-bottom: 1.2rem; }
+
+        .post-footer {
+            display: flex; align-items: center; justify-content: space-between;
+            padding-top: 1rem; border-top: 1px solid var(--border); flex-wrap: wrap; gap: .75rem;
+        }
+        .action-row { display: flex; gap: .5rem; }
+        .act-btn {
+            display: flex; align-items: center; gap: .4rem;
+            padding: .5rem .9rem; border-radius: 8px; border: 1px solid var(--border);
+            background: rgba(13,40,24,.4); color: var(--text-dim);
+            font-family: 'DM Sans', sans-serif; font-size: .82rem; font-weight: 600;
+            cursor: pointer; transition: all .22s; user-select: none;
+        }
+        .act-btn:hover { border-color: var(--border-bright); color: var(--text); transform: translateY(-1px); }
+        .act-btn.like.voted { background: rgba(74,222,128,.12); color: var(--green-neon); border-color: rgba(74,222,128,.3); }
+        .act-btn.dislike.voted { background: rgba(239,68,68,.12); color: #FCA5A5; border-color: rgba(239,68,68,.3); }
+        .act-btn.reply-toggle { color: var(--text); }
+        .act-btn.reply-toggle.open { background: rgba(34,197,94,.1); color: var(--green-neon); border-color: var(--border-bright); }
+
+        .reply-cnt { font-size: .8rem; color: var(--text-dim); font-weight: 500; }
+
+        /* Replies */
+        .replies-wrap {
+            background: rgba(10,31,17,.5);
+            border-top: 1px solid var(--border);
+            padding: 1.2rem 1.6rem;
+            display: none;
+        }
+        .replies-wrap.open { display: block; animation: fadeIn .3s ease; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+        .reply-item {
+            display: flex; gap: .8rem; margin-bottom: 1rem;
+            padding-bottom: 1rem; border-bottom: 1px solid var(--border);
+        }
+        .reply-item:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .reply-avatar {
+            width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Syne', sans-serif; font-weight: 800; font-size: .72rem; color: #fff;
+        }
+        .reply-content { flex: 1; }
+        .reply-header-row { display: flex; align-items: center; gap: .6rem; margin-bottom: .35rem; }
+        .reply-name { font-weight: 700; font-size: .82rem; color: var(--text-bright); }
+        .reply-time { font-size: .7rem; color: var(--text-dim); }
+        .reply-text { font-size: .84rem; color: var(--text-dim); line-height: 1.65; }
+
+        .reply-form-wrap { margin-top: 1rem; display: flex; gap: .75rem; align-items: flex-start; }
+        .reply-form-wrap .reply-avatar { margin-top: .2rem; }
+        .reply-field-group { flex: 1; }
+        .reply-field-group input {
+            width: 100%; background: rgba(13,40,24,.6); border: 1px solid var(--border);
+            border-radius: 8px; padding: .65rem 1rem;
+            font-family: 'DM Sans', sans-serif; font-size: .85rem; color: var(--text-bright);
+            outline: none; transition: border-color .2s, box-shadow .2s;
+            margin-bottom: .5rem;
+        }
+        .reply-field-group input::placeholder { color: var(--text-dim); }
+        .reply-field-group input:focus { border-color: var(--green-bright); box-shadow: 0 0 0 3px rgba(34,197,94,.1); }
+        .reply-field-group textarea {
+            width: 100%; background: rgba(13,40,24,.6); border: 1px solid var(--border);
+            border-radius: 8px; padding: .65rem 1rem;
+            font-family: 'DM Sans', sans-serif; font-size: .85rem; color: var(--text-bright);
+            outline: none; transition: border-color .2s, box-shadow .2s;
+            resize: vertical; min-height: 72px; margin-bottom: .5rem;
+        }
+        .reply-field-group textarea::placeholder { color: var(--text-dim); }
+        .reply-field-group textarea:focus { border-color: var(--green-bright); box-shadow: 0 0 0 3px rgba(34,197,94,.1); }
+        .btn-reply-submit {
+            background: linear-gradient(135deg, var(--green-bright), #16A34A);
+            color: #fff; border: none; border-radius: 8px;
+            padding: .5rem 1.2rem; font-family: 'DM Sans', sans-serif;
+            font-weight: 700; font-size: .82rem; cursor: pointer; transition: all .2s;
+        }
+        .btn-reply-submit:hover { background: linear-gradient(135deg, var(--green-neon), var(--green-bright)); transform: translateY(-1px); }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center; padding: 4rem 2rem;
+            color: var(--text-dim); font-size: .95rem; line-height: 1.8;
+        }
+        .empty-state .em-icon { font-size: 3.5rem; margin-bottom: 1rem; display: block; opacity: .5; }
+
+        /* Toast */
+        .toast {
+            position: fixed; bottom: 2rem; right: 2rem;
+            background: rgba(20,56,31,.97); border: 1px solid var(--border-bright);
+            border-radius: 12px; padding: .9rem 1.4rem;
+            font-size: .88rem; font-weight: 600; color: var(--text-bright);
+            box-shadow: 0 12px 40px rgba(0,0,0,.5);
+            display: flex; align-items: center; gap: .6rem;
+            transform: translateY(80px); opacity: 0;
+            transition: all .35s cubic-bezier(.34,1.56,.64,1);
+            z-index: 9999; backdrop-filter: blur(12px);
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.error { border-color: rgba(239,68,68,.4); }
+        .toast .t-icon { font-size: 1.1rem; }
+
+        /* Search bar */
+        .search-wrap { position: relative; }
+        .search-wrap input {
+            width: 100%; background: rgba(13,40,24,.6);
+            border: 1px solid var(--border); border-radius: 10px;
+            padding: .7rem 1rem .7rem 2.6rem;
+            font-family: 'DM Sans', sans-serif; font-size: .88rem; color: var(--text-bright);
+            outline: none; transition: border-color .2s, box-shadow .2s;
+        }
+        .search-wrap input::placeholder { color: var(--text-dim); }
+        .search-wrap input:focus { border-color: var(--green-bright); box-shadow: 0 0 0 3px rgba(34,197,94,.1); }
+        .search-icon {
+            position: absolute; left: .85rem; top: 50%; transform: translateY(-50%);
+            color: var(--text-dim); font-size: .95rem; pointer-events: none;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--forest); }
+        ::-webkit-scrollbar-thumb { background: var(--forest-card); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--forest-light); }
+    </style>
+</head>
+<body>
+
+<!-- ── PAGE HEADER ── -->
+<div class="page-header">
+    <div class="badge"><span class="dot"></span> Live Community</div>
+    <h1>🌾 Farmer <span>Talk</span></h1>
+    <p>Connect with farmers across India — share tips, ask questions, grow together.</p>
+    <div class="header-stats">
+        <div class="hstat"><div class="n" id="totalPostsStat">0</div><div class="l">Discussions</div></div>
+        <div class="hstat"><div class="n" id="totalRepliesStat">0</div><div class="l">Replies</div></div>
+        <div class="hstat"><div class="n" id="totalLikesStat">0</div><div class="l">Helpful Votes</div></div>
+    </div>
+</div>
+
+<!-- ── MAIN LAYOUT ── -->
+<div class="main-layout">
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar">
+
+        <!-- New Post Form -->
+        <div class="panel">
+            <div class="panel-head">✍️ Start a Discussion</div>
+            <div class="panel-body">
+                <form id="postForm" autocomplete="off">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Your Name</label>
+                            <input type="text" id="pName" placeholder="Full name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Location</label>
+                            <input type="text" id="pLoc" placeholder="City, State" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="pCat" required>
+                                <option value="">Select…</option>
+                                <option value="crop-tips">🌾 Crop Tips</option>
+                                <option value="weather">🌤️ Weather</option>
+                                <option value="market">📈 Market Prices</option>
+                                <option value="equipment">🔧 Equipment</option>
+                                <option value="pest">🐛 Pest Control</option>
+                                <option value="general">💬 General</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Crops Grown</label>
+                            <input type="text" id="pCrops" placeholder="e.g. Rice, Wheat">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Post Title</label>
+                        <input type="text" id="pTitle" placeholder="What's your topic?" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Your Message</label>
+                        <textarea id="pContent" placeholder="Share your thoughts, questions, or experience…" required></textarea>
+                    </div>
+                    <button type="submit" class="btn-post">📝 Post to Community</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Search -->
+        <div class="panel">
+            <div class="panel-head">🔍 Search Posts</div>
+            <div class="panel-body" style="padding-top:0.9rem;padding-bottom:0.9rem;">
+                <div class="search-wrap">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" placeholder="Search discussions…">
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Filter -->
+        <div class="panel">
+            <div class="panel-head">📂 Filter by Category</div>
+            <div class="panel-body" style="padding-top:.75rem;padding-bottom:.75rem;">
+                <div class="cat-pills">
+                    <button class="cat-pill active" data-cat="all">
+                        <span class="icon">🌐</span> All Discussions <span class="cnt" id="cnt-all">0</span>
+                    </button>
+                    <button class="cat-pill" data-cat="crop-tips">
+                        <span class="icon">🌾</span> Crop Tips <span class="cnt" id="cnt-crop-tips">0</span>
+                    </button>
+                    <button class="cat-pill" data-cat="weather">
+                        <span class="icon">🌤️</span> Weather <span class="cnt" id="cnt-weather">0</span>
+                    </button>
+                    <button class="cat-pill" data-cat="market">
+                        <span class="icon">📈</span> Market Prices <span class="cnt" id="cnt-market">0</span>
+                    </button>
+                    <button class="cat-pill" data-cat="equipment">
+                        <span class="icon">🔧</span> Equipment <span class="cnt" id="cnt-equipment">0</span>
+                    </button>
+                    <button class="cat-pill" data-cat="pest">
+                        <span class="icon">🐛</span> Pest Control <span class="cnt" id="cnt-pest">0</span>
+                    </button>
+                    <button class="cat-pill" data-cat="general">
+                        <span class="icon">💬</span> General <span class="cnt" id="cnt-general">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trending -->
+        <div class="panel" id="trendingPanel">
+            <div class="panel-head">🔥 Trending Now</div>
+            <div class="panel-body" id="trendingList" style="padding-top:.5rem;padding-bottom:.5rem;">
+                <div style="color:var(--text-dim);font-size:.82rem;padding:.5rem 0;">No posts yet. Be the first!</div>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- ── FEED ── -->
+    <main>
+        <div class="feed">
+            <div class="feed-toolbar">
+                <div class="feed-title">Community Feed <span class="live-badge">● Live</span></div>
+                <div class="sort-tabs">
+                    <button class="sort-tab active" data-sort="newest">Newest</button>
+                    <button class="sort-tab" data-sort="top">Top Liked</button>
+                    <button class="sort-tab" data-sort="active">Most Active</button>
+                </div>
+            </div>
+            <div id="feedContainer"></div>
+        </div>
+    </main>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+    <span class="t-icon" id="toastIcon">✅</span>
+    <span id="toastMsg">Done!</span>
+</div>
+
+<script>
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let posts = [];
+let currentCat = 'all';
+let currentSort = 'newest';
+let searchQuery = '';
+let postIdSeed = 1;
+
+// Avatar color palette
+const avatarColors = [
+    'linear-gradient(135deg,#22C55E,#16A34A)',
+    'linear-gradient(135deg,#F59E0B,#D97706)',
+    'linear-gradient(135deg,#3B82F6,#1D4ED8)',
+    'linear-gradient(135deg,#EF4444,#B91C1C)',
+    'linear-gradient(135deg,#8B5CF6,#6D28D9)',
+    'linear-gradient(135deg,#06B6D4,#0284C7)',
+    'linear-gradient(135deg,#EC4899,#BE185D)',
+    'linear-gradient(135deg,#14B8A6,#0F766E)',
+];
+
+const catMeta = {
+    'crop-tips': { label: 'Crop Tips',    icon: '🌾', bg: 'rgba(34,197,94,.12)',  color: '#4ADE80' },
+    'weather':   { label: 'Weather',      icon: '🌤️', bg: 'rgba(96,165,250,.12)', color: '#93C5FD' },
+    'market':    { label: 'Market Prices',icon: '📈', bg: 'rgba(245,158,11,.12)', color: '#FCD34D' },
+    'equipment': { label: 'Equipment',    icon: '🔧', bg: 'rgba(156,163,175,.1)', color: '#D1D5DB' },
+    'pest':      { label: 'Pest Control', icon: '🐛', bg: 'rgba(239,68,68,.12)',  color: '#FCA5A5' },
+    'general':   { label: 'General',      icon: '💬', bg: 'rgba(74,222,128,.1)',  color: '#86EFAC' },
+};
+
+// ── SEED DATA ─────────────────────────────────────────────────────────────────
+const seedPosts = [
+    {
+        name: 'Raj Kumar', loc: 'Punjab', crops: 'Rice, Wheat', cat: 'crop-tips',
+        title: 'Best practices for wheat sowing this season?',
+        body: 'Fellow farmers, I\'m planning to sow wheat next week. With changing weather patterns, what are the best practices you\'ve found effective? Any specific varieties that have worked well in similar conditions?',
+        replies: [
+            { name: 'Manpreet Singh', text: 'I\'ve had great success with HD-2967 variety this year. Maintain proper seed rate — around 100 kg per hectare works best in our region.', time: '1 hour ago' },
+            { name: 'Amit Sharma',    text: 'Don\'t forget about soil testing! I did mine last week and adjusted fertilizer accordingly. Also watch out for termites during this season.', time: '45 min ago' },
+        ],
+        likes: 12, dislikes: 1, time: '2 hours ago',
+    },
+    {
+        name: 'Suresh Patel', loc: 'Gujarat', crops: 'Cotton, Groundnut', cat: 'market',
+        title: 'Cotton prices expected to rise next month',
+        body: 'Just got word from the local mandi that cotton prices are expected to increase by 15% next month due to export demand. Anyone else hearing similar reports? Should we hold our stock?',
+        replies: [
+            { name: 'Vikram Kaur', text: 'Yes, hearing the same from Maharashtra mandis. International demand is picking up. I\'m planning to hold for 2–3 more weeks.', time: '3 hours ago' },
+        ],
+        likes: 8, dislikes: 0, time: '5 hours ago',
+    },
+    {
+        name: 'Anita Devi', loc: 'Uttar Pradesh', crops: 'Sugarcane, Potato', cat: 'pest',
+        title: 'Aphid infestation on potato crops — help needed!',
+        body: 'My potato fields are showing signs of aphid attack. Leaves are curling and yellowing rapidly. Has anyone dealt with this successfully? Looking for organic solutions if possible.',
+        replies: [],
+        likes: 5, dislikes: 0, time: '8 hours ago',
+    },
+    {
+        name: 'Mahesh Rao', loc: 'Karnataka', crops: 'Coffee, Areca', cat: 'weather',
+        title: 'Unexpected frost warning for South India this week',
+        body: 'Met department just issued a frost advisory for high-altitude regions of Karnataka. Coffee growers should take immediate precautions. I\'m planning to use smoke screens overnight — any better suggestions?',
+        replies: [
+            { name: 'Priya Hegde', text: 'Wind machines are very effective against frost. Also mulching around the base of the plants helps retain soil heat.', time: '2 hours ago' },
+        ],
+        likes: 15, dislikes: 0, time: '1 day ago',
+    },
+];
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function initials(name) {
+    return name.trim().split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+}
+function colorFor(name) {
+    let h = 0;
+    for (let c of name) h = (h * 31 + c.charCodeAt(0)) & 0xfffffff;
+    return avatarColors[h % avatarColors.length];
+}
+function timeAgo(ts) {
+    const diff = Date.now() - ts;
+    const m = Math.floor(diff/60000);
+    if (m < 1) return 'Just now';
+    if (m < 60) return `${m} min ago`;
+    const h = Math.floor(m/60);
+    if (h < 24) return `${h} hour${h>1?'s':''} ago`;
+    const d = Math.floor(h/24);
+    return `${d} day${d>1?'s':''} ago`;
+}
+function uid() { return Date.now() + '_' + (postIdSeed++); }
+
+function toast(msg, icon='✅', isErr=false) {
+    const el = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    document.getElementById('toastIcon').textContent = icon;
+    el.className = 'toast show' + (isErr?' error':'');
+    clearTimeout(el._t);
+    el._t = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ── STATS ─────────────────────────────────────────────────────────────────────
+function updateStats() {
+    const totalLikes = posts.reduce((s,p) => s + p.likes, 0);
+    const totalReplies = posts.reduce((s,p) => s + p.replies.length, 0);
+    document.getElementById('totalPostsStat').textContent = posts.length;
+    document.getElementById('totalRepliesStat').textContent = totalReplies;
+    document.getElementById('totalLikesStat').textContent = totalLikes;
+
+    // Category counts
+    const cats = ['all','crop-tips','weather','market','equipment','pest','general'];
+    cats.forEach(c => {
+        const el = document.getElementById('cnt-' + c);
+        if (el) el.textContent = c === 'all' ? posts.length : posts.filter(p=>p.cat===c).length;
+    });
+
+    // Trending
+    const sorted = [...posts].sort((a,b) => b.likes - a.likes).slice(0,4);
+    const tEl = document.getElementById('trendingList');
+    if (!sorted.length) {
+        tEl.innerHTML = '<div style="color:var(--text-dim);font-size:.82rem;padding:.5rem 0;">No posts yet. Be the first!</div>';
+        return;
+    }
+    tEl.innerHTML = sorted.map((p,i) => `
+        <div class="trending-item" onclick="scrollToPost('${p.id}')">
+            <div class="t-num">${String(i+1).padStart(2,'0')}</div>
+            <div>
+                <div class="t-title">${p.title}</div>
+                <div class="t-meta">👍 ${p.likes} · ${timeAgo(p.ts)}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function scrollToPost(id) {
+    const el = document.getElementById('post-' + id);
+    if (el) { el.scrollIntoView({ behavior:'smooth', block:'center' }); el.style.borderColor='rgba(74,222,128,.6)'; setTimeout(()=>el.style.borderColor='',1500); }
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function getFilteredSorted() {
+    let list = [...posts];
+    if (currentCat !== 'all') list = list.filter(p => p.cat === currentCat);
+    if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        list = list.filter(p =>
+            p.title.toLowerCase().includes(q) ||
+            p.body.toLowerCase().includes(q) ||
+            p.name.toLowerCase().includes(q) ||
+            p.loc.toLowerCase().includes(q)
+        );
+    }
+    if (currentSort === 'newest')  list.sort((a,b) => b.ts - a.ts);
+    if (currentSort === 'top')     list.sort((a,b) => b.likes - a.likes);
+    if (currentSort === 'active')  list.sort((a,b) => b.replies.length - a.replies.length);
+    return list;
+}
+
+function renderFeed() {
+    const container = document.getElementById('feedContainer');
+    const list = getFilteredSorted();
+    if (!list.length) {
+        container.innerHTML = `<div class="empty-state"><span class="em-icon">🌱</span>No discussions found.<br>Be the first to start a conversation!</div>`;
+        return;
+    }
+    container.innerHTML = list.map(p => renderPost(p)).join('');
+    // Re-attach open reply sections
+    posts.forEach(p => {
+        if (p._replyOpen) {
+            const rw = document.getElementById('replies-' + p.id);
+            const btn = document.getElementById('reply-btn-' + p.id);
+            if (rw) { rw.classList.add('open'); }
+            if (btn) btn.classList.add('open');
+        }
+    });
+}
+
+function renderPost(p) {
+    const cm = catMeta[p.cat] || catMeta['general'];
+    const bg = colorFor(p.name);
+    const repliesHTML = p.replies.map(r => `
+        <div class="reply-item">
+            <div class="reply-avatar" style="background:${colorFor(r.name)}">${initials(r.name)}</div>
+            <div class="reply-content">
+                <div class="reply-header-row">
+                    <span class="reply-name">${r.name}</span>
+                    <span class="reply-time">${typeof r.time === 'number' ? timeAgo(r.time) : r.time}</span>
+                </div>
+                <div class="reply-text">${r.text}</div>
+            </div>
+        </div>
+    `).join('');
+
+    return `
+    <div class="post-card" id="post-${p.id}">
+        <div class="post-top-bar"></div>
+        <div class="post-inner">
+            <div class="post-head">
+                <div class="post-author">
+                    <div class="avatar" style="background:${bg}">${initials(p.name)}</div>
+                    <div>
+                        <div class="author-name">${p.name}</div>
+                        <div class="author-sub">${p.loc}${p.crops ? ' · ' + p.crops : ''}</div>
+                    </div>
+                </div>
+                <div class="post-right">
+                    <div class="cat-tag" style="background:${cm.bg};color:${cm.color}">${cm.icon} ${cm.label}</div>
+                    <div class="post-time">${typeof p.ts === 'number' ? timeAgo(p.ts) : p.time}</div>
+                </div>
+            </div>
+            <div class="post-title">${p.title}</div>
+            <div class="post-body">${p.body}</div>
+            <div class="post-footer">
+                <div class="action-row">
+                    <button class="act-btn like ${p._liked?'voted':''}" onclick="vote('${p.id}','like')">
+                        👍 <span id="lc-${p.id}">${p.likes}</span>
+                    </button>
+                    <button class="act-btn dislike ${p._disliked?'voted':''}" onclick="vote('${p.id}','dislike')">
+                        👎 <span id="dc-${p.id}">${p.dislikes}</span>
+                    </button>
+                    <button class="act-btn reply-toggle ${p._replyOpen?'open':''}" id="reply-btn-${p.id}" onclick="toggleReplies('${p.id}')">
+                        💬 Reply <span style="font-size:.75rem;opacity:.7;">(${p.replies.length})</span>
+                    </button>
+                </div>
+                <div class="reply-cnt">${p.replies.length} ${p.replies.length===1?'reply':'replies'}</div>
+            </div>
+        </div>
+        <div class="replies-wrap ${p._replyOpen?'open':''}" id="replies-${p.id}">
+            <div id="reply-list-${p.id}">${repliesHTML}</div>
+            <div class="reply-form-wrap">
+                <div class="reply-avatar" style="background:${avatarColors[0]}">YOU</div>
+                <div class="reply-field-group">
+                    <input type="text" id="rname-${p.id}" placeholder="Your name (required)">
+                    <textarea id="rmsg-${p.id}" placeholder="Write your reply…"></textarea>
+                    <button class="btn-reply-submit" onclick="submitReply('${p.id}')">Post Reply →</button>
+                </div>
+            </div>
+        </div>
+    </div>`;
+}
+
+// ── ACTIONS ───────────────────────────────────────────────────────────────────
+function vote(pid, type) {
+    const p = posts.find(x => x.id === pid);
+    if (!p) return;
+    if (type === 'like') {
+        if (p._liked) { p.likes--; p._liked = false; }
+        else { p.likes++; p._liked = true; if (p._disliked) { p.dislikes = Math.max(0,p.dislikes-1); p._disliked=false; } }
+    } else {
+        if (p._disliked) { p.dislikes = Math.max(0,p.dislikes-1); p._disliked = false; }
+        else { p.dislikes++; p._disliked = true; if (p._liked) { p.likes = Math.max(0,p.likes-1); p._liked=false; } }
+    }
+    // Update counts in-place without full re-render
+    const lc = document.getElementById('lc-'+pid);
+    const dc = document.getElementById('dc-'+pid);
+    if (lc) lc.textContent = p.likes;
+    if (dc) dc.textContent = p.dislikes;
+    const likeBtn = document.querySelector(`#post-${pid} .act-btn.like`);
+    const disBtn  = document.querySelector(`#post-${pid} .act-btn.dislike`);
+    if (likeBtn) likeBtn.className = 'act-btn like' + (p._liked?' voted':'');
+    if (disBtn)  disBtn.className  = 'act-btn dislike' + (p._disliked?' voted':'');
+    updateStats();
+}
+
+function toggleReplies(pid) {
+    const p = posts.find(x => x.id === pid);
+    if (!p) return;
+    p._replyOpen = !p._replyOpen;
+    const rw  = document.getElementById('replies-' + pid);
+    const btn = document.getElementById('reply-btn-' + pid);
+    if (rw) rw.classList.toggle('open', p._replyOpen);
+    if (btn) btn.classList.toggle('open', p._replyOpen);
+}
+
+function submitReply(pid) {
+    const p = posts.find(x => x.id === pid);
+    if (!p) return;
+    const nameEl = document.getElementById('rname-' + pid);
+    const msgEl  = document.getElementById('rmsg-' + pid);
+    const name = nameEl.value.trim();
+    const text = msgEl.value.trim();
+    if (!name) { toast('Please enter your name to reply.', '⚠️', true); nameEl.focus(); return; }
+    if (!text) { toast('Please write a reply message.', '⚠️', true); msgEl.focus(); return; }
+    const reply = { name, text, time: Date.now() };
+    p.replies.push(reply);
+    // Append new reply card to the list
+    const listEl = document.getElementById('reply-list-' + pid);
+    if (listEl) {
+        const bg = colorFor(name);
+        const div = document.createElement('div');
+        div.className = 'reply-item';
+        div.style.animation = 'slideIn .35s ease both';
+        div.innerHTML = `
+            <div class="reply-avatar" style="background:${bg}">${initials(name)}</div>
+            <div class="reply-content">
+                <div class="reply-header-row">
+                    <span class="reply-name">${name}</span>
+                    <span class="reply-time">Just now</span>
+                </div>
+                <div class="reply-text">${text}</div>
+            </div>`;
+        listEl.appendChild(div);
+    }
+    // Update reply count in footer
+    const rcEl = document.querySelector(`#post-${pid} .reply-cnt`);
+    if (rcEl) rcEl.textContent = `${p.replies.length} ${p.replies.length===1?'reply':'replies'}`;
+    const btnEl = document.getElementById('reply-btn-' + pid);
+    if (btnEl) btnEl.querySelector('span').textContent = `(${p.replies.length})`;
+    nameEl.value = '';
+    msgEl.value = '';
+    updateStats();
+    toast('Reply posted! 🌱');
+}
+
+// ── POST FORM ─────────────────────────────────────────────────────────────────
+document.getElementById('postForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const name    = document.getElementById('pName').value.trim();
+    const loc     = document.getElementById('pLoc').value.trim();
+    const cat     = document.getElementById('pCat').value;
+    const crops   = document.getElementById('pCrops').value.trim();
+    const title   = document.getElementById('pTitle').value.trim();
+    const body    = document.getElementById('pContent').value.trim();
+    if (!name||!loc||!cat||!title||!body) { toast('Please fill in all required fields.','⚠️',true); return; }
+    const post = { id: uid(), name, loc, cat, crops, title, body, likes:0, dislikes:0, replies:[], ts: Date.now(), _liked:false, _disliked:false, _replyOpen:false };
+    posts.unshift(post);
+    this.reset();
+    renderFeed();
+    updateStats();
+    toast('Discussion posted! 🌾');
+    window.scrollTo({ top: document.getElementById('feedContainer').offsetTop - 80, behavior: 'smooth' });
+});
+
+// ── FILTERS & SORT ────────────────────────────────────────────────────────────
+document.querySelectorAll('.cat-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentCat = btn.dataset.cat;
+        renderFeed();
+    });
+});
+
+document.querySelectorAll('.sort-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.sort-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentSort = btn.dataset.sort;
+        renderFeed();
+    });
+});
+
+let searchTimer;
+document.getElementById('searchInput').addEventListener('input', function() {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => { searchQuery = this.value.trim(); renderFeed(); }, 280);
+});
+
+// ── BOOT ──────────────────────────────────────────────────────────────────────
+(function boot() {
+    // Load seed posts with fake timestamps
+    const now = Date.now();
+    seedPosts.forEach((sp, i) => {
+        posts.push({
+            id: uid(),
+            name: sp.name, loc: sp.loc, crops: sp.crops, cat: sp.cat,
+            title: sp.title, body: sp.body,
+            likes: sp.likes, dislikes: sp.dislikes,
+            replies: sp.replies.map(r => ({ ...r })),
+            ts: now - (i+1)*60*60*1000*(i+1),
+            _liked: false, _disliked: false, _replyOpen: false,
+        });
+    });
+    renderFeed();
+    updateStats();
+})();
+</script>
+</body>
+</html>

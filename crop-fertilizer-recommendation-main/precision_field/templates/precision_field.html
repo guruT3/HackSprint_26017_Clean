@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block title %}Precision Field Zoning & Water Stress — AGRI MITRA{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="{{ url_for('precision_field.static', filename='css/precision_field.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="pf-wrapper">
+    <!-- Header -->
+    <div class="pf-header">
+        <div class="pf-title-group">
+            <h2>
+                🗺️ Precision Field Zoning & Water Stress
+                <span class="pf-badge pf-badge-normal">Sentinel-2 Multi-Index</span>
+            </h2>
+        </div>
+        <div>
+            <span style="font-size:0.88rem; font-weight:600; color:#64748b;">Target Field Status: <strong id="pf-active-field-title">North Field (3x3 Grid)</strong></span>
+        </div>
+    </div>
+
+    <!-- Location & Target Field Selection Controls -->
+    <div class="pf-controls-bar">
+        <div class="pf-control-group">
+            <label for="pf-field-select">Target Field / Location:</label>
+            <select id="pf-field-select" class="pf-select">
+                <option value="north_field" selected>🌾 North Field (Punjab: 28.6139, 77.2090)</option>
+                <option value="south_field">🌽 South Field (Karnataka: 12.9716, 77.5946)</option>
+                <option value="west_field">🍇 West Field (Maharashtra: 19.0760, 72.8777)</option>
+                <option value="custom">📍 Custom / Selected Location (Click Map)</option>
+            </select>
+        </div>
+
+        <div class="pf-control-group">
+            <label for="pf-lat-input">Latitude:</label>
+            <input type="number" step="0.000001" id="pf-lat-input" class="pf-input pf-coord-input" value="28.6139" placeholder="Lat">
+        </div>
+
+        <div class="pf-control-group">
+            <label for="pf-lng-input">Longitude:</label>
+            <input type="number" step="0.000001" id="pf-lng-input" class="pf-input pf-coord-input" value="77.2090" placeholder="Lng">
+        </div>
+
+        <div class="pf-control-buttons">
+            <button id="pf-btn-gps" class="pf-btn pf-btn-gps" type="button" title="Detect current GPS location">
+                <span id="pf-gps-text">📍 Take Current Location</span>
+            </button>
+            <button id="pf-btn-analyze" class="pf-btn pf-btn-primary" type="button">
+                ⚡ Set & Analyze Field
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Grid Layout -->
+    <div class="pf-grid">
+        <!-- Map Card -->
+        <div class="pf-map-card">
+            <div class="pf-map-header">
+                <span>Field Spatial Zones & Water-Stress Map</span>
+                <span>Resolution: 3×3 Grid Zones</span>
+            </div>
+            
+            <div id="pf-map-container" class="pf-map-viewport"></div>
+
+            <!-- Legend -->
+            <div class="pf-legend">
+                <div class="pf-legend-item">
+                    <div class="pf-legend-box" style="background:#2ecc71;"></div>
+                    <span>🟢 Normal / Healthy</span>
+                </div>
+                <div class="pf-legend-item">
+                    <div class="pf-legend-box" style="background:#f1c40f;"></div>
+                    <span>🟡 Attention Required</span>
+                </div>
+                <div class="pf-legend-item">
+                    <div class="pf-legend-box" style="background:#e74c3c;"></div>
+                    <span>🔴 Potential Water Stress</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Zone Diagnostic Panel -->
+        <div class="pf-sidebar">
+            <div class="pf-card">
+                <div class="pf-zone-detail-header">
+                    <span id="pf-zone-name">Zone Details</span>
+                    <span id="pf-zone-status" class="pf-badge pf-badge-normal">Normal</span>
+                </div>
+
+                <div class="pf-stat-row">
+                    <span>Zone Area</span>
+                    <strong id="pf-zone-area">0.42 acres</strong>
+                </div>
+                <div class="pf-stat-row">
+                    <span>NDVI (Vegetation Vigor)</span>
+                    <strong id="pf-zone-ndvi">--</strong>
+                </div>
+                <div class="pf-stat-row">
+                    <span>NDMI (Moisture Signal)</span>
+                    <strong id="pf-zone-ndmi">--</strong>
+                </div>
+                <div class="pf-stat-row">
+                    <span>Water Stress Indicator</span>
+                    <strong id="pf-zone-score" style="color:#e65100;">-- / 100</strong>
+                </div>
+                <div class="pf-stat-row">
+                    <span>Diagnostic Confidence</span>
+                    <strong id="pf-zone-confidence">Medium</strong>
+                </div>
+
+                <!-- Explainability Section -->
+                <div style="margin-top:16px; border-top:1px solid #f1f5f9; padding-top:12px;">
+                    <div style="font-weight:700; font-size:0.9rem; color:#0f172a;">💡 Why was this zone evaluated?</div>
+                    <ul id="pf-reasons-list" class="pf-reasons-list">
+                        <li>Click any zone on the map to view diagnostic details.</li>
+                    </ul>
+                </div>
+
+                <!-- Targeted Irrigation Recommendation -->
+                <div style="margin-top:16px; background:#fffbebf5; border:1px solid #fde68a; border-radius:10px; padding:12px;">
+                    <div style="font-weight:700; color:#b45309; font-size:0.88rem;">🎯 Precision Irrigation Attention</div>
+                    <div id="pf-zone-recommendation" style="font-size:0.85rem; color:#78350f; margin-top:4px;">
+                        Inspect zone soil moisture before applying irrigation.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ url_for('precision_field.static', filename='js/precision_field.js') }}"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    PrecisionMapController.init('pf-map-container', 28.6139, 77.2090);
+    PrecisionMapController.loadFieldZones('field_001', { lat: 28.6139, lng: 77.2090 });
+});
+</script>
+{% endblock %}

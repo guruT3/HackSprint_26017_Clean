@@ -1,0 +1,436 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us{% endblock %}
+
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Hind:wght@300;400;500;600&display=swap');
+
+    :root {
+        --soil:   #4a2c0a;
+        --bark:   #6b3f1a;
+        --hay:    #c8a84b;
+        --sun:    #f5c842;
+        --leaf:   #2d7a3a;
+        --sprout: #4caf50;
+        --sky:    #e8f5e9;
+        --cream:  #fdf9ef;
+        --shadow: rgba(74,44,10,0.12);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: 'Hind', sans-serif;
+        background: var(--cream);
+        color: #2c3e50;
+        min-height: 100vh;
+    }
+
+    /* ── HERO ── */
+    .contact-hero {
+        background: linear-gradient(135deg, var(--soil) 0%, var(--leaf) 100%);
+        padding: 56px 32px 80px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .contact-hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255,255,255,0.15);
+        border: 1px solid rgba(255,255,255,0.3);
+        color: rgba(255,255,255,0.9);
+        padding: 6px 18px;
+        border-radius: 100px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 18px;
+        position: relative;
+    }
+
+    .contact-hero h1 {
+        font-family: 'Baloo 2', cursive;
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 800;
+        color: #fff;
+        position: relative;
+        margin-bottom: 12px;
+    }
+
+    .contact-hero h1 span { color: var(--sun); }
+
+    .contact-hero p {
+        color: rgba(255,255,255,0.75);
+        font-size: 1rem;
+        position: relative;
+        max-width: 420px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+    /* ── WAVE ── */
+    .wave-divider {
+        display: block;
+        width: 100%;
+        height: 48px;
+        background: var(--cream);
+        clip-path: ellipse(55% 100% at 50% 100%);
+        margin-top: -2px;
+    }
+
+    /* ── LAYOUT ── */
+    .contact-wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px 20px 80px;
+        display: grid;
+        grid-template-columns: 1fr 360px;
+        gap: 32px;
+        align-items: start;
+    }
+
+    /* ── FORM CARD ── */
+    .form-card {
+        background: #fff;
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: 0 8px 40px var(--shadow);
+        border: 1.5px solid #f0e8d8;
+    }
+
+    .form-card h2 {
+        font-family: 'Baloo 2', cursive;
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--soil);
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .form-card > p {
+        color: #90a4ae;
+        font-size: 0.9rem;
+        margin-bottom: 28px;
+    }
+
+    /* Flash messages */
+    .flash-msg {
+        padding: 14px 18px;
+        border-radius: 12px;
+        margin-bottom: 22px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .flash-success {
+        background: #e8f5e9;
+        color: var(--leaf);
+        border: 1.5px solid #a5d6a7;
+    }
+
+    .flash-danger {
+        background: #fdecea;
+        color: #c0392b;
+        border: 1.5px solid #ef9a9a;
+    }
+
+    /* Fields */
+    .field-group {
+        margin-bottom: 22px;
+    }
+
+    .field-group label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.86rem;
+        color: var(--bark);
+        letter-spacing: 0.3px;
+        margin-bottom: 8px;
+    }
+
+    .field-group input,
+    .field-group textarea {
+        width: 100%;
+        padding: 13px 16px;
+        border: 2px solid #e0d8c8;
+        border-radius: 12px;
+        font-family: 'Hind', sans-serif;
+        font-size: 0.95rem;
+        color: #2c3e50;
+        background: var(--cream);
+        transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
+        outline: none;
+        resize: vertical;
+    }
+
+    .field-group input:focus,
+    .field-group textarea:focus {
+        border-color: var(--sprout);
+        box-shadow: 0 0 0 4px rgba(76,175,80,0.12);
+        background: #fff;
+        transform: translateY(-1px);
+    }
+
+    .field-group input.is-invalid,
+    .field-group textarea.is-invalid {
+        border-color: #e53935;
+        box-shadow: 0 0 0 3px rgba(229,57,53,0.1);
+    }
+
+    .field-error {
+        color: #e53935;
+        font-size: 0.8rem;
+        margin-top: 5px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    /* Submit btn */
+    .btn-submit {
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(135deg, var(--leaf), #1b5e20);
+        color: #fff;
+        border: none;
+        border-radius: 14px;
+        font-family: 'Baloo 2', cursive;
+        font-size: 1.05rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.25s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        box-shadow: 0 6px 20px rgba(45,122,58,0.3);
+        margin-top: 8px;
+        letter-spacing: 0.3px;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(45,122,58,0.4);
+    }
+
+    .btn-submit:active { transform: translateY(0); }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .info-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 26px 24px;
+        box-shadow: 0 4px 24px var(--shadow);
+        border: 1.5px solid #f0e8d8;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .info-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 32px var(--shadow);
+    }
+
+    .info-icon {
+        width: 52px; height: 52px;
+        border-radius: 14px;
+        background: var(--sky);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.4rem;
+        margin-bottom: 14px;
+    }
+
+    .info-card h4 {
+        font-family: 'Baloo 2', cursive;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--soil);
+        margin-bottom: 5px;
+    }
+
+    .info-card p {
+        font-size: 0.9rem;
+        color: #78909c;
+        line-height: 1.5;
+    }
+
+    .info-card a {
+        color: var(--leaf);
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .info-card a:hover { text-decoration: underline; }
+
+    /* Hours card */
+    .hours-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px dashed #e8e0d0;
+        font-size: 0.88rem;
+    }
+
+    .hours-row:last-child { border-bottom: none; }
+
+    .hours-row .day { color: var(--bark); font-weight: 600; }
+    .hours-row .time { color: #90a4ae; }
+    .hours-row .open {
+        background: #e8f5e9;
+        color: var(--leaf);
+        padding: 2px 10px;
+        border-radius: 100px;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+        .contact-wrap {
+            grid-template-columns: 1fr;
+            padding: 16px 16px 60px;
+        }
+
+        .form-card { padding: 28px 22px; }
+    }
+</style>
+
+<!-- HERO -->
+<div class="contact-hero">
+    <div class="hero-badge">🌿 AgriMitra Support</div>
+    <h1>Get in <span>Touch</span> 👋</h1>
+    <p>Have a question about your soil or crops? We're here to help you grow.</p>
+</div>
+<div class="wave-divider"></div>
+
+<!-- MAIN CONTENT -->
+<div class="contact-wrap">
+
+    <!-- FORM -->
+    <div class="form-card">
+        <h2>✉️ Send Us a Message</h2>
+        <p>Fill in the form below — we usually reply within 24 hours.</p>
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-msg flash-{{ 'success' if category == 'success' else 'danger' }}">
+                        {{ '✅' if category == 'success' else '⚠️' }} {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" novalidate>
+            {{ form.hidden_tag() }}
+
+            <!-- Name -->
+            <div class="field-group">
+                {{ form.name.label(class="") }}
+                {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else ""), placeholder="e.g. Ramesh Kumar") }}
+                {% if form.name.errors %}
+                    {% for error in form.name.errors %}
+                        <div class="field-error">⚠ {{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <!-- Email -->
+            <div class="field-group">
+                {{ form.email.label(class="") }}
+                {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else ""), placeholder="you@example.com", type="email") }}
+                {% if form.email.errors %}
+                    {% for error in form.email.errors %}
+                        <div class="field-error">⚠ {{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <!-- Message -->
+            <div class="field-group">
+                {{ form.message.label(class="") }}
+                {{ form.message(class="form-control" + (" is-invalid" if form.message.errors else ""), placeholder="Describe your question or issue in detail...", rows="5") }}
+                {% if form.message.errors %}
+                    {% for error in form.message.errors %}
+                        <div class="field-error">⚠ {{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn-submit">
+                🚀 Send Message
+            </button>
+        </form>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+        <div class="info-card">
+            <div class="info-icon">📍</div>
+            <h4>Our Location</h4>
+            <p>State Odisha, India<br>Serving farmers across the region</p>
+        </div>
+
+        <div class="info-card">
+            <div class="info-icon">📞</div>
+            <h4>Phone</h4>
+            <p><a href="tel:7846917002">+91 78469 17002</a><br>
+            Available Mon–Sat, 9AM–6PM</p>
+        </div>
+
+        <div class="info-card">
+            <div class="info-icon">📧</div>
+            <h4>Email</h4>
+            <p><a href="mailto:agrimitra@gmail.com">agrimitra@gmail.com</a><br>
+            We reply within 24 hours</p>
+        </div>
+
+        <div class="info-card">
+            <div class="info-icon">🕐</div>
+            <h4>Support Hours</h4>
+            <div class="hours-row">
+                <span class="day">Mon – Fri</span>
+                <span class="time">9:00 AM – 6:00 PM</span>
+                <span class="open">Open</span>
+            </div>
+            <div class="hours-row">
+                <span class="day">Saturday</span>
+                <span class="time">9:00 AM – 2:00 PM</span>
+                <span class="open">Open</span>
+            </div>
+            <div class="hours-row">
+                <span class="day">Sunday</span>
+                <span class="time">Closed</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

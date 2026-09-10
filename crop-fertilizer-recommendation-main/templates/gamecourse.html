@@ -1,0 +1,625 @@
+{% extends "base.html" %}
+
+{% block title %}Farmer Courses — AgriMitra{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --forest:        #0D2818;
+        --forest-mid:    #14381F;
+        --forest-card:   #1A4A28;
+        --green-bright:  #22C55E;
+        --green-neon:    #4ADE80;
+        --green-muted:   #86EFAC;
+        --amber:         #F59E0B;
+        --amber-light:   #FCD34D;
+        --border:        rgba(34,197,94,.1);
+        --border-bright: rgba(34,197,94,.3);
+        --text:          #BBF7D0;
+        --text-bright:   #ECFDF5;
+        --text-dim:      #4B7A5E;
+        --red:           #F87171;
+    }
+
+    body { background: var(--forest); }
+
+    /* ── PAGE WRAP ── */
+    .courses-wrap {
+        min-height: calc(100vh - var(--nav-h));
+        background: linear-gradient(135deg, #060F0A 0%, #0D2818 50%, #0A2215 100%);
+        padding: 3.5rem 2rem 5rem;
+        position: relative; overflow: hidden;
+    }
+    .courses-wrap::before {
+        content: '';
+        position: absolute; inset: 0;
+        background-image: radial-gradient(circle at 1px 1px, rgba(34,197,94,.05) 1px, transparent 0);
+        background-size: 40px 40px; pointer-events: none;
+    }
+    .glow1 {
+        position: absolute; width: 600px; height: 600px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(34,197,94,.09) 0%, transparent 65%);
+        top: -200px; right: -150px; pointer-events: none;
+    }
+    .glow2 {
+        position: absolute; width: 400px; height: 400px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(245,158,11,.07) 0%, transparent 65%);
+        bottom: 0; left: -100px; pointer-events: none;
+    }
+
+    .courses-inner { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+
+    /* ── HEADER ── */
+    .page-header { margin-bottom: 3rem; }
+    .page-label {
+        font-size: .72rem; font-weight: 700; letter-spacing: 2.5px;
+        text-transform: uppercase; color: var(--green-bright);
+        display: flex; align-items: center; gap: .6rem; margin-bottom: .75rem;
+    }
+    .page-label::before {
+        content: ''; display: inline-block; width: 22px; height: 2px;
+        background: linear-gradient(90deg, var(--green-bright), var(--amber)); border-radius: 2px;
+    }
+    .page-title {
+        font-family: 'Syne', sans-serif; font-size: clamp(2rem,4vw,3rem);
+        font-weight: 800; color: var(--text-bright); line-height: 1.1; margin-bottom: .75rem;
+    }
+    .page-title span {
+        background: linear-gradient(90deg, var(--green-neon), var(--amber));
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .page-desc { color: var(--text-dim); font-size: .97rem; line-height: 1.7; max-width: 580px; }
+
+    /* ── PROGRESS BAR ── */
+    .progress-banner {
+        background: rgba(26,74,40,.5); border: 1px solid var(--border-bright);
+        border-radius: 16px; padding: 20px 24px;
+        display: flex; align-items: center; gap: 1.5rem;
+        margin-bottom: 2.5rem; backdrop-filter: blur(10px);
+        flex-wrap: wrap;
+    }
+    .progress-left { flex: 1; min-width: 200px; }
+    .progress-title {
+        font-family: 'Syne', sans-serif; font-weight: 700; font-size: .9rem;
+        color: var(--text-bright); margin-bottom: 8px;
+        display: flex; justify-content: space-between; align-items: center;
+    }
+    .progress-count { color: var(--green-neon); }
+    .progress-track {
+        height: 8px; background: rgba(34,197,94,.1); border-radius: 4px; overflow: hidden;
+    }
+    .progress-fill {
+        height: 100%; border-radius: 4px;
+        background: linear-gradient(90deg, var(--green-bright), var(--amber));
+        transition: width .6s ease;
+    }
+    .progress-coins {
+        display: flex; align-items: center; gap: 8px;
+        background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.25);
+        border-radius: 12px; padding: 10px 18px; white-space: nowrap;
+    }
+    .progress-coins .coin-val {
+        font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--amber);
+    }
+    .progress-coins .coin-lbl { font-size: .72rem; color: rgba(245,158,11,.6); text-transform: uppercase; letter-spacing: .8px; margin-top: 1px; }
+    .rate-badge {
+        background: rgba(34,197,94,.08); border: 1px solid var(--border);
+        border-radius: 10px; padding: 8px 14px; text-align: center; white-space: nowrap;
+    }
+    .rate-badge .rate-val { font-family: 'Syne', sans-serif; font-size: .88rem; font-weight: 700; color: var(--green-neon); }
+    .rate-badge .rate-lbl { font-size: .68rem; color: var(--text-dim); margin-top: 2px; }
+
+    /* ── FILTER TABS ── */
+    .filter-tabs {
+        display: flex; gap: .6rem; margin-bottom: 2rem; flex-wrap: wrap;
+    }
+    .filter-tab {
+        padding: .45rem 1.1rem; border-radius: 20px; font-size: .8rem; font-weight: 700;
+        cursor: pointer; border: 1px solid var(--border); color: var(--text-dim);
+        background: rgba(26,74,40,.3); transition: all .2s; letter-spacing: .3px;
+        font-family: 'Nunito Sans', sans-serif;
+    }
+    .filter-tab:hover { border-color: var(--border-bright); color: var(--green-neon); }
+    .filter-tab.active {
+        background: rgba(34,197,94,.15); border-color: var(--border-bright);
+        color: var(--green-neon);
+    }
+
+    /* ── COURSES GRID ── */
+    .courses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 1.4rem;
+    }
+
+    /* ── COURSE CARD ── */
+    .course-card {
+        background: rgba(26,74,40,.4);
+        border: 1px solid var(--border); border-radius: 20px;
+        overflow: hidden; transition: all .3s; backdrop-filter: blur(10px);
+        position: relative; display: flex; flex-direction: column;
+        animation: fadeUp .5s ease both;
+    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+    .course-card:hover {
+        border-color: var(--border-bright); transform: translateY(-5px);
+        box-shadow: 0 20px 50px rgba(0,0,0,.4), 0 0 30px rgba(34,197,94,.06);
+    }
+    .course-card.completed {
+        border-color: rgba(34,197,94,.4);
+        background: rgba(20,56,31,.5);
+    }
+    .course-card.completed::after {
+        content: '✓ Completed';
+        position: absolute; top: 14px; right: 14px;
+        background: rgba(34,197,94,.2); border: 1px solid rgba(34,197,94,.4);
+        color: var(--green-neon); font-size: .68rem; font-weight: 700;
+        letter-spacing: .8px; text-transform: uppercase;
+        padding: 4px 10px; border-radius: 20px;
+    }
+
+    /* Thumb */
+    .course-thumb {
+        height: 160px; display: flex; align-items: center; justify-content: center;
+        font-size: 4.5rem; position: relative; overflow: hidden;
+        flex-shrink: 0;
+    }
+    .thumb-1 { background: linear-gradient(135deg,#0A2A14,#061A0A); }
+    .thumb-2 { background: linear-gradient(135deg,#1F1A05,#141000); }
+    .thumb-3 { background: linear-gradient(135deg,#0A1A2A,#060E18); }
+    .thumb-4 { background: linear-gradient(135deg,#1A0A1A,#100810); }
+    .thumb-5 { background: linear-gradient(135deg,#1A0A0A,#100505); }
+    .thumb-6 { background: linear-gradient(135deg,#0A1A12,#061210); }
+    .thumb-7 { background: linear-gradient(135deg,#14200A,#0C1606); }
+    .thumb-8 { background: linear-gradient(135deg,#1A1510,#100E08); }
+
+    .course-thumb .thumb-glow {
+        position: absolute; inset: 0;
+        background: radial-gradient(circle at center, rgba(34,197,94,.08) 0%, transparent 70%);
+    }
+    .course-thumb .course-level {
+        position: absolute; bottom: 10px; left: 12px;
+        font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .8px;
+        padding: 3px 10px; border-radius: 20px; font-family: 'Nunito Sans', sans-serif;
+    }
+    .level-beginner { background: rgba(34,197,94,.15); color: var(--green-neon); border: 1px solid rgba(34,197,94,.3); }
+    .level-intermediate { background: rgba(245,158,11,.15); color: var(--amber-light); border: 1px solid rgba(245,158,11,.3); }
+    .level-advanced { background: rgba(248,113,113,.12); color: var(--red); border: 1px solid rgba(248,113,113,.25); }
+
+    /* Body */
+    .course-body { padding: 1.3rem 1.4rem; flex: 1; display: flex; flex-direction: column; }
+    .course-tag {
+        font-size: .68rem; font-weight: 700; letter-spacing: .8px; text-transform: uppercase;
+        color: var(--green-muted); margin-bottom: .5rem; opacity: .7;
+    }
+    .course-title {
+        font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700;
+        color: var(--text-bright); line-height: 1.35; margin-bottom: .5rem;
+    }
+    .course-desc { font-size: .83rem; color: var(--text-dim); line-height: 1.65; flex: 1; margin-bottom: 1rem; }
+
+    /* Meta row */
+    .course-meta {
+        display: flex; align-items: center; gap: 1rem;
+        font-size: .75rem; color: var(--text-dim); margin-bottom: 1rem;
+        padding-top: .75rem; border-top: 1px solid var(--border);
+    }
+    .course-meta span { display: flex; align-items: center; gap: .3rem; }
+
+    /* Reward pill */
+    .course-reward {
+        display: inline-flex; align-items: center; gap: 5px;
+        background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.25);
+        color: var(--amber-light); font-size: .72rem; font-weight: 700;
+        padding: 3px 10px; border-radius: 20px; margin-bottom: 1rem;
+        letter-spacing: .3px;
+    }
+
+    /* CTA Button */
+    .course-btn {
+        width: 100%; padding: .75rem; border-radius: 12px;
+        font-family: 'Syne', sans-serif; font-weight: 700; font-size: .85rem;
+        cursor: pointer; border: none; transition: all .25s;
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .btn-start {
+        background: linear-gradient(135deg, var(--green-bright), #16A34A);
+        color: #fff; box-shadow: 0 6px 20px rgba(34,197,94,.3);
+    }
+    .btn-start:hover { background: linear-gradient(135deg,var(--green-neon),var(--green-bright)); transform: translateY(-1px); box-shadow: 0 10px 28px rgba(34,197,94,.45); }
+
+    .btn-continue {
+        background: rgba(245,158,11,.12); border: 1px solid rgba(245,158,11,.3);
+        color: var(--amber-light);
+    }
+    .btn-continue:hover { background: rgba(245,158,11,.2); transform: translateY(-1px); }
+
+    .btn-done {
+        background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.3);
+        color: var(--green-neon); cursor: default;
+    }
+
+    /* ── TOAST NOTIFICATION ── */
+    .toast-container {
+        position: fixed; top: 90px; right: 24px;
+        display: flex; flex-direction: column; gap: 10px;
+        z-index: 9999; pointer-events: none;
+    }
+    .toast {
+        background: rgba(20,56,31,.97);
+        border: 1px solid var(--border-bright);
+        border-left: 4px solid var(--green-bright);
+        border-radius: 14px; padding: 14px 18px;
+        display: flex; align-items: center; gap: 12px;
+        box-shadow: 0 12px 40px rgba(0,0,0,.5), 0 0 30px rgba(34,197,94,.1);
+        backdrop-filter: blur(16px);
+        animation: slideIn .4s cubic-bezier(0.16,1,0.3,1) both;
+        pointer-events: all; min-width: 280px;
+    }
+    .toast.removing { animation: slideOut .35s ease forwards; }
+    @keyframes slideIn { from{opacity:0;transform:translateX(80px)} to{opacity:1;transform:translateX(0)} }
+    @keyframes slideOut { from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(80px)} }
+
+    .toast-icon {
+        width: 40px; height: 40px; border-radius: 10px;
+        background: rgba(34,197,94,.15); border: 1px solid rgba(34,197,94,.3);
+        display: grid; place-items: center; font-size: 1.3rem; flex-shrink: 0;
+    }
+    .toast-body {}
+    .toast-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: .88rem; color: var(--text-bright); }
+    .toast-sub { font-size: .75rem; color: var(--text-dim); margin-top: 2px; }
+    .toast-coin {
+        margin-left: auto; text-align: center; flex-shrink: 0;
+        font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 800; color: var(--amber);
+        background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.25);
+        border-radius: 10px; padding: 4px 12px;
+    }
+    .toast-coin span { font-size: .65rem; color: rgba(245,158,11,.6); display: block; text-transform: uppercase; letter-spacing: .5px; }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+        text-align: center; padding: 4rem 2rem;
+        color: var(--text-dim); display: none;
+    }
+    .empty-state.visible { display: block; }
+    .empty-state-icon { font-size: 3.5rem; margin-bottom: 1rem; }
+
+    @media (max-width: 768px) {
+        .courses-wrap { padding: 2rem 1rem 4rem; }
+        .progress-banner { flex-direction: column; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Toast container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<div class="courses-wrap">
+    <div class="glow1"></div>
+    <div class="glow2"></div>
+    <div class="courses-inner">
+
+        <!-- Header -->
+        <div class="page-header">
+            <div class="page-label">Learn & Earn</div>
+            <h1 class="page-title">Farmer <span>Knowledge Hub</span></h1>
+            <p class="page-desc">Complete courses to sharpen your farming skills — each completed course earns you <strong style="color:var(--amber)">+5 coins (= ₹1)</strong> added to your wallet instantly.</p>
+        </div>
+
+        <!-- Progress Banner -->
+        <div class="progress-banner">
+            <div class="progress-left">
+                <div class="progress-title">
+                    <span>Your Progress</span>
+                    <span class="progress-count"><span id="completedCount">0</span> / <span id="totalCount">8</span> Completed</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+                </div>
+            </div>
+            <div class="progress-coins">
+                <div>
+                    <div class="coin-val" id="earnedCoins">0</div>
+                    <div class="coin-lbl">Coins Earned</div>
+                </div>
+                <span style="font-size:1.6rem">🪙</span>
+            </div>
+            <div class="rate-badge">
+                <div class="rate-val">5 coins = ₹1</div>
+                <div class="rate-lbl">Per Course</div>
+            </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <div class="filter-tab active" onclick="filterCourses('all', this)">🌿 All Courses</div>
+            <div class="filter-tab" onclick="filterCourses('beginner', this)">🟢 Beginner</div>
+            <div class="filter-tab" onclick="filterCourses('intermediate', this)">🟡 Intermediate</div>
+            <div class="filter-tab" onclick="filterCourses('advanced', this)">🔴 Advanced</div>
+            <div class="filter-tab" onclick="filterCourses('completed', this)">✅ Completed</div>
+        </div>
+
+        <!-- Courses Grid -->
+        <div class="courses-grid" id="coursesGrid">
+
+            <!-- Course 1 -->
+            <div class="course-card" data-level="beginner" data-id="1" style="animation-delay:.05s">
+                <div class="course-thumb thumb-1">
+                    <span style="position:relative;z-index:1">🌱</span>
+                    <div class="thumb-glow"></div>
+                    <div class="course-level level-beginner">Beginner</div>
+                </div>
+                <div class="course-body">
+                    <div class="course-tag">Soil Science</div>
+                    <div class="course-title">Understanding Soil Health & NPK Basics</div>
+                    <div class="course-desc">Learn what Nitrogen, Phosphorus and Potassium do for your crops and how to test your soil at home with simple methods.</div>
+                    <div class="course-reward">🪙 +5 coins on completion · ₹1 value</div>
+                    <div class="course-meta">
+                        <span>📖 12 lessons</span>
+                        <span>⏱ 45 min</span>
+                        <span>🌍 Hindi · English</span>
+                    </div>
+                    <button class="course-btn btn-start" onclick="completeCourse(this, 1, 'Soil Health & NPK Basics')">▶ Start Course</button>
+                </div>
+            </div>
+
+            <!-- Course 2 -->
+            <div class="course-card" data-level="beginner" data-id="2" style="animation-delay:.1s">
+                <div class="course-thumb thumb-2">
+                    <span style="position:relative;z-index:1">🌾</span>
+                    <div class="thumb-glow"></div>
+                    <div class="course-level level-beginner">Beginner</div>
+                </div>
+                <div class="course-body">
+                    <div class="course-tag">Crop Selection</div>
+                    <div class="course-title">Choosing the Right Crop for Your Land</div>
+                    <div class="course-desc">Understand climate zones, soil types, and water availability to pick crops that give you the highest yield and profit.</div>
+                    <div class="course-reward">🪙 +5 coins on completion · ₹1 value</div>
+                    <div class="course-meta">
+                        <span>📖 10 lessons</span>
+                        <span>⏱ 35 min</span>
+                        <span>🌍 Hindi · English</span>
+                    </div>
+                    <button class="course-btn btn-start" onclick="completeCourse(this, 2, 'Choosing the Right Crop')">▶ Start Course</button>
+                </div>
+            </div>
+
+            <!-- Course 3 -->
+            <div class="course-card" data-level="beginner" data-id="3" style="animation-delay:.15s">
+                <div class="course-thumb thumb-6">
+                    <span style="position:relative;z-index:1">💧</span>
+                    <div class="thumb-glow"></div>
+                    <div class="course-level level-beginner">Beginner</div>
+                </div>
+                <div class="course-body">
+                    <div class="course-tag">Water Management</div>
+                    <div class="course-title">Smart Irrigation: Save Water, Grow More</div>
+                    <div class="course-desc">Drip irrigation, sprinklers, furrow methods — learn which technique suits your farm and how to cut water usage by 60%.</div>
+                    <div class="course-reward">🪙 +5 coins on completion · ₹1 value</div>
+                    <div class="course-meta">
+                        <span>📖 8 lessons</span>
+                        <span>⏱ 30 min</span>
+                        <span>🌍 Hindi · English</span>
+                    </div>
+                    <button class="course-btn btn-start" onclick="completeCourse(this, 3, 'Smart Irrigation')">▶ Start Course</button>
+                </div>
+            </div>
+
+            <!-- Course 4 -->
+            <div class="course-card" data-level="intermediate" data-id="4" style="animation-delay:.2s">
+                <div class="course-thumb thumb-3">
+                    <span style="position:relative;z-index:1">🔬</span>
+                    <div class="thumb-glow"></div>
+                    <div class="course-level level-intermediate">Intermediate</div>
+                </div>
+                <div class="course-body">
+                    <div class="course-tag">Plant Health</div>
+                    <div class="course-title">Identifying & Treating Crop Diseases</div>
+                    <div class="course-desc">Spot early signs of fungal, bacterial, and viral diseases. Learn organic and chemical treatment strategies with real field examples.</div>
+                    <div class="course-reward">🪙 +5 coins on completion · ₹1 value</div>
+                    <div class="course-meta">
+                        <span>📖 15 lessons</span>
+                        <span>⏱ 55 min</span>
+                        <span>🌍 Hindi · English</span>
+                    </div>
+                    <button class="course-btn btn-start" onclick="completeCourse(this, 4, 'Identifying Crop Diseases')">▶ Start Course</button>
+                </div>
+            </div>
+
+            <!-- Course 5 -->
+            <div class="course-card" data-level="intermediate" data-id="5" style="animation-delay:.25s">
+                <div class="course-thumb thumb-7">
+                    <span style="position:relative;z-index:1">🌿</span>
+                    <div class="thumb-glow"></div>
+                    <div class="course-level level-intermediate">Intermediate</div>
+                </div>
+                <div class="course-body">
+                    <div class="course-tag">Organic Farming</div>
+                    <div class="course-title">Organic Farming & Natural Fertilizers</div>
+                    <div class="course-desc">Composting, vermicompost, green manure, and bio-pesticides — build a chemical-free farm that fetches premium market prices.</div>
+                    <div class="course-reward">🪙 +5 coins on completion · ₹1 value</div>
+                    <div class="course-meta">
+                        <span>📖 14 lessons</span>
+                        <span>⏱ 50 min</span>
+                        <span>🌍 Hindi · English</span>
+                    </div>
+                    <button class="course-btn btn-start" onclick="completeCourse(this, 5, 'Organic Farming')">▶ Start Course</button>
+                </div>
+            </div>
+
+            <!-- Course 6 -->
+            <div class="course-card" data-level="intermediate" data-id="6" style="animation-delay:.3s">
+                <div class="course-thumb thumb-5">
+                    <span style="position:relative;z-index:1">📈</span>
+                    <div class="thumb-glow"></div>
+                    <div class="course-level level-intermediate">Intermediate</div>
+                </div>
+                <div class="course-body">
+                    <div class="course-tag">Market & Finance</div>
+                    <div class="course-title">Selling Smart: Mandi Prices & Market Timing</div>
+                    <div class="course-desc">Read mandi rate trends, understand MSP, and learn when to hold vs sell your produce for maximum profit across seasons.</div>
+                    <div class="course-reward">🪙 +5 coins on completion · ₹1 value</div>
+                    <div class="course-meta">
+                        <span>📖 11 lessons</span>
+                        <span>⏱ 40 min</span>
+                        <span>🌍 Hindi · English</span>
+                    </div>
+                    <button class="course-btn btn-start" onclick="completeCourse(this, 6, 'Mandi Prices & Market Timing')">▶ Start Course</button>
+                </div>
+            </div>
+
+            <!-- Course 7 -->
+            <div class="course-card" data-level="advanced" data-id="7" style="animation-delay:.35s">
+                <div class="course-thumb thumb-4">
+                    <span style="position:relative;z-index:1">🤖</span>
+                    <div class="thumb-glow"></div>
+                    <div class="course-level level-advanced">Advanced</div>
+                </div>
+                <div class="course-body">
+                    <div class="course-tag">Precision Agriculture</div>
+                    <div class="course-title">AI & Drone Technology in Modern Farming</div>
+                    <div class="course-desc">How drones, satellite imagery, and AI tools like Agri Mitra are revolutionizing yield prediction, pest control, and farm planning.</div>
+                    <div class="course-reward">🪙 +5 coins on completion · ₹1 value</div>
+                    <div class="course-meta">
+                        <span>📖 18 lessons</span>
+                        <span>⏱ 70 min</span>
+                        <span>🌍 Hindi · English</span>
+                    </div>
+                    <button class="course-btn btn-start" onclick="completeCourse(this, 7, 'AI & Drone Technology')">▶ Start Course</button>
+                </div>
+            </div>
+
+            <!-- Course 8 -->
+            <div class="course-card" data-level="advanced" data-id="8" style="animation-delay:.4s">
+                <div class="course-thumb thumb-8">
+                    <span style="position:relative;z-index:1">💳</span>
+                    <div class="thumb-glow"></div>
+                    <div class="course-level level-advanced">Advanced</div>
+                </div>
+                <div class="course-body">
+                    <div class="course-tag">Government Schemes</div>
+                    <div class="course-title">Kisan Credit Card, PM-KISAN & Loan Schemes</div>
+                    <div class="course-desc">Step-by-step guide to applying for KCC, PM-KISAN, subsidies, and crop insurance — maximize every rupee of government support.</div>
+                    <div class="course-reward">🪙 +5 coins on completion · ₹1 value</div>
+                    <div class="course-meta">
+                        <span>📖 16 lessons</span>
+                        <span>⏱ 60 min</span>
+                        <span>🌍 Hindi · English</span>
+                    </div>
+                    <button class="course-btn btn-start" onclick="completeCourse(this, 8, 'Kisan Credit & Loan Schemes')">▶ Start Course</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Empty state (for filter) -->
+        <div class="empty-state" id="emptyState">
+            <div class="empty-state-icon">🌱</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--text-bright);font-size:1.1rem;margin-bottom:.5rem;">No courses found</div>
+            <div style="color:var(--text-dim);font-size:.88rem;">Try a different filter to explore all courses.</div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // ── STATE ──────────────────────────────────────────
+    const completed = new Set();
+    const COINS_PER_COURSE = 5;
+    let totalCoins = 0;
+
+    // ── COMPLETE COURSE ────────────────────────────────
+    function completeCourse(btn, id, title) {
+        if (completed.has(id)) return;
+
+        // Mark card completed
+        completed.add(id);
+        const card = btn.closest('.course-card');
+        card.classList.add('completed');
+
+        // Update button
+        btn.className = 'course-btn btn-done';
+        btn.innerHTML = '✅ Completed';
+        btn.disabled = true;
+
+        // Update coins & progress
+        totalCoins += COINS_PER_COURSE;
+        updateProgress();
+
+        // Show toast
+        showToast(title);
+
+        // Optionally POST to backend
+        // fetch('/complete-course', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({course_id: id}) });
+    }
+
+    // ── UPDATE PROGRESS ────────────────────────────────
+    function updateProgress() {
+        const total = document.querySelectorAll('.course-card').length;
+        const done  = completed.size;
+        const pct   = Math.round((done / total) * 100);
+
+        document.getElementById('completedCount').textContent = done;
+        document.getElementById('totalCount').textContent = total;
+        document.getElementById('progressFill').style.width = pct + '%';
+        document.getElementById('earnedCoins').textContent = totalCoins;
+    }
+
+    // ── TOAST ──────────────────────────────────────────
+    function showToast(title) {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = `
+            <div class="toast-icon">🎉</div>
+            <div class="toast-body">
+                <div class="toast-title">Course Completed!</div>
+                <div class="toast-sub">${title}</div>
+            </div>
+            <div class="toast-coin">+5<span>coins</span></div>
+        `;
+        container.appendChild(toast);
+
+        // Auto remove after 4s
+        setTimeout(() => {
+            toast.classList.add('removing');
+            setTimeout(() => toast.remove(), 400);
+        }, 4000);
+    }
+
+    // ── FILTER ─────────────────────────────────────────
+    function filterCourses(level, tabEl) {
+        // Update active tab
+        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+        tabEl.classList.add('active');
+
+        const cards = document.querySelectorAll('.course-card');
+        let visible = 0;
+
+        cards.forEach(card => {
+            const cardLevel = card.dataset.level;
+            const isCompleted = card.classList.contains('completed');
+
+            let show = false;
+            if (level === 'all')       show = true;
+            else if (level === 'completed') show = isCompleted;
+            else                       show = cardLevel === level;
+
+            card.style.display = show ? '' : 'none';
+            if (show) visible++;
+        });
+
+        const empty = document.getElementById('emptyState');
+        empty.classList.toggle('visible', visible === 0);
+    }
+
+    // Init progress
+    updateProgress();
+</script>
+{% endblock %}

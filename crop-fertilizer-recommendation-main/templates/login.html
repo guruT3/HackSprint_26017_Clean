@@ -1,0 +1,515 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In – Agri Mitra{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --g1: #1b5e20;
+        --g2: #2e7d32;
+        --g3: #4CAF50;
+        --g4: #8BC34A;
+        --orange: #FFB74D;
+        --glass: rgba(255,255,255,.13);
+        --glass-border: rgba(255,255,255,.22);
+        --glass-strong: rgba(255,255,255,.92);
+    }
+
+    /* ── FULL PAGE BACKGROUND ───────────────────── */
+    .login-page {
+        min-height: calc(100vh - 68px);
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 1.5rem;
+        overflow: hidden;
+        background: linear-gradient(145deg, #1b5e20 0%, #2e7d32 30%, #388e3c 60%, #558b2f 100%);
+    }
+
+    /* Animated blobs */
+    .login-page::before,
+    .login-page::after {
+        content: '';
+        position: absolute;
+        border-radius: 50%;
+        pointer-events: none;
+    }
+    .login-page::before {
+        width: 600px; height: 600px;
+        background: radial-gradient(circle, rgba(139,195,74,.25) 0%, transparent 70%);
+        top: -150px; right: -150px;
+        animation: blobFloat 10s ease-in-out infinite alternate;
+    }
+    .login-page::after {
+        width: 500px; height: 500px;
+        background: radial-gradient(circle, rgba(255,183,77,.15) 0%, transparent 70%);
+        bottom: -120px; left: -120px;
+        animation: blobFloat 13s ease-in-out infinite alternate-reverse;
+    }
+    @keyframes blobFloat {
+        from { transform: scale(1) translate(0,0); }
+        to   { transform: scale(1.15) translate(30px, -30px); }
+    }
+
+    /* Floating particles */
+    .particles {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+    }
+    .particle {
+        position: absolute;
+        width: 5px; height: 5px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.25);
+        animation: rise linear infinite;
+    }
+    @keyframes rise {
+        from { transform: translateY(100vh) scale(0); opacity: 0; }
+        10%  { opacity: 1; }
+        90%  { opacity: .6; }
+        to   { transform: translateY(-10vh) scale(1); opacity: 0; }
+    }
+
+    /* ── CARD ───────────────────────────────────── */
+    .login-card {
+        position: relative;
+        z-index: 10;
+        width: 100%;
+        max-width: 980px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow:
+            0 30px 80px rgba(0,0,0,.35),
+            0 0 0 1px rgba(255,255,255,.12);
+        animation: cardIn .7s cubic-bezier(.16,1,.3,1) both;
+    }
+    @keyframes cardIn {
+        from { opacity: 0; transform: translateY(40px) scale(.97); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ── LEFT PANEL ─────────────────────────────── */
+    .login-panel {
+        background: var(--glass);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border-right: 1px solid var(--glass-border);
+        padding: 3.5rem 2.8rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Decorative leaf watermark */
+    .login-panel::before {
+        content: '🌱';
+        position: absolute;
+        font-size: 14rem;
+        bottom: -3rem;
+        right: -3rem;
+        opacity: .07;
+        pointer-events: none;
+        line-height: 1;
+    }
+
+    .brand-logo {
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+        font-family: 'Playfair Display', serif;
+        font-size: 1.6rem;
+        font-weight: 900;
+        color: #fff;
+        margin-bottom: 2.5rem;
+        text-decoration: none;
+    }
+    .brand-logo .accent { color: var(--orange); }
+
+    .panel-title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(1.8rem, 3vw, 2.5rem);
+        font-weight: 900;
+        color: #fff;
+        line-height: 1.15;
+        margin-bottom: .9rem;
+    }
+    .panel-title em { font-style: normal; color: var(--orange); }
+
+    .panel-desc {
+        color: rgba(255,255,255,.8);
+        font-size: .93rem;
+        line-height: 1.7;
+        margin-bottom: 2.2rem;
+    }
+
+    /* Feature list */
+    .feature-list { display: flex; flex-direction: column; gap: .75rem; }
+    .feat {
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+        color: rgba(255,255,255,.9);
+        font-size: .88rem;
+        font-weight: 500;
+    }
+    .feat-dot {
+        width: 32px; height: 32px;
+        border-radius: 9px;
+        background: rgba(255,255,255,.15);
+        border: 1px solid rgba(255,255,255,.2);
+        display: grid;
+        place-items: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+        transition: background .2s;
+    }
+    .feat:hover .feat-dot { background: rgba(255,183,77,.3); }
+
+    /* ── RIGHT PANEL (form) ─────────────────────── */
+    .login-form-panel {
+        background: var(--glass-strong);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        padding: 3.5rem 2.8rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .form-head { margin-bottom: 2rem; }
+    .form-head h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--g1);
+        margin-bottom: .3rem;
+    }
+    .form-head p { color: #666; font-size: .88rem; }
+
+    /* Flash error */
+    .flash-error {
+        display: flex;
+        align-items: flex-start;
+        gap: .7rem;
+        background: #ffebee;
+        border: 1.5px solid #ef9a9a;
+        border-left: 4px solid #e53935;
+        border-radius: 10px;
+        padding: .85rem 1rem;
+        margin-bottom: 1.4rem;
+        font-size: .87rem;
+        color: #b71c1c;
+    }
+
+    /* Form groups */
+    .fgroup { margin-bottom: 1.2rem; }
+    .fgroup label {
+        display: block;
+        font-weight: 600;
+        font-size: .82rem;
+        color: #444;
+        margin-bottom: .45rem;
+        letter-spacing: .3px;
+        text-transform: uppercase;
+    }
+    .fgroup label .req { color: #e53935; margin-left: 2px; }
+    .fgroup label .opt { color: #aaa; font-weight: 400; font-size: .75rem; text-transform: none; letter-spacing: 0; margin-left: .3rem; }
+
+    /* Input wrapper */
+    .input-box {
+        position: relative;
+    }
+    .input-box .i-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1rem;
+        pointer-events: none;
+        transition: opacity .2s;
+        opacity: .5;
+    }
+    .input-box input {
+        width: 100%;
+        padding: .85rem 1rem .85rem 2.8rem;
+        border: 2px solid #dde7dd;
+        border-radius: 12px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: .93rem;
+        color: #333;
+        background: rgba(255,255,255,.8);
+        outline: none;
+        transition: border-color .25s, box-shadow .25s, background .25s;
+    }
+    .input-box input::placeholder { color: #bbb; }
+    .input-box input:focus {
+        border-color: var(--g3);
+        background: #fff;
+        box-shadow: 0 0 0 3.5px rgba(76,175,80,.15);
+    }
+    .input-box input:focus ~ .i-icon { opacity: .9; }
+
+    /* Field error */
+    .field-err {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        color: #c62828;
+        font-size: .78rem;
+        margin-top: .4rem;
+        padding-left: .3rem;
+    }
+
+    /* Divider */
+    .or-divider {
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+        color: #bbb;
+        font-size: .8rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        margin: .3rem 0;
+    }
+    .or-divider::before, .or-divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: #e0e0e0;
+    }
+
+    /* Submit button */
+    .btn-signin {
+        width: 100%;
+        padding: 1rem;
+        margin-top: 1.3rem;
+        background: linear-gradient(135deg, var(--g3) 0%, var(--g2) 100%);
+        color: #fff;
+        border: none;
+        border-radius: 13px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 6px 22px rgba(76,175,80,.38);
+        transition: all .28s;
+        position: relative;
+        overflow: hidden;
+        letter-spacing: .3px;
+    }
+    .btn-signin::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.18) 50%, transparent 100%);
+        transform: translateX(-100%);
+        transition: transform .5s;
+    }
+    .btn-signin:hover::after { transform: translateX(100%); }
+    .btn-signin:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(76,175,80,.48);
+    }
+    .btn-signin:active { transform: translateY(0); }
+
+    /* Register link */
+    .reg-link {
+        text-align: center;
+        margin-top: 1.4rem;
+        font-size: .87rem;
+        color: #777;
+    }
+    .reg-link a {
+        color: var(--g3);
+        font-weight: 700;
+        text-decoration: none;
+        transition: color .2s;
+    }
+    .reg-link a:hover { color: var(--g1); text-decoration: underline; }
+
+    /* Helper note */
+    .login-note {
+        text-align: center;
+        font-size: .78rem;
+        color: #999;
+        margin-top: .7rem;
+        background: #f9fbe7;
+        border-radius: 8px;
+        padding: .5rem .75rem;
+        border: 1px solid #dcedc8;
+    }
+
+    /* ── RESPONSIVE ─────────────────────────────── */
+    @media (max-width: 760px) {
+        .login-card { grid-template-columns: 1fr; max-width: 440px; }
+        .login-panel {
+            padding: 2.5rem 2rem;
+            border-right: none;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .login-panel::before { font-size: 8rem; }
+        .login-form-panel { padding: 2.5rem 2rem; }
+        .panel-title { font-size: 1.7rem; }
+        .feature-list { flex-direction: row; flex-wrap: wrap; gap: .5rem; }
+        .feat { font-size: .8rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="login-page">
+
+    <!-- Floating particles -->
+    <div class="particles" id="particles"></div>
+
+    <div class="login-card">
+
+        <!-- ── LEFT PANEL ── -->
+        <div class="login-panel">
+            <a class="brand-logo" href="{{ url_for('look') }}">
+                🌱 Agri<span class="accent">Mitra</span>
+            </a>
+
+            <h1 class="panel-title">
+                Smarter<br>Farming<br>Starts <em>Here.</em>
+            </h1>
+            <p class="panel-desc">
+                Sign in to access AI crop predictions, disease detection, real-time weather, and market intelligence — all in one place.
+            </p>
+
+            <div class="feature-list">
+                <div class="feat">
+                    <div class="feat-dot">🧠</div>
+                    AI Crop Recommendation
+                </div>
+                <div class="feat">
+                    <div class="feat-dot">🔬</div>
+                    Plant Disease Detection
+                </div>
+                <div class="feat">
+                    <div class="feat-dot">🌤️</div>
+                    Hyperlocal Weather Alerts
+                </div>
+                <div class="feat">
+                    <div class="feat-dot">📈</div>
+                    Live Market Prices
+                </div>
+            </div>
+        </div>
+
+        <!-- ── RIGHT PANEL (form) ── -->
+        <div class="login-form-panel">
+            <div class="form-head">
+                <h2>Welcome back 👋</h2>
+                <p>Sign in to your Agri Mitra account</p>
+            </div>
+
+            {% if error %}
+            <div class="flash-error">
+                <span>⚠️</span>
+                <span>{{ error }}</span>
+            </div>
+            {% endif %}
+
+            <form method="POST">
+                {{ form.hidden_tag() }}
+
+                <!-- Phone -->
+                <div class="fgroup">
+                    <label for="phone_number">
+                        Phone Number<span class="req">*</span>
+                    </label>
+                    <div class="input-box">
+                        {{ form.phone_number(class="form-control", placeholder="e.g. 9876543210", id="phone_number") }}
+                        <span class="i-icon">📱</span>
+                    </div>
+                    {% if form.phone_number.errors %}
+                    <div class="field-err">
+                        {% for e in form.phone_number.errors %}
+                        <span>⚠ {{ e }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- OR divider -->
+                <div class="or-divider">OR</div>
+
+                <!-- Email -->
+                <div class="fgroup">
+                    <label for="Email">
+                        Email Address<span class="opt">(optional)</span>
+                    </label>
+                    <div class="input-box">
+                        {{ form.Email(class="form-control", placeholder="you@example.com", id="Email") }}
+                        <span class="i-icon">✉️</span>
+                    </div>
+                    {% if form.Email.errors %}
+                    <div class="field-err">
+                        {% for e in form.Email.errors %}
+                        <span>⚠ {{ e }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Password -->
+                <div class="fgroup">
+                    <label for="password">
+                        Password<span class="req">*</span>
+                    </label>
+                    <div class="input-box">
+                        {{ form.password(class="form-control", type="password", placeholder="Enter your password", id="password") }}
+                        <span class="i-icon">🔒</span>
+                    </div>
+                    {% if form.password.errors %}
+                    <div class="field-err">
+                        {% for e in form.password.errors %}
+                        <span>⚠ {{ e }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                {{ form.submit(class="btn-signin") }}
+            </form>
+
+            <div class="login-note">
+                🔐 Login with your registered phone number or email
+            </div>
+
+            <div class="reg-link">
+                New to Agri Mitra? <a href="{{ url_for('register') }}">Create an account →</a>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Generate floating particles
+    const container = document.getElementById('particles');
+    for (let i = 0; i < 22; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.cssText = `
+            left: ${Math.random() * 100}%;
+            width: ${Math.random() * 5 + 3}px;
+            height: ${Math.random() * 5 + 3}px;
+            animation-duration: ${Math.random() * 8 + 7}s;
+            animation-delay: ${Math.random() * 8}s;
+            opacity: ${Math.random() * 0.4 + 0.1};
+        `;
+        container.appendChild(p);
+    }
+</script>
+{% endblock %}

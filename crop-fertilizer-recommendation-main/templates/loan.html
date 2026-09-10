@@ -1,0 +1,622 @@
+{% extends "base.html" %}
+
+{% block title %}Financial Support - Loan & Calculator{% endblock %}
+
+{% block content %}
+<style>
+    .loan-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .header-section {
+        text-align: center;
+        margin-bottom: 40px;
+        padding: 30px 20px;
+        background: linear-gradient(135deg, #2e7d32 0%, #66bb6a 100%);
+        color: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .header-section h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .header-section p {
+        font-size: 1.1rem;
+        opacity: 0.95;
+    }
+
+    .export-btn {
+        position: fixed;
+        top: 100px;
+        right: 30px;
+        background: #ff6b6b;
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+        box-shadow: 0 4px 15px rgba(255,107,107,0.4);
+        transition: all 0.3s ease;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .export-btn:hover {
+        background: #ee5a52;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255,107,107,0.5);
+    }
+
+    .section-title {
+        font-size: 2rem;
+        color: #2e7d32;
+        margin: 40px 0 25px 0;
+        padding-bottom: 10px;
+        border-bottom: 3px solid #66bb6a;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* Loan Directory Grid */
+    .loan-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 25px;
+        margin-bottom: 50px;
+    }
+
+    .loan-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .loan-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #2e7d32, #66bb6a);
+    }
+
+    .loan-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        border-color: #66bb6a;
+    }
+
+    .loan-type {
+        display: inline-block;
+        background: #e8f5e9;
+        color: #2e7d32;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+    }
+
+    .loan-card h3 {
+        color: #1b5e20;
+        font-size: 1.3rem;
+        margin-bottom: 10px;
+        min-height: 60px;
+    }
+
+    .loan-card p {
+        color: #666;
+        margin-bottom: 20px;
+        line-height: 1.6;
+        min-height: 45px;
+    }
+
+    .apply-btn {
+        display: inline-block;
+        width: 100%;
+        background: linear-gradient(135deg, #2e7d32, #388e3c);
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .apply-btn:hover {
+        background: linear-gradient(135deg, #1b5e20, #2e7d32);
+        transform: scale(1.02);
+    }
+
+    /* Calculator Section */
+    .calculator-section {
+        background: white;
+        border-radius: 15px;
+        padding: 35px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        margin-bottom: 50px;
+    }
+
+    .calculator-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        margin-top: 25px;
+    }
+
+    .input-group {
+        margin-bottom: 25px;
+    }
+
+    .input-group label {
+        display: block;
+        color: #1b5e20;
+        font-weight: 600;
+        margin-bottom: 8px;
+        font-size: 1rem;
+    }
+
+    .input-group input,
+    .input-group select {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #c8e6c9;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+    }
+
+    .input-group input:focus,
+    .input-group select:focus {
+        outline: none;
+        border-color: #66bb6a;
+    }
+
+    .calc-btn {
+        background: linear-gradient(135deg, #2e7d32, #388e3c);
+        color: white;
+        border: none;
+        padding: 14px 30px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        font-weight: 600;
+        width: 100%;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+    }
+
+    .calc-btn:hover {
+        background: linear-gradient(135deg, #1b5e20, #2e7d32);
+        transform: scale(1.02);
+    }
+
+    .results-box {
+        background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+        border-radius: 12px;
+        padding: 25px;
+        border-left: 5px solid #2e7d32;
+    }
+
+    .result-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #c8e6c9;
+    }
+
+    .result-item:last-child {
+        border-bottom: none;
+    }
+
+    .result-label {
+        font-weight: 600;
+        color: #1b5e20;
+        font-size: 1.05rem;
+    }
+
+    .result-value {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #2e7d32;
+    }
+
+    .chart-container {
+        margin-top: 25px;
+        max-width: 350px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Tips Section */
+    .tips-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 25px;
+        margin-bottom: 50px;
+    }
+
+    .tip-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        border-left: 5px solid #ff9800;
+        transition: all 0.3s ease;
+    }
+
+    .tip-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    }
+
+    .tip-icon {
+        font-size: 2rem;
+        margin-bottom: 15px;
+    }
+
+    .tip-card h3 {
+        color: #e65100;
+        font-size: 1.2rem;
+        margin-bottom: 12px;
+    }
+
+    .tip-card p {
+        color: #555;
+        line-height: 1.7;
+    }
+
+    @media (max-width: 768px) {
+        .calculator-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .loan-grid,
+        .tips-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .header-section h1 {
+            font-size: 1.8rem;
+        }
+
+        .export-btn {
+            top: 80px;
+            right: 15px;
+            padding: 10px 18px;
+            font-size: 14px;
+        }
+    }
+</style>
+
+<div id="printable-content">
+    <div class="loan-container">
+        <!-- Header -->
+        <div class="header-section">
+            <h1>
+                🌾 Financial Support Hub
+            </h1>
+            <p>Access agricultural loans, calculate EMIs, and get smart farming financial tips</p>
+        </div>
+
+        <!-- Loan Directory Section -->
+        <h2 class="section-title">💼 Agricultural Loan Directory</h2>
+        <div class="loan-grid">
+            <!-- SBI -->
+            <div class="loan-card">
+                <span class="loan-type">Government Bank</span>
+                <h3>SBI - Crop Loan / Kisan Credit Card</h3>
+                <p>Flexible crop loans and KCC for agricultural inputs with attractive interest rates</p>
+                <a href="https://sbi.co.in/web/agri-rural/agriculture-banking/crop-loan" target="_blank" class="apply-btn">Apply Now →</a>
+            </div>
+
+            <!-- Bank of India -->
+            <div class="loan-card">
+                <span class="loan-type">Government Bank</span>
+                <h3>Bank of India - Agri Scheme Loans</h3>
+                <p>Comprehensive agricultural financing for crop production and farm development</p>
+                <a href="https://bankofindia.co.in/farm-loans" target="_blank" class="apply-btn">Apply Now →</a>
+            </div>
+
+            <!-- Bank of Baroda -->
+            <div class="loan-card">
+                <span class="loan-type">Government Bank</span>
+                <h3>Bank of Baroda - Agriculture Loans</h3>
+                <p>Tailored loan products for farmers covering all agricultural activities</p>
+                <a href="https://www.bankofbaroda.in/business-banking/rural-and-agri/loans-and-advances" target="_blank" class="apply-btn">Apply Now →</a>
+            </div>
+
+            <!-- Axis Bank -->
+            <div class="loan-card">
+                <span class="loan-type">Private Bank</span>
+                <h3>Axis Bank - Agri & Rural Loans</h3>
+                <p>Specialized agricultural financing with quick processing and disbursement</p>
+                <a href="https://www.axisbank.com/agri-and-rural/loans" target="_blank" class="apply-btn">Apply Now →</a>
+            </div>
+
+            <!-- ICICI Bank -->
+            <div class="loan-card">
+                <span class="loan-type">Private Bank</span>
+                <h3>ICICI Bank - Farmer Finance</h3>
+                <p>Modern agricultural loans with digital application and easy repayment options</p>
+                <a href="https://www.icicibank.com/rural/loans/farmer-finance" target="_blank" class="apply-btn">Apply Now →</a>
+            </div>
+
+            <!-- Federal Bank -->
+            <div class="loan-card">
+                <span class="loan-type">Private Bank</span>
+                <h3>Federal Bank - Federal Green Plus</h3>
+                <p>Sustainable agricultural financing scheme supporting eco-friendly farming</p>
+                <a href="https://www.federalbank.co.in/federal-green-plus-loan-scheme" target="_blank" class="apply-btn">Apply Now →</a>
+            </div>
+
+            <!-- PNB -->
+            <div class="loan-card">
+                <span class="loan-type">Government Bank</span>
+                <h3>Punjab National Bank - Agriculture Schemes</h3>
+                <p>Comprehensive credit solutions for diverse agricultural requirements</p>
+                <a href="https://www.pnbindia.in/agriculture-credit-schemes.html" target="_blank" class="apply-btn">Apply Now →</a>
+            </div>
+
+            <!-- HDFC Bank -->
+            <div class="loan-card">
+                <span class="loan-type">Private Bank</span>
+                <h3>HDFC Bank - Agri / Kisan Loans</h3>
+                <p>Customized agricultural financing with competitive rates and flexible tenure</p>
+                <a href="https://www.hdfcbank.com/agri" target="_blank" class="apply-btn">Apply Now →</a>
+            </div>
+
+            <!-- LT Finance -->
+            <div class="loan-card">
+                <span class="loan-type">NBFC</span>
+                <h3>LT Finance - Agri Implement Loan</h3>
+                <p>Financing for purchasing tractors, harvesters and other farm equipment</p>
+                <a href="https://www.ltfinance.com/agri-implement-loan" target="_blank" class="apply-btn">Apply Now →</a>
+            </div>
+
+            <!-- IIFL Finance -->
+            <div class="loan-card">
+                <span class="loan-type">NBFC</span>
+                <h3>IIFL Finance - Agriculture Personal Loans</h3>
+                <p>Quick personal loans for farmers with minimal documentation requirements</p>
+                <a href="https://www.iifl.com/personal-loans/personal-loan-for-agriculture" target="_blank" class="apply-btn">Apply Now →</a>
+            </div>
+        </div>
+
+        <!-- Loan Calculator Section -->
+        <h2 class="section-title">🧮 EMI Loan Calculator</h2>
+        <div class="calculator-section">
+            <div class="calculator-grid">
+                <!-- Input Side -->
+                <div>
+                    <div class="input-group">
+                        <label for="loanAmount">Loan Amount (₹)</label>
+                        <input type="number" id="loanAmount" placeholder="e.g., 500000" value="500000">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="interestRate">Interest Rate (% per annum)</label>
+                        <input type="number" id="interestRate" step="0.1" placeholder="e.g., 7.5" value="7.5">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="loanTenure">Loan Tenure</label>
+                        <input type="number" id="loanTenure" placeholder="e.g., 5" value="5">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="tenureType">Tenure Type</label>
+                        <select id="tenureType">
+                            <option value="years">Years</option>
+                            <option value="months">Months</option>
+                        </select>
+                    </div>
+
+                    <button class="calc-btn" onclick="calculateEMI()">Calculate EMI</button>
+                </div>
+
+                <!-- Results Side -->
+                <div>
+                    <div class="results-box">
+                        <div class="result-item">
+                            <span class="result-label">Monthly EMI</span>
+                            <span class="result-value" id="emiResult">₹0</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Total Interest</span>
+                            <span class="result-value" id="interestResult">₹0</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Total Repayment</span>
+                            <span class="result-value" id="totalResult">₹0</span>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="loanChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Smart Tips Section -->
+        <h2 class="section-title">💡 Smart Financial Tips for Farmers</h2>
+        <div class="tips-grid">
+            <div class="tip-card">
+                <div class="tip-icon">⏰</div>
+                <h3>Apply Before Sowing Season</h3>
+                <p>Apply for crop loans 2-3 months before the sowing season to ensure timely fund availability. This prevents delays in purchasing seeds, fertilizers, and other inputs at the right time.</p>
+            </div>
+
+            <div class="tip-card">
+                <div class="tip-icon">⭐</div>
+                <h3>Maintain Good Credit Score</h3>
+                <p>Always repay loans on time to maintain a credit score above 750. A good credit history helps you get loans faster with better interest rates and higher loan amounts in future.</p>
+            </div>
+
+            <div class="tip-card">
+                <div class="tip-icon">🎯</div>
+                <h3>Utilize Kisan Credit Card</h3>
+                <p>KCC offers flexible credit at lower interest rates (usually 4-7% after subsidy). Use it for working capital needs, and benefit from interest subvention schemes for timely repayment.</p>
+            </div>
+
+            <div class="tip-card">
+                <div class="tip-icon">🏛️</div>
+                <h3>Check Government Subsidies</h3>
+                <p>Many agricultural loans come with interest subvention of 2-3%. Also explore PM-KISAN, soil health card schemes, and state-specific subsidies that can reduce your farming costs significantly.</p>
+            </div>
+
+            <div class="tip-card">
+                <div class="tip-icon">📋</div>
+                <h3>Keep Documents Ready</h3>
+                <p>Maintain updated land records, Aadhaar, PAN card, bank statements, and income proof. Having proper documentation speeds up loan approval and helps you access emergency funds quickly.</p>
+            </div>
+
+            <div class="tip-card">
+                <div class="tip-icon">🛡️</div>
+                <h3>Consider Crop Insurance</h3>
+                <p>Enroll in Pradhan Mantri Fasal Bima Yojana (PMFBY) to protect against crop loss due to natural calamities. Insurance coverage helps you repay loans even during bad harvest seasons.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Export PDF Button -->
+<button class="export-btn" onclick="exportToPDF()">
+    📄 Export as PDF
+</button>
+
+<script>
+    let chartInstance = null;
+
+    function calculateEMI() {
+        const principal = parseFloat(document.getElementById('loanAmount').value);
+        const annualRate = parseFloat(document.getElementById('interestRate').value);
+        const tenure = parseFloat(document.getElementById('loanTenure').value);
+        const tenureType = document.getElementById('tenureType').value;
+
+        if (!principal || !annualRate || !tenure) {
+            alert('Please fill all fields with valid numbers');
+            return;
+        }
+
+        // Convert to months
+        const months = tenureType === 'years' ? tenure * 12 : tenure;
+        
+        // Monthly interest rate
+        const monthlyRate = annualRate / (12 * 100);
+
+        // EMI Calculation: [P * R * (1+R)^N] / [(1+R)^N - 1]
+        const emi = (principal * monthlyRate * Math.pow(1 + monthlyRate, months)) / 
+                    (Math.pow(1 + monthlyRate, months) - 1);
+
+        const totalAmount = emi * months;
+        const totalInterest = totalAmount - principal;
+
+        // Display results
+        document.getElementById('emiResult').textContent = '₹' + emi.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        document.getElementById('interestResult').textContent = '₹' + totalInterest.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        document.getElementById('totalResult').textContent = '₹' + totalAmount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+        // Update chart
+        updateChart(principal, totalInterest);
+    }
+
+    function updateChart(principal, interest) {
+        const ctx = document.getElementById('loanChart').getContext('2d');
+
+        if (chartInstance) {
+            chartInstance.destroy();
+        }
+
+        chartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Principal Amount', 'Total Interest'],
+                datasets: [{
+                    data: [principal, interest],
+                    backgroundColor: ['#2e7d32', '#ff9800'],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Principal vs Interest Breakdown',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        color: '#1b5e20'
+                    }
+                }
+            }
+        });
+    }
+
+    function exportToPDF() {
+        const element = document.getElementById('printable-content');
+        const exportBtn = document.querySelector('.export-btn');
+        
+        // Hide export button during PDF generation
+        exportBtn.style.display = 'none';
+
+        const opt = {
+            margin: 10,
+            filename: 'Farmer_Loan_Support_Module.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(element).save().then(() => {
+            // Show export button again after PDF generation
+            exportBtn.style.display = 'flex';
+        });
+    }
+
+    // Calculate on page load with default values
+    window.addEventListener('load', function() {
+        calculateEMI();
+    });
+</script>
+
+{% endblock %}

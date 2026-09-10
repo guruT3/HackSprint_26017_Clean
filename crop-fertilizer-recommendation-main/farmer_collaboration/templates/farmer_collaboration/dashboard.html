@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Connect — Digital Agriculture Collaboration</title>
+    <link rel="stylesheet" href="{{ url_for('farmer_collaboration.static', filename='css/farmer_connect.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="fc-container">
+        <!-- Navbar -->
+        <div class="fc-navbar">
+            <a href="{{ url_for('farmer_collaboration.dashboard') }}" class="fc-brand">
+                🌾 Farmer Connect
+            </a>
+            <div class="fc-nav-links">
+                <a href="{{ url_for('farmer_collaboration.community') }}" class="fc-nav-link">👨‍🌾 Community</a>
+                <a href="{{ url_for('farmer_collaboration.marketplace') }}" class="fc-nav-link">🛒 Agri Marketplace</a>
+                <a href="{{ url_for('farmer_collaboration.requirements') }}" class="fc-nav-link">📋 Requirements</a>
+                <a href="{{ url_for('farmer_collaboration.mandi_hub') }}" class="fc-nav-link">🏪 Mandi Hub</a>
+                <a href="{{ url_for('farmer_collaboration.messages') }}" class="fc-nav-link">💬 Messages</a>
+                <a href="{{ url_for('farmer_collaboration.notifications') }}" class="fc-nav-link">🔔 Notifications</a>
+                <a href="{{ url_for('farmer_collaboration.admin_dashboard') }}" class="fc-nav-link"
+                    style="background:rgba(255,255,255,0.15);">⚙️ Admin</a>
+            </div>
+        </div>
+
+        <!-- Hero Header -->
+        <div class="fc-hero">
+            <h1>Welcome, Ramesh Kumar! 🌾</h1>
+            <p>Your Digital Agriculture Ecosystem — Connect with nearby farmers, trade seeds & inputs, post
+                requirements, and access verified Mandi prices.</p>
+            <div class="fc-quick-actions">
+                <a href="{{ url_for('farmer_collaboration.create_listing') }}" class="fc-btn fc-btn-primary">➕ Sell
+                    Something</a>
+                <a href="{{ url_for('farmer_collaboration.marketplace') }}" class="fc-btn fc-btn-accent">🛒 Buy
+                    Inputs</a>
+                <a href="{{ url_for('farmer_collaboration.create_requirement') }}" class="fc-btn fc-btn-secondary">📋
+                    Post Requirement</a>
+                <a href="{{ url_for('farmer_collaboration.community') }}" class="fc-btn fc-btn-secondary">💬 Ask
+                    Community</a>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div style="margin-bottom: 24px;">
+            <form action="{{ url_for('farmer_collaboration.global_search') }}" method="GET"
+                style="display:flex; gap:12px;">
+                <input type="text" name="q" placeholder="Search seeds, fertilizer, machinery, farmers, or mandis..."
+                    style="flex:1; padding:14px; border-radius:10px; border:1px solid #cbd5e1; font-size:1rem;">
+                <button type="submit" class="fc-btn fc-btn-primary" style="background:#2e7d32; color:#fff;">🔍
+                    Search</button>
+            </form>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="fc-grid-2">
+            <!-- Left Column: Marketplace & Community -->
+            <div>
+                <!-- Marketplace Highlights -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                    <h3 style="margin:0; font-size:1.25rem; font-weight:800;">🛒 Featured Agri Marketplace</h3>
+                    <a href="{{ url_for('farmer_collaboration.marketplace') }}"
+                        style="color:#2e7d32; font-weight:700; text-decoration:none;">View All →</a>
+                </div>
+
+                <div class="fc-grid-3" style="grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));">
+                    {% for item in listings %}
+                    <div class="fc-card">
+                        <div>
+                            <div class="fc-card-header">
+                                <span class="fc-badge fc-badge-green">{{ item.category }}</span>
+                                <span class="fc-verified">✓ {{ item.rating }}★</span>
+                            </div>
+                            <h4 class="fc-card-title">{{ item.title }}</h4>
+                            <div class="fc-card-meta">
+                                <span>👨‍🌾 {{ item.seller }}</span>
+                            </div>
+                            <div class="fc-card-meta">
+                                <span>📍 {{ item.location }}</span>
+                            </div>
+                            <div class="fc-price-tag">₹{{ item.price }} <span
+                                    style="font-size:0.8rem; font-weight:500; color:#64748b;">/ {{ item.unit }}</span>
+                            </div>
+                        </div>
+                        <div style="margin-top:14px; display:flex; gap:8px;">
+                            <a href="{{ url_for('farmer_collaboration.listing_detail', listing_id=item.id) }}"
+                                class="fc-btn fc-btn-secondary"
+                                style="background:#f1f5f9; color:#0f172a; flex:1; text-align:center;">View</a>
+                            <button onclick="FarmerConnectUI.openInquiryModal('{{ item.title }}', '{{ item.seller }}')"
+                                class="fc-btn fc-btn-primary"
+                                style="background:#2e7d32; color:#fff; flex:1;">Contact</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Community Discussions -->
+                <div
+                    style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; margin-top:20px;">
+                    <h3 style="margin:0; font-size:1.25rem; font-weight:800;">👨‍🌾 Recent Farmer Discussions</h3>
+                    <a href="{{ url_for('farmer_collaboration.community') }}"
+                        style="color:#2e7d32; font-weight:700; text-decoration:none;">Join Community →</a>
+                </div>
+
+                {% for post in posts %}
+                <div class="fc-card" style="margin-bottom:16px;">
+                    <div class="fc-card-header">
+                        <div>
+                            <strong style="font-size:1rem; color:#0f172a;">{{ post.author }}</strong>
+                            <span style="font-size:0.8rem; color:#64748b; margin-left:8px;">📍 {{ post.location
+                                }}</span>
+                        </div>
+                        <span class="fc-badge fc-badge-blue">{{ post.category }}</span>
+                    </div>
+                    <h4 class="fc-card-title">{{ post.title }}</h4>
+                    <p style="color:#475569; font-size:0.92rem; line-height:1.5; margin:0 0 12px 0;">{{ post.content }}
+                    </p>
+                    <div style="display:flex; gap:16px; font-size:0.85rem; color:#64748b;">
+                        <span onclick="FarmerConnectUI.toggleLike({{ post.id }}, this)" style="cursor:pointer;">❤️ <span
+                                class="like-count">{{ post.likes }}</span> Likes</span>
+                        <span>💬 {{ post.comments_count }} Answers</span>
+                        <span>🕒 {{ post.created_at }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Right Column: Mandis & Requirements -->
+            <div>
+                <!-- Verified Mandi Hub -->
+                <div class="fc-card" style="margin-bottom:20px;">
+                    <div class="fc-card-header">
+                        <h3 style="margin:0; font-size:1.1rem; font-weight:800;">🏪 Verified Mandis Nearby</h3>
+                        <span class="fc-badge fc-badge-green">Verified</span>
+                    </div>
+                    {% for mandi in mandis %}
+                    <div style="padding:10px 0; border-bottom:1px solid #f1f5f9;">
+                        <div style="font-weight:700; color:#0f172a;">{{ mandi.mandi_name }} ✓</div>
+                        <div style="font-size:0.82rem; color:#64748b;">📍 {{ mandi.district }}, {{ mandi.state }} | 📞
+                            {{ mandi.phone }}</div>
+                        <div style="font-size:0.82rem; font-weight:600; color:#2e7d32; margin-top:4px;">Crops: {{
+                            mandi.crops }}</div>
+                    </div>
+                    {% endfor %}
+                    <a href="{{ url_for('farmer_collaboration.mandi_hub') }}" class="fc-btn fc-btn-secondary"
+                        style="background:#e8f5e9; color:#2e7d32; margin-top:12px; width:100%; justify-content:center;">Explore
+                        Mandi Hub</a>
+                </div>
+
+                <!-- Open Requirements -->
+                <div class="fc-card">
+                    <div class="fc-card-header">
+                        <h3 style="margin:0; font-size:1.1rem; font-weight:800;">📋 Farmer Requirements</h3>
+                    </div>
+                    {% for req in requirements %}
+                    <div style="padding:10px 0; border-bottom:1px solid #f1f5f9;">
+                        <div style="font-weight:700; color:#0f172a;">{{ req.title }}</div>
+                        <div style="font-size:0.82rem; color:#64748b;">By: {{ req.farmer }} | 📍 {{ req.location }}
+                        </div>
+                        <div style="font-size:0.85rem; font-weight:700; color:#d97706; margin-top:4px;">Qty: {{
+                            req.quantity }} {{ req.unit }} | Budget: ₹{{ req.budget }}</div>
+                    </div>
+                    {% endfor %}
+                    <a href="{{ url_for('farmer_collaboration.requirements') }}" class="fc-btn fc-btn-secondary"
+                        style="background:#fff3e0; color:#b45309; margin-top:12px; width:100%; justify-content:center;">View
+                        Requirements Board</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('farmer_collaboration.static', filename='js/farmer_connect.js') }}"></script>
+</body>
+
+</html>

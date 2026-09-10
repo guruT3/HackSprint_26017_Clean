@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification Center — Farmer Connect</title>
+    <link rel="stylesheet" href="{{ url_for('farmer_collaboration.static', filename='css/farmer_connect.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="fc-container">
+    <div class="fc-navbar">
+        <a href="{{ url_for('farmer_collaboration.dashboard') }}" class="fc-brand">🌾 Farmer Connect</a>
+        <div class="fc-nav-links">
+            <a href="{{ url_for('farmer_collaboration.dashboard') }}" class="fc-nav-link">Dashboard</a>
+            <a href="{{ url_for('farmer_collaboration.notifications') }}" class="fc-nav-link active">🔔 Notifications</a>
+        </div>
+    </div>
+
+    <div style="max-width:750px; margin:0 auto;">
+        <h2>🔔 Notification Center</h2>
+
+        <div style="display:flex; flex-direction:column; gap:12px;">
+            {% for n in notifications %}
+            <div class="fc-card" style="border-left:4px solid #2e7d32;">
+                <div class="fc-card-header">
+                    <strong style="color:#0f172a; font-size:1.05rem;">{{ n.title }}</strong>
+                    <span style="font-size:0.8rem; color:#64748b;">{{ n.time }}</span>
+                </div>
+                <p style="color:#475569; margin:4px 0 12px 0; font-size:0.92rem;">{{ n.message }}</p>
+                <a href="{{ url_for('farmer_collaboration.messages') }}" class="fc-btn fc-btn-secondary" style="background:#e8f5e9; color:#2e7d32; padding:6px 12px; align-self:flex-start;">View Details →</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

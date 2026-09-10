@@ -1,0 +1,668 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,600;0,700;1,600&display=swap');
+
+/* ── TOKENS ── */
+:root {
+  --deep:    #0a1f0d;
+  --forest:  #122b16;
+  --pine:    #1a3d1f;
+  --fern:    #256b2d;
+  --leaf:    #3a9142;
+  --sprout:  #52b85c;
+  --lime:    #7dd67a;
+  --mist:    #c8ebc4;
+  --dew:     #edf7ec;
+  --cream:   #f4faf3;
+  --gold:    #d4a843;
+  --straw:   #e8cb7a;
+  --brown:   #5c3a1a;
+  --slate:   #7a9e7e;
+  --card:    #132918;
+  --card2:   #1a3320;
+  --border:  rgba(82,184,92,0.18);
+  --glow:    rgba(82,184,92,0.09);
+  --r:       14px;
+  --r2:      22px;
+}
+
+/* ── PAGE ── */
+.jb-page {
+  font-family: 'Nunito', sans-serif;
+  background: var(--deep);
+  min-height: 100vh;
+  color: var(--mist);
+  position: relative;
+}
+
+/* subtle leaf-pattern background */
+.jb-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2352b85c' fill-opacity='0.03'%3E%3Cpath d='M40 40 Q55 20 70 40 Q55 60 40 40Z M40 40 Q25 20 10 40 Q25 60 40 40Z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── HERO ── */
+.jb-hero {
+  position: relative;
+  z-index: 1;
+  padding: 60px 32px 52px;
+  text-align: center;
+  background:
+    radial-gradient(ellipse 70% 100% at 50% -5%, rgba(58,145,66,0.35) 0%, transparent 70%),
+    linear-gradient(180deg, rgba(26,61,31,0.6) 0%, transparent 100%);
+  border-bottom: 1px solid var(--border);
+}
+
+.jb-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(82,184,92,0.12);
+  border: 1px solid rgba(82,184,92,0.4);
+  color: var(--lime);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 6px 18px;
+  border-radius: 100px;
+  margin-bottom: 20px;
+}
+
+.jb-hero h1 {
+  font-family: 'Lora', serif;
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--cream);
+  margin-bottom: 14px;
+}
+
+.jb-hero h1 em {
+  font-style: italic;
+  color: var(--lime);
+}
+
+.jb-hero p {
+  color: var(--slate);
+  font-size: 1rem;
+  font-weight: 400;
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.75;
+}
+
+.jb-rule {
+  width: 52px;
+  height: 3px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, transparent, var(--sprout), transparent);
+  margin: 26px auto 0;
+}
+
+/* ── STATS ROW ── */
+.jb-stats {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  background: rgba(26,51,32,0.7);
+}
+
+.jb-stat {
+  padding: 18px 36px;
+  text-align: center;
+  border-right: 1px solid var(--border);
+}
+
+.jb-stat:last-child { border-right: none; }
+
+.jb-stat-num {
+  font-family: 'Lora', serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--lime);
+  line-height: 1;
+  margin-bottom: 3px;
+}
+
+.jb-stat-lbl {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--slate);
+}
+
+/* ── MAIN LAYOUT ── */
+.jb-main {
+  position: relative;
+  z-index: 1;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 36px 24px 90px;
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 24px;
+  align-items: start;
+}
+
+@media(max-width: 820px) {
+  .jb-main { grid-template-columns: 1fr; }
+  .jb-stats { flex-wrap: wrap; }
+  .jb-stat  { flex: 1; min-width: 120px; border-right: none; border-bottom: 1px solid var(--border); }
+}
+
+/* ── PANEL ── */
+.jb-panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  overflow: hidden;
+}
+
+.jb-panel-head {
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(37,107,45,0.3), rgba(19,41,24,0.5));
+  position: relative;
+  overflow: hidden;
+}
+
+/* shimmer line on top */
+.jb-panel-head::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 20%; right: 20%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--sprout), transparent);
+}
+
+.jb-panel-icon {
+  width: 40px; height: 40px;
+  border-radius: 11px;
+  background: rgba(82,184,92,0.15);
+  border: 1px solid rgba(82,184,92,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.jb-panel-title {
+  font-family: 'Lora', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--cream);
+}
+
+.jb-panel-body { padding: 20px; }
+
+/* ── PORTAL ITEMS ── */
+.jb-portal-link {
+  text-decoration: none;
+  display: block;
+  margin-bottom: 9px;
+}
+.jb-portal-link:last-child { margin-bottom: 0; }
+
+.jb-portal-item {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 13px 15px;
+  background: var(--card2);
+  border: 1px solid rgba(82,184,92,0.08);
+  border-radius: var(--r);
+  transition: border-color 0.22s, background 0.22s, transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.jb-portal-item:hover {
+  border-color: rgba(82,184,92,0.45);
+  background: rgba(37,107,45,0.22);
+  transform: translateX(5px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+}
+
+.jb-portal-emoji {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: rgba(82,184,92,0.1);
+  border: 1px solid rgba(82,184,92,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.jb-portal-item:hover .jb-portal-emoji {
+  background: rgba(82,184,92,0.2);
+}
+
+.jb-portal-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--mist);
+  flex: 1;
+  line-height: 1.3;
+}
+
+.jb-portal-arrow {
+  color: var(--sprout);
+  font-size: 0.9rem;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.jb-portal-item:hover .jb-portal-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ── FORM ── */
+.jb-form-body { padding: 26px 28px; }
+
+@media(max-width: 560px) {
+  .jb-form-body { padding: 18px 16px; }
+}
+
+.jb-field { margin-bottom: 18px; }
+
+.jb-label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--sprout);
+  margin-bottom: 8px;
+}
+
+.jb-input,
+.jb-select,
+.jb-textarea {
+  width: 100%;
+  background: var(--card2);
+  border: 1.5px solid rgba(82,184,92,0.15);
+  border-radius: var(--r);
+  padding: 12px 15px;
+  color: var(--cream);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: border-color 0.22s, box-shadow 0.22s, background 0.22s;
+  outline: none;
+  -webkit-appearance: none;
+  box-sizing: border-box;
+}
+
+.jb-input::placeholder,
+.jb-textarea::placeholder { color: var(--slate); opacity: 0.6; }
+
+.jb-input:focus,
+.jb-select:focus,
+.jb-textarea:focus {
+  border-color: var(--sprout);
+  box-shadow: 0 0 0 3px rgba(82,184,92,0.15);
+  background: rgba(26,51,32,0.9);
+}
+
+.jb-input.is-invalid,
+.jb-select.is-invalid { border-color: #e57373; }
+
+.jb-select option { background: var(--pine); color: var(--cream); }
+
+.jb-textarea { resize: vertical; min-height: 88px; }
+
+.jb-err {
+  display: none;
+  font-size: 0.77rem;
+  color: #ef9a9a;
+  margin-top: 5px;
+  font-weight: 500;
+}
+.jb-err.show { display: block; }
+
+.jb-row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media(max-width: 500px) {
+  .jb-row2 { grid-template-columns: 1fr; }
+}
+
+/* ── WHATSAPP BUTTON ── */
+.jb-submit {
+  width: 100%;
+  padding: 15px;
+  margin-top: 4px;
+  background: linear-gradient(135deg, #25d366, #128c4a);
+  border: none;
+  border-radius: var(--r);
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #fff;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+  box-shadow: 0 6px 20px rgba(37,211,102,0.25);
+}
+
+.jb-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(37,211,102,0.38);
+  filter: brightness(1.07);
+}
+
+.jb-submit:disabled {
+  opacity: 0.55;
+  transform: none;
+  cursor: not-allowed;
+}
+
+/* ── DIVIDER ── */
+.jb-form-divider {
+  border: none;
+  border-top: 1px solid rgba(82,184,92,0.12);
+  margin: 18px 0;
+}
+
+/* ── TOAST ── */
+.jb-toast {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  background: var(--fern);
+  border: 1px solid var(--sprout);
+  color: var(--cream);
+  padding: 14px 22px;
+  border-radius: var(--r);
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  z-index: 9999;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.4);
+  transform: translateY(120%);
+  transition: transform 0.38s cubic-bezier(0.34,1.2,0.64,1);
+}
+
+.jb-toast.show { transform: translateY(0); }
+
+/* ── NOTICE CHIP ── */
+.jb-notice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(82,184,92,0.08);
+  border: 1px solid rgba(82,184,92,0.2);
+  border-radius: 10px;
+  padding: 11px 15px;
+  margin-bottom: 20px;
+  font-size: 0.82rem;
+  color: var(--slate);
+  font-weight: 500;
+}
+
+.jb-notice-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--sprout);
+  flex-shrink: 0;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(82,184,92,0.6); }
+  50%      { box-shadow: 0 0 0 6px rgba(82,184,92,0); }
+}
+</style>
+
+<div class="jb-page">
+
+  <!-- HERO -->
+  <div class="jb-hero">
+    <div class="jb-badge">🌿 Agriculture Employment Platform</div>
+    <h1>Find Work,<br><em>Grow Together</em></h1>
+    <p>Register your farming skills, set your availability, and connect with employers across India's agricultural sector.</p>
+    <div class="jb-rule"></div>
+  </div>
+
+  <!-- STATS STRIP -->
+  
+
+  <!-- MAIN GRID -->
+  <div class="jb-main">
+
+    <!-- LEFT — PORTALS -->
+    <div>
+      <div class="jb-panel">
+        <div class="jb-panel-head">
+          <div class="jb-panel-icon">🏛️</div>
+          <div class="jb-panel-title">Government Portals</div>
+        </div>
+        <div class="jb-panel-body">
+
+          <a href="https://nrega.nic.in/netnrega/homestciti.aspx" target="_blank" class="jb-portal-link">
+            <div class="jb-portal-item">
+              <div class="jb-portal-emoji">👷</div>
+              <div class="jb-portal-name">MGNREGA Job Card</div>
+              <span class="jb-portal-arrow">→</span>
+            </div>
+          </a>
+
+          <a href="https://kisancallcentre.gov.in/" target="_blank" class="jb-portal-link">
+            <div class="jb-portal-item">
+              <div class="jb-portal-emoji">📞</div>
+              <div class="jb-portal-name">Kisan Call Centre</div>
+              <span class="jb-portal-arrow">→</span>
+            </div>
+          </a>
+
+          <a href="https://agristack.gov.in/" target="_blank" class="jb-portal-link">
+            <div class="jb-portal-item">
+              <div class="jb-portal-emoji">🌾</div>
+              <div class="jb-portal-name">AgriStack Portal</div>
+              <span class="jb-portal-arrow">→</span>
+            </div>
+          </a>
+
+          <a href="https://www.nabard.org/" target="_blank" class="jb-portal-link">
+            <div class="jb-portal-item">
+              <div class="jb-portal-emoji">🏦</div>
+              <div class="jb-portal-name">NABARD Schemes</div>
+              <span class="jb-portal-arrow">→</span>
+            </div>
+          </a>
+
+          <a href="https://www.ncs.gov.in/" target="_blank" class="jb-portal-link">
+            <div class="jb-portal-item">
+              <div class="jb-portal-emoji">💼</div>
+              <div class="jb-portal-name">National Career Service</div>
+              <span class="jb-portal-arrow">→</span>
+            </div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- helpful tip card -->
+      <div style="margin-top:16px; background:var(--card); border:1px solid var(--border); border-radius:var(--r2); padding:20px 22px;">
+        <div style="font-family:'Lora',serif; font-size:1rem; font-weight:700; color:var(--cream); margin-bottom:10px;">💡 Tips for Workers</div>
+        <div style="font-size:0.84rem; color:var(--slate); line-height:1.75;">
+          ✔ Keep your phone reachable after registration<br>
+          ✔ Mention your travel distance preference<br>
+          ✔ Update availability seasonally<br>
+          ✔ List all relevant farming skills
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT — FORM -->
+    <div class="jb-panel">
+      <div class="jb-panel-head">
+        <div class="jb-panel-icon">📋</div>
+        <div class="jb-panel-title">Worker Registration</div>
+      </div>
+
+      <div class="jb-form-body">
+
+        <div class="jb-notice">
+          <div class="jb-notice-dot"></div>
+          Submissions go directly to a farm coordinator via WhatsApp
+        </div>
+
+        <form method="POST" action="{{ url_for('jb') }}" novalidate id="jbForm">
+          {{ form.hidden_tag() }}
+
+          <div class="jb-row2">
+            <div class="jb-field">
+              {{ form.name.label(class="jb-label") }}
+              {{ form.name(class="jb-input" + (" is-invalid" if form.name.errors else ""), placeholder="Full name") }}
+              {% if form.name.errors %}
+                <div class="jb-err show">{% for e in form.name.errors %}{{ e }}{% endfor %}</div>
+              {% endif %}
+            </div>
+            <div class="jb-field">
+              {{ form.phone.label(class="jb-label") }}
+              {{ form.phone(class="jb-input" + (" is-invalid" if form.phone.errors else ""), placeholder="Phone number") }}
+              {% if form.phone.errors %}
+                <div class="jb-err show">{% for e in form.phone.errors %}{{ e }}{% endfor %}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="jb-field">
+            {{ form.location.label(class="jb-label") }}
+            {{ form.location(class="jb-input" + (" is-invalid" if form.location.errors else ""), placeholder="Village, District, State") }}
+            {% if form.location.errors %}
+              <div class="jb-err show">{% for e in form.location.errors %}{{ e }}{% endfor %}</div>
+            {% endif %}
+          </div>
+
+          <div class="jb-row2">
+            <div class="jb-field">
+              {{ form.availability.label(class="jb-label") }}
+              {{ form.availability(class="jb-select" + (" is-invalid" if form.availability.errors else "")) }}
+              {% if form.availability.errors %}
+                <div class="jb-err show">{% for e in form.availability.errors %}{{ e }}{% endfor %}</div>
+              {% endif %}
+            </div>
+            <div class="jb-field">
+              {{ form.budget.label(class="jb-label") }}
+              {{ form.budget(class="jb-input" + (" is-invalid" if form.budget.errors else ""), step="0.01", placeholder="Expected ₹ / day") }}
+              {% if form.budget.errors %}
+                <div class="jb-err show">{% for e in form.budget.errors %}{{ e }}{% endfor %}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="jb-field">
+            {{ form.skills.label(class="jb-label") }}
+            {{ form.skills(class="jb-select" + (" is-invalid" if form.skills.errors else "")) }}
+            {% if form.skills.errors %}
+              <div class="jb-err show">{% for e in form.skills.errors %}{{ e }}{% endfor %}</div>
+            {% endif %}
+          </div>
+
+          <div class="jb-field">
+            {{ form.additional_info.label(class="jb-label") }}
+            {{ form.additional_info(class="jb-input" + (" is-invalid" if form.additional_info.errors else ""), placeholder="Any extra details…") }}
+            {% if form.additional_info.errors %}
+              <div class="jb-err show">{% for e in form.additional_info.errors %}{{ e }}{% endfor %}</div>
+            {% endif %}
+          </div>
+
+          <hr class="jb-form-divider">
+
+          <button type="submit" class="jb-submit" id="submitBtn" onclick="return submitToWhatsApp(event)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+            Register via WhatsApp
+          </button>
+        </form>
+      </div>
+    </div>
+
+  </div><!-- /jb-main -->
+</div><!-- /jb-page -->
+
+<!-- Toast -->
+<div class="jb-toast" id="jbToast">✅ Opening WhatsApp for you…</div>
+
+<script>
+function submitToWhatsApp(event) {
+  event.preventDefault();
+  const name   = document.querySelector('input[name="name"]').value.trim();
+  const loc    = document.querySelector('input[name="location"]').value.trim();
+  const phone  = document.querySelector('input[name="phone"]').value.trim();
+  const avail  = document.querySelector('select[name="availability"]').value;
+  const budget = document.querySelector('input[name="budget"]').value.trim();
+  const skills = document.querySelector('select[name="skills"]').value;
+  const extra  = document.querySelector('input[name="additional_info"]')?.value.trim() || 'N/A';
+
+  if (!name || !loc || !phone || !avail || !budget || !skills) {
+    alert('⚠️ Please fill in all required fields!');
+    return false;
+  }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = `<span>⏳</span> Opening WhatsApp…`;
+
+  const toast = document.getElementById('jbToast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3200);
+
+  const msg =
+    `🌾 *New Worker Registration*\n\n` +
+    `👤 *Name:* ${name}\n📍 *Location:* ${loc}\n📞 *Phone:* ${phone}\n` +
+    `📅 *Availability:* ${avail}\n💰 *Expected Salary:* ₹${budget}/day\n` +
+    `🛠️ *Skills:* ${skills}\n📝 *Additional Info:* ${extra}`;
+
+  setTimeout(() => {
+    window.open(`https://wa.me/917846917002?text=${encodeURIComponent(msg)}`, '_blank');
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Register via WhatsApp`;
+    }, 2200);
+  }, 500);
+
+  return false;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('#jbForm input, #jbForm select').forEach(el => {
+    el.addEventListener('blur', () => {
+      el.classList.toggle('is-invalid', el.value.trim() === '');
+    });
+    el.addEventListener('input', () => {
+      if (el.value.trim()) el.classList.remove('is-invalid');
+    });
+  });
+});
+</script>
+
+{% endblock %}

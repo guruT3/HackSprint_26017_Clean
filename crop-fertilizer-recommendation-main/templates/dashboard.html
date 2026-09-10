@@ -1,0 +1,451 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — AgriMitra{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --forest:        #0D2818;
+        --forest-mid:    #14381F;
+        --forest-card:   #1A4A28;
+        --forest-light:  #1F5C30;
+        --green-bright:  #22C55E;
+        --green-neon:    #4ADE80;
+        --green-muted:   #86EFAC;
+        --amber:         #F59E0B;
+        --amber-light:   #FCD34D;
+        --border:        rgba(34,197,94,.1);
+        --border-bright: rgba(34,197,94,.3);
+        --text:          #BBF7D0;
+        --text-bright:   #ECFDF5;
+        --text-muted:    #6EE7A0;
+        --text-dim:      #4B7A5E;
+    }
+
+    .dashboard-wrap {
+        min-height: calc(100vh - var(--nav-h) - 200px);
+        background: linear-gradient(135deg, #060F0A 0%, #0D2818 50%, #0A2215 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 1rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* dot grid bg */
+    .dashboard-wrap::before {
+        content: '';
+        position: absolute; inset: 0;
+        background-image: radial-gradient(circle at 1px 1px, rgba(34,197,94,.06) 1px, transparent 0);
+        background-size: 40px 40px;
+        pointer-events: none;
+    }
+
+    /* glow orbs */
+    .dashboard-wrap::after {
+        content: '';
+        position: absolute;
+        width: 600px; height: 600px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(34,197,94,.09) 0%, transparent 65%);
+        top: -200px; right: -150px; pointer-events: none;
+    }
+
+    .dash-grid {
+        width: 100%;
+        max-width: 920px;
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 1.5rem;
+        position: relative; z-index: 1;
+        animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(24px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .dash-card {
+        background: rgba(26,74,40,.45);
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        padding: 28px;
+        box-shadow: 0 4px 32px rgba(0,0,0,.4);
+        backdrop-filter: blur(12px);
+    }
+
+    /* ── LEFT: PROFILE ── */
+    .profile-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .avatar-ring {
+        width: 88px; height: 88px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--green-bright), #16A34A);
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Syne', sans-serif;
+        font-size: 2rem; font-weight: 800; color: #fff;
+        margin-bottom: 16px;
+        box-shadow: 0 8px 28px rgba(34,197,94,.35);
+        position: relative;
+    }
+
+    .avatar-ring::after {
+        content: '';
+        position: absolute; inset: -5px;
+        border-radius: 50%;
+        border: 2px dashed rgba(34,197,94,.35);
+        animation: rotateDash 12s linear infinite;
+    }
+
+    @keyframes rotateDash {
+        from { transform: rotate(0deg); }
+        to   { transform: rotate(360deg); }
+    }
+
+    .profile-label {
+        font-size: .68rem; letter-spacing: 2px;
+        text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px;
+    }
+
+    .profile-email {
+        font-family: 'Syne', sans-serif;
+        font-size: .9rem; font-weight: 700;
+        color: var(--text-bright); word-break: break-all; margin-bottom: 12px;
+    }
+
+    .active-badge {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.25);
+        color: var(--green-neon); font-size: .72rem; font-weight: 700;
+        padding: 4px 14px; border-radius: 20px; letter-spacing: .5px; margin-bottom: 24px;
+    }
+    .active-badge::before {
+        content: ''; width: 6px; height: 6px;
+        background: var(--green-bright); border-radius: 50%;
+        animation: blink 2s ease-in-out infinite;
+        box-shadow: 0 0 6px var(--green-bright);
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    .meta-divider {
+        width: 100%; height: 1px;
+        background: var(--border); margin: 0 0 18px;
+    }
+
+    .meta-row {
+        width: 100%; display: flex;
+        justify-content: space-between; align-items: center;
+        font-size: .83rem; color: var(--text-dim);
+        margin-bottom: 10px; padding: 8px 10px;
+        border-radius: 10px; background: rgba(34,197,94,.05);
+        border: 1px solid var(--border);
+    }
+    .meta-row strong { color: var(--text-bright); font-weight: 700; }
+
+    .dash-actions {
+        display: grid; grid-template-columns: 1fr 1fr;
+        gap: 10px; width: 100%; margin-top: 18px;
+    }
+
+    .dash-btn {
+        display: flex; align-items: center; justify-content: center;
+        gap: 6px; padding: 12px; border-radius: 12px;
+        text-decoration: none; font-family: 'Syne', sans-serif;
+        font-size: .82rem; font-weight: 700;
+        transition: all .2s ease; border: 1px solid transparent;
+    }
+
+    .btn-back {
+        background: rgba(34,197,94,.08); border-color: var(--border);
+        color: var(--text-bright);
+    }
+    .btn-back:hover {
+        background: rgba(34,197,94,.15); border-color: var(--border-bright);
+        color: var(--green-neon); transform: translateY(-1px);
+    }
+
+    .btn-logout {
+        background: rgba(239,68,68,.07); border-color: rgba(239,68,68,.2); color: #f87171;
+    }
+    .btn-logout:hover {
+        background: rgba(239,68,68,.14); color: #fca5a5; transform: translateY(-1px);
+    }
+
+    /* ── RIGHT COLUMN ── */
+    .right-col { display: flex; flex-direction: column; gap: 1.2rem; }
+
+    /* Coin card */
+    .coin-card {
+        background: linear-gradient(135deg, #1a1200, #2d1f00);
+        border: 1px solid rgba(245,158,11,.25);
+        border-radius: 20px; padding: 28px;
+        display: flex; align-items: center; justify-content: space-between;
+        position: relative; overflow: hidden;
+        box-shadow: 0 8px 32px rgba(245,158,11,.12);
+    }
+    .coin-card::before {
+        content: ''; position: absolute; top: -40px; right: -40px;
+        width: 160px; height: 160px;
+        background: radial-gradient(circle, rgba(245,158,11,.2) 0%, transparent 70%);
+        border-radius: 50%; pointer-events: none;
+    }
+    .coin-card::after {
+        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(245,158,11,.5), transparent);
+    }
+
+    .coin-amount {
+        font-family: 'Syne', sans-serif; font-size: 3.2rem; font-weight: 800;
+        color: var(--amber); line-height: 1;
+        animation: popIn .6s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    @keyframes popIn { from{opacity:0;transform:scale(.7)} to{opacity:1;transform:scale(1)} }
+
+    .coin-sub {
+        font-size: .72rem; color: rgba(245,158,11,.45);
+        text-transform: uppercase; letter-spacing: 1.5px; margin-top: 6px;
+    }
+
+    .coin-emoji { font-size: 3rem; animation: flip 4s ease-in-out infinite; }
+    @keyframes flip { 0%,100%{transform:rotateY(0)} 50%{transform:rotateY(180deg)} }
+
+    /* Mini stats */
+    .mini-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .mini-stat {
+        background: rgba(26,74,40,.5);
+        border: 1px solid var(--border); border-radius: 16px;
+        padding: 18px 20px; backdrop-filter: blur(8px);
+        transition: transform .2s, box-shadow .2s, border-color .2s;
+    }
+    .mini-stat:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(0,0,0,.3);
+        border-color: var(--border-bright);
+    }
+    .mini-stat-icon { font-size: 1.3rem; margin-bottom: 8px; }
+    .mini-stat-val {
+        font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800;
+        color: var(--green-neon);
+    }
+    .mini-stat-lbl {
+        font-size: .7rem; color: var(--text-dim);
+        text-transform: uppercase; letter-spacing: 1px; margin-top: 2px;
+    }
+
+    /* Timer */
+    .timer-card {
+        background: rgba(26,74,40,.5);
+        border: 1px solid var(--border); border-radius: 16px;
+        padding: 16px 20px; backdrop-filter: blur(8px);
+        display: flex; align-items: center; justify-content: space-between;
+    }
+    .timer-left { display: flex; align-items: center; gap: 12px; }
+    .timer-icon-box {
+        width: 42px; height: 42px;
+        background: rgba(34,197,94,.1); border: 1px solid var(--border);
+        border-radius: 12px; display: flex; align-items: center;
+        justify-content: center; font-size: 1.2rem;
+    }
+    .timer-title { font-weight: 700; font-size: .88rem; color: var(--text-bright); }
+    .timer-sub   { font-size: .73rem; color: var(--text-dim); margin-top: 2px; }
+    .timer-pill {
+        background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.25);
+        color: var(--green-neon); font-family: 'Syne', sans-serif;
+        font-size: .88rem; font-weight: 700; padding: 6px 16px;
+        border-radius: 20px; white-space: nowrap;
+    }
+
+    /* ── REFERRAL CARD ── */
+    .referral-card {
+        background: linear-gradient(135deg, rgba(26,74,40,.6), rgba(13,40,24,.8));
+        border: 1px solid var(--border-bright);
+        border-radius: 18px; padding: 20px 22px;
+        backdrop-filter: blur(10px);
+        position: relative; overflow: hidden;
+    }
+    .referral-card::before {
+        content: ''; position: absolute; top: -30px; right: -30px;
+        width: 120px; height: 120px;
+        background: radial-gradient(circle, rgba(34,197,94,.12) 0%, transparent 70%);
+        border-radius: 50%; pointer-events: none;
+    }
+
+    .referral-top {
+        display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+    }
+    .referral-top-icon {
+        width: 36px; height: 36px; border-radius: 10px;
+        background: rgba(34,197,94,.12); border: 1px solid var(--border-bright);
+        display: grid; place-items: center; font-size: 1.1rem;
+    }
+    .referral-top-title {
+        font-family: 'Syne', sans-serif; font-size: .92rem; font-weight: 700; color: var(--text-bright);
+    }
+    .referral-top-sub { font-size: .72rem; color: var(--text-dim); margin-top: 1px; }
+
+    .referral-link-box {
+        display: flex; align-items: center; gap: 8px;
+        background: rgba(0,0,0,.3); border: 1px solid var(--border);
+        border-radius: 12px; padding: 10px 14px;
+        margin-bottom: 10px;
+    }
+    .referral-link-text {
+        flex: 1; font-family: monospace; font-size: .78rem;
+        color: var(--green-muted); word-break: break-all; line-height: 1.4;
+    }
+    .copy-btn {
+        background: rgba(34,197,94,.15); border: 1px solid var(--border-bright);
+        color: var(--green-neon); font-family: 'Syne', sans-serif;
+        font-size: .75rem; font-weight: 700; padding: 6px 14px;
+        border-radius: 8px; cursor: pointer; white-space: nowrap;
+        transition: all .2s; flex-shrink: 0;
+    }
+    .copy-btn:hover { background: rgba(34,197,94,.25); transform: translateY(-1px); }
+    .copy-btn.copied { background: rgba(34,197,94,.3); color: #fff; }
+
+    .referral-bonus {
+        display: flex; align-items: center; gap: 6px;
+        font-size: .73rem; color: var(--text-dim);
+    }
+    .referral-bonus span { color: var(--amber); font-weight: 700; }
+
+    @media (max-width: 700px) {
+        .dash-grid { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrap">
+    <div class="dash-grid">
+
+        <!-- LEFT: Profile Card -->
+        <div class="dash-card profile-card">
+            <div class="avatar-ring">{{ user.email[0].upper() }}</div>
+            <div class="profile-label">Logged in as</div>
+            <div class="profile-email">{{ user.email }}</div>
+            <div class="active-badge">Active Member</div>
+
+            <div class="meta-divider"></div>
+
+            <div class="meta-row">
+                <span>Login Bonus</span>
+                <strong>+1 / day</strong>
+            </div>
+            <div class="meta-row">
+                <span>Form Bonus</span>
+                <strong>+1 / submit</strong>
+            </div>
+            <div class="meta-row">
+                <span>Status</span>
+                <strong>🟢 Active</strong>
+            </div>
+
+            <div class="dash-actions">
+                <a href="{{ url_for('look') }}" class="dash-btn btn-back">← Home</a>
+                <a href="{{ url_for('logout') }}" class="dash-btn btn-logout">🚪 Logout</a>
+            </div>
+        </div>
+
+        <!-- RIGHT: Stats -->
+        <div class="right-col">
+
+            <!-- Coin Balance -->
+            <div class="coin-card">
+                <div>
+                    <div class="coin-amount">{{ user.coins }}</div>
+                    <div class="coin-sub">Total Credits</div>
+                    <div style="margin-top:10px; display:inline-flex; align-items:center; gap:6px; background:rgba(245,158,11,.12); border:1px solid rgba(245,158,11,.25); border-radius:20px; padding:4px 12px;">
+                        <span style="font-size:.7rem; color:rgba(245,158,11,.7); font-weight:700; letter-spacing:.5px;">💰 5 coins = ₹1</span>
+                        <span style="color:rgba(245,158,11,.35); font-size:.65rem;">·</span>
+                        <span style="font-size:.7rem; color:rgba(245,158,11,.55);">Value: ₹{{ (user.coins / 5) | round(1) }}</span>
+                    </div>
+                </div>
+                <div class="coin-emoji">🪙</div>
+            </div>
+
+            <!-- Mini Stats -->
+            <div class="mini-stats">
+                <div class="mini-stat">
+                    <div class="mini-stat-icon">🔐</div>
+                    <div class="mini-stat-val">+1</div>
+                    <div class="mini-stat-lbl">Per Login</div>
+                </div>
+                <div class="mini-stat">
+                    <div class="mini-stat-icon">📋</div>
+                    <div class="mini-stat-val">+1</div>
+                    <div class="mini-stat-lbl">Per Form</div>
+                </div>
+            </div>
+
+            <!-- Timer -->
+            <div class="timer-card">
+                <div class="timer-left">
+                    <div class="timer-icon-box">⏰</div>
+                    <div>
+                        <div class="timer-title">Next Login Coin</div>
+                        <div class="timer-sub">Resets every 24 hours</div>
+                    </div>
+                </div>
+                <div class="timer-pill">{{ user.next_coin }}</div>
+            </div>
+
+            <!-- Referral Card -->
+            <div class="referral-card">
+                <div class="referral-top">
+                    <div class="referral-top-icon">🌾</div>
+                    <div>
+                        <div class="referral-top-title">Your Farmer Referral Link</div>
+                        <div class="referral-top-sub">Share with fellow farmers & earn bonus coins</div>
+                    </div>
+                </div>
+
+                <div class="referral-link-box">
+                    <div class="referral-link-text" id="refLink">
+                        https://agrimitra.com/join?ref={{ user.email | replace('@', '_') | replace('.', '-') }}
+                    </div>
+                    <button class="copy-btn" id="copyBtn" onclick="copyRef()">📋 Copy</button>
+                </div>
+
+                <div class="referral-bonus">
+                    🌿 Each referral earns <span>+5 coins</span> &nbsp;·&nbsp; <span>5 coins = ₹1</span> — invite farmers, grow together!
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function copyRef() {
+        const text = document.getElementById('refLink').textContent.trim();
+        const btn  = document.getElementById('copyBtn');
+        navigator.clipboard.writeText(text).then(() => {
+            btn.textContent = '✅ Copied!';
+            btn.classList.add('copied');
+            setTimeout(() => {
+                btn.textContent = '📋 Copy';
+                btn.classList.remove('copied');
+            }, 2500);
+        }).catch(() => {
+            // fallback
+            const ta = document.createElement('textarea');
+            ta.value = text; document.body.appendChild(ta);
+            ta.select(); document.execCommand('copy');
+            document.body.removeChild(ta);
+            btn.textContent = '✅ Copied!';
+            btn.classList.add('copied');
+            setTimeout(() => { btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 2500);
+        });
+    }
+</script>
+{% endblock %}

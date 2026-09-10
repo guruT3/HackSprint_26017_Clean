@@ -1,0 +1,905 @@
+{% extends "base.html" %}
+
+{% block title %}Custom Farming Plan - AI Agriculture{% endblock %}
+
+{% block extra_css %}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap');
+
+/* ─────────────────────────────────────────────
+   ROOT TOKENS
+───────────────────────────────────────────── */
+:root {
+  --ink:      #0d1a0f;
+  --forest:   #143318;
+  --moss:     #1e4620;
+  --fern:     #2d6a32;
+  --sage:     #4a8b50;
+  --mist:     #c8dfc9;
+  --gold:     #c9a84c;
+  --amber:    #e8b84b;
+  --cream:    #f5efe0;
+  --parchment:#ece5d0;
+  --rust:     #b85c2a;
+  --slate:    #8a9e8b;
+  --surface:  #111d12;
+  --card:     #162118;
+  --card2:    #1a2a1c;
+  --border:   rgba(201,168,76,0.18);
+  --glow:     rgba(201,168,76,0.08);
+  --r:        16px;
+  --r2:       24px;
+}
+
+/* ─────────────────────────────────────────────
+   GLOBAL RESET
+───────────────────────────────────────────── */
+.fp-wrap, .fp-wrap * { box-sizing: border-box; margin: 0; padding: 0; }
+
+.fp-wrap {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--ink);
+  color: var(--cream);
+  min-height: 100vh;
+  /* animated grain overlay */
+  position: relative;
+}
+
+.fp-wrap::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─────────────────────────────────────────────
+   HERO BANNER
+───────────────────────────────────────────── */
+.fp-hero {
+  position: relative;
+  padding: 90px 40px 72px;
+  text-align: center;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.fp-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 90% at 50% -10%, rgba(44,106,50,0.45) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 80% 50%, rgba(201,168,76,0.07) 0%, transparent 60%);
+}
+
+.fp-hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--border);
+  border: 1px solid var(--gold);
+  color: var(--amber);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  padding: 7px 18px;
+  border-radius: 100px;
+  margin-bottom: 26px;
+  position: relative;
+}
+
+.fp-hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.8rem, 6vw, 5rem);
+  font-weight: 900;
+  line-height: 1.05;
+  color: var(--cream);
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.fp-hero h1 em {
+  font-style: italic;
+  color: var(--amber);
+}
+
+.fp-hero-sub {
+  color: var(--slate);
+  font-size: 1.05rem;
+  font-weight: 300;
+  max-width: 520px;
+  margin: 0 auto;
+  position: relative;
+  line-height: 1.7;
+}
+
+.fp-hero-divider {
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 36px auto 0;
+}
+
+/* ─────────────────────────────────────────────
+   MAIN CONTAINER
+───────────────────────────────────────────── */
+.fp-main {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 28px 100px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ─────────────────────────────────────────────
+   FORM PANEL
+───────────────────────────────────────────── */
+.fp-form-panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 48px;
+  margin-bottom: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.fp-form-panel::before {
+  content: '';
+  position: absolute;
+  top: -1px; left: 40px; right: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.fp-section-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+
+.fp-section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--cream);
+  margin-bottom: 36px;
+}
+
+/* 2-column + 3-column form grid */
+.fp-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+@media(min-width: 900px) {
+  .fp-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+.fp-field { display: flex; flex-direction: column; gap: 10px; }
+
+.fp-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: var(--mist);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fp-input, .fp-select {
+  background: var(--card2);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--r);
+  padding: 13px 16px;
+  color: var(--cream);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  transition: border-color 0.25s, box-shadow 0.25s;
+  outline: none;
+  width: 100%;
+  -webkit-appearance: none;
+}
+
+.fp-input::placeholder { color: var(--slate); opacity: 0.6; }
+
+.fp-input:focus, .fp-select:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
+}
+
+.fp-select option { background: var(--forest); color: var(--cream); }
+
+.fp-submit {
+  width: 100%;
+  padding: 18px 32px;
+  background: linear-gradient(135deg, var(--gold) 0%, #a07828 100%);
+  color: var(--ink);
+  border: none;
+  border-radius: var(--r);
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.fp-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 40px rgba(201,168,76,0.35);
+  filter: brightness(1.08);
+}
+
+/* ─────────────────────────────────────────────
+   GENERATED PLAN
+───────────────────────────────────────────── */
+.fp-plan {
+  display: none;
+  margin-bottom: 40px;
+}
+
+.fp-plan.show { display: block; animation: riseIn 0.5s ease; }
+
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fp-plan-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.fp-export {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: transparent;
+  border: 1px solid var(--gold);
+  border-radius: var(--r);
+  color: var(--amber);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.fp-export:hover {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+/* Plan sections — alternating accent colors */
+.fp-blocks { display: flex; flex-direction: column; gap: 16px; }
+
+.fp-block {
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--r2);
+  padding: 28px 32px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.25s;
+}
+
+.fp-block:hover { border-color: rgba(201,168,76,0.3); }
+
+.fp-block-accent {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  border-radius: var(--r2) 0 0 var(--r2);
+}
+
+.accent-gold   { background: var(--gold); }
+.accent-fern   { background: var(--fern); }
+.accent-rust   { background: var(--rust); }
+.accent-slate  { background: var(--slate); }
+.accent-amber  { background: var(--amber); }
+.accent-mist   { background: var(--mist); }
+
+.fp-block-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--cream);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fp-block-body {
+  color: var(--slate);
+  font-size: 0.93rem;
+  line-height: 1.75;
+}
+
+.fp-block-body strong { color: var(--mist); font-weight: 500; }
+
+.fp-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.fp-mini-item {
+  background: var(--card2);
+  border-radius: 12px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.fp-mini-item .mi-label {
+  font-size: 0.7rem;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+
+.fp-mini-item .mi-val {
+  font-size: 0.96rem;
+  font-weight: 500;
+  color: var(--cream);
+}
+
+/* ─────────────────────────────────────────────
+   SEASON CARDS
+───────────────────────────────────────────── */
+.fp-seasons-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--cream);
+  margin-bottom: 8px;
+}
+
+.fp-seasons-sub {
+  color: var(--slate);
+  font-size: 0.9rem;
+  margin-bottom: 28px;
+}
+
+.fp-seasons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 20px;
+}
+
+.fp-season {
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--r2);
+  padding: 28px 24px;
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.fp-season:hover {
+  transform: translateY(-6px);
+  border-color: var(--border);
+  box-shadow: 0 24px 48px rgba(0,0,0,0.4);
+}
+
+.fp-season-glow {
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  opacity: 0.07;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.fp-season:hover .fp-season-glow { opacity: 0.14; }
+
+.glow-spring  { background: #4caf50; }
+.glow-summer  { background: #ff9800; }
+.glow-monsoon { background: #2196f3; }
+.glow-autumn  { background: #8d6e63; }
+.glow-winter  { background: #90a4ae; }
+
+.fp-season-icon {
+  font-size: 2.2rem;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.fp-season-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--cream);
+  margin-bottom: 2px;
+}
+
+.fp-season-months {
+  font-size: 0.75rem;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 1.5px;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.fp-weather-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 20px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.fp-weather-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+}
+
+.fp-weather-row .wr-key { color: var(--slate); }
+.fp-weather-row .wr-val { color: var(--mist); font-weight: 500; }
+
+.fp-season-acts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fp-act {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--slate);
+  line-height: 1.45;
+}
+
+.fp-act::before {
+  content: '→';
+  color: var(--gold);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* season top-border color bars */
+.fp-season.spring  { box-shadow: inset 0 3px 0 #4caf50; }
+.fp-season.summer  { box-shadow: inset 0 3px 0 #ff9800; }
+.fp-season.monsoon { box-shadow: inset 0 3px 0 #2196f3; }
+.fp-season.autumn  { box-shadow: inset 0 3px 0 #a1887f; }
+.fp-season.winter  { box-shadow: inset 0 3px 0 #78909c; }
+
+/* ─────────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────────── */
+@media (max-width: 700px) {
+  .fp-form-panel { padding: 28px 20px; }
+  .fp-hero { padding: 60px 20px 52px; }
+  .fp-block { padding: 22px 20px; }
+  .fp-plan-header { flex-direction: column; align-items: flex-start; }
+  .fp-export { width: 100%; justify-content: center; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="fp-wrap">
+
+  <!-- ── HERO ── -->
+  <div class="fp-hero">
+    <div class="fp-hero-eyebrow">🌾 AI Agriculture Platform</div>
+    <h1>Your <em>Custom</em><br>Farming Plan</h1>
+    <p class="fp-hero-sub">Precision-tailored recommendations built from your land, climate, and goals — powered by AI.</p>
+    <div class="fp-hero-divider"></div>
+  </div>
+
+  <div class="fp-main">
+
+    <!-- ── FORM ── -->
+    <div class="fp-form-panel">
+      <div class="fp-section-label">Step 01 — Input</div>
+      <div class="fp-section-title">Tell us about your farm</div>
+
+      <form id="farmingForm">
+        <div class="fp-grid">
+          <div class="fp-field">
+            <label class="fp-label">🌍 Farm Location</label>
+            <input class="fp-input" id="location" type="text" placeholder="e.g. Punjab, Maharashtra" required>
+          </div>
+          <div class="fp-field">
+            <label class="fp-label">📏 Farm Size (acres)</label>
+            <input class="fp-input" id="farmSize" type="number" placeholder="e.g. 5" min="0.1" step="0.1" required>
+          </div>
+          <div class="fp-field">
+            <label class="fp-label">🌱 Crop Type</label>
+            <select class="fp-select" id="cropType" required>
+              <option value="">Select crop</option>
+              <option>Rice</option><option>Wheat</option><option>Cotton</option>
+              <option>Sugarcane</option><option>Vegetables</option>
+              <option>Fruits</option><option>Pulses</option>
+            </select>
+          </div>
+          <div class="fp-field">
+            <label class="fp-label">📅 Season</label>
+            <select class="fp-select" id="season" required>
+              <option value="">Select season</option>
+              <option value="Spring">Spring (Mar–May)</option>
+              <option value="Summer">Summer (Jun–Aug)</option>
+              <option value="Monsoon">Monsoon (Jul–Sep)</option>
+              <option value="Autumn">Autumn (Sep–Nov)</option>
+              <option value="Winter">Winter (Dec–Feb)</option>
+            </select>
+          </div>
+          <div class="fp-field">
+            <label class="fp-label">💧 Irrigation Type</label>
+            <select class="fp-select" id="irrigation" required>
+              <option value="">Select method</option>
+              <option value="Drip">Drip Irrigation</option>
+              <option value="Sprinkler">Sprinkler</option>
+              <option value="Flood">Flood / Surface</option>
+              <option value="Rainwater">Rainwater Only</option>
+            </select>
+          </div>
+          <div class="fp-field">
+            <label class="fp-label">🪨 Soil Type</label>
+            <select class="fp-select" id="soilType" required>
+              <option value="">Select soil</option>
+              <option>Clay</option><option>Sandy</option><option>Loamy</option>
+              <option>Black</option><option>Red</option>
+            </select>
+          </div>
+          <div class="fp-field">
+            <label class="fp-label">💰 Budget Range (₹)</label>
+            <select class="fp-select" id="budget" required>
+              <option value="">Select range</option>
+              <option value="10000-50000">₹10,000 – ₹50,000</option>
+              <option value="50000-100000">₹50,000 – ₹1,00,000</option>
+              <option value="100000-500000">₹1,00,000 – ₹5,00,000</option>
+              <option value="500000+">₹5,00,000+</option>
+            </select>
+          </div>
+          <div class="fp-field">
+            <label class="fp-label">🎯 Farming Goal</label>
+            <select class="fp-select" id="goal" required>
+              <option value="">Select goal</option>
+              <option value="Maximum Yield">Maximum Yield</option>
+              <option value="Organic Farming">Organic Farming</option>
+              <option value="Cost Efficiency">Cost Efficiency</option>
+              <option value="Sustainable">Sustainable Farming</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="fp-submit">
+          <span>✦</span> Generate My Farming Plan
+        </button>
+      </form>
+    </div>
+
+    <!-- ── GENERATED PLAN ── -->
+    <div class="fp-plan" id="generatedPlan">
+      <div class="fp-plan-header">
+        <div>
+          <div class="fp-section-label">Step 02 — Results</div>
+          <div class="fp-seasons-title">Your Personalized Plan</div>
+        </div>
+        <button class="fp-export" id="exportBtn">📄 Export PDF</button>
+      </div>
+      <div class="fp-blocks" id="planContent"></div>
+    </div>
+
+    <!-- ── SEASON CALENDAR ── -->
+    <div style="margin-top: 56px;">
+      <div class="fp-section-label">Reference</div>
+      <div class="fp-seasons-title">Seasonal Calendar</div>
+      <p class="fp-seasons-sub">Key activities and conditions across all five growing seasons</p>
+
+      <div class="fp-seasons-grid">
+
+        <!-- Spring -->
+        <div class="fp-season spring">
+          <div class="fp-season-glow glow-spring"></div>
+          <span class="fp-season-icon">🌸</span>
+          <div class="fp-season-name">Spring</div>
+          <div class="fp-season-months">Mar – May</div>
+          <div class="fp-weather-chip">
+            <div class="fp-weather-row"><span class="wr-key">Temp</span><span class="wr-val">20–30 °C</span></div>
+            <div class="fp-weather-row"><span class="wr-key">Rain</span><span class="wr-val">50–100 mm</span></div>
+            <div class="fp-weather-row"><span class="wr-key">Humidity</span><span class="wr-val">60–70 %</span></div>
+          </div>
+          <div class="fp-season-acts">
+            <div class="fp-act">Prepare soil and add compost</div>
+            <div class="fp-act">Plant summer crops</div>
+            <div class="fp-act">Start irrigation systems</div>
+            <div class="fp-act">Apply organic fertilizers</div>
+          </div>
+        </div>
+
+        <!-- Summer -->
+        <div class="fp-season summer">
+          <div class="fp-season-glow glow-summer"></div>
+          <span class="fp-season-icon">☀️</span>
+          <div class="fp-season-name">Summer</div>
+          <div class="fp-season-months">Jun – Aug</div>
+          <div class="fp-weather-chip">
+            <div class="fp-weather-row"><span class="wr-key">Temp</span><span class="wr-val">30–40 °C</span></div>
+            <div class="fp-weather-row"><span class="wr-key">Rain</span><span class="wr-val">20–50 mm</span></div>
+            <div class="fp-weather-row"><span class="wr-key">Humidity</span><span class="wr-val">40–60 %</span></div>
+          </div>
+          <div class="fp-season-acts">
+            <div class="fp-act">Increase irrigation frequency</div>
+            <div class="fp-act">Harvest spring crops</div>
+            <div class="fp-act">Use shade nets for protection</div>
+            <div class="fp-act">Monitor heat stress signs</div>
+          </div>
+        </div>
+
+        <!-- Monsoon -->
+        <div class="fp-season monsoon">
+          <div class="fp-season-glow glow-monsoon"></div>
+          <span class="fp-season-icon">🌧️</span>
+          <div class="fp-season-name">Monsoon</div>
+          <div class="fp-season-months">Jul – Sep</div>
+          <div class="fp-weather-chip">
+            <div class="fp-weather-row"><span class="wr-key">Temp</span><span class="wr-val">25–35 °C</span></div>
+            <div class="fp-weather-row"><span class="wr-key">Rain</span><span class="wr-val">200–400 mm</span></div>
+            <div class="fp-weather-row"><span class="wr-key">Humidity</span><span class="wr-val">70–90 %</span></div>
+          </div>
+          <div class="fp-season-acts">
+            <div class="fp-act">Plant rice and monsoon crops</div>
+            <div class="fp-act">Improve drainage systems</div>
+            <div class="fp-act">Control fungal diseases</div>
+          </div>
+        </div>
+
+        <!-- Autumn -->
+        <div class="fp-season autumn">
+          <div class="fp-season-glow glow-autumn"></div>
+          <span class="fp-season-icon">🍂</span>
+          <div class="fp-season-name">Autumn</div>
+          <div class="fp-season-months">Sep – Nov</div>
+          <div class="fp-weather-chip">
+            <div class="fp-weather-row"><span class="wr-key">Temp</span><span class="wr-val">18–28 °C</span></div>
+            <div class="fp-weather-row"><span class="wr-key">Rain</span><span class="wr-val">80–120 mm</span></div>
+            <div class="fp-weather-row"><span class="wr-key">Humidity</span><span class="wr-val">65–75 %</span></div>
+          </div>
+          <div class="fp-season-acts">
+            <div class="fp-act">Harvest monsoon crops</div>
+            <div class="fp-act">Prepare for winter planting</div>
+            <div class="fp-act">Plant winter vegetables</div>
+          </div>
+        </div>
+
+        <!-- Winter -->
+        <div class="fp-season winter">
+          <div class="fp-season-glow glow-winter"></div>
+          <span class="fp-season-icon">❄️</span>
+          <div class="fp-season-name">Winter</div>
+          <div class="fp-season-months">Dec – Feb</div>
+          <div class="fp-weather-chip">
+            <div class="fp-weather-row"><span class="wr-key">Temp</span><span class="wr-val">10–25 °C</span></div>
+            <div class="fp-weather-row"><span class="wr-key">Rain</span><span class="wr-val">30–60 mm</span></div>
+            <div class="fp-weather-row"><span class="wr-key">Humidity</span><span class="wr-val">50–70 %</span></div>
+          </div>
+          <div class="fp-season-acts">
+            <div class="fp-act">Plant wheat and barley</div>
+            <div class="fp-act">Protect crops from frost</div>
+            <div class="fp-act">Harvest winter vegetables</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div><!-- /fp-main -->
+</div><!-- /fp-wrap -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const VARIETIES = {
+  Rice:       ['Basmati','IR-64','Sona Masuri'],
+  Wheat:      ['HD-2967','PBW-343','Sharbati'],
+  Cotton:     ['Bt Cotton','Hybrid-6'],
+  Vegetables: ['Tomato','Potato','Onion','Cabbage'],
+  Fruits:     ['Mango','Banana','Papaya'],
+  Sugarcane:  ['Co 0238','CoM 0265'],
+  Pulses:     ['Arhar','Moong','Chana']
+};
+
+const IRRIGATION_SCH = {
+  Drip:      'Daily 2–3 hrs in the morning',
+  Sprinkler: 'Every 2–3 days for 1 hour',
+  Flood:     'Weekly deep watering',
+  Rainwater: 'Monitor rainfall, supplement as needed'
+};
+
+const FERTILIZERS = {
+  Clay:  'NPK 10:26:26 + Organic compost',
+  Sandy: 'NPK 20:20:20 + Vermicompost',
+  Loamy: 'NPK 19:19:19 + FYM',
+  Black: 'DAP + Urea',
+  Red:   'NPK 12:32:16 + Lime'
+};
+
+const GOAL_TIPS = {
+  'Maximum Yield':  'Focus on high-yielding varieties, optimal fertilizer, and timely pest management. Use soil testing for precision nutrition.',
+  'Organic Farming':'Use organic manure, neem-based pesticides, and bio-fertilizers. Implement crop rotation and companion planting.',
+  'Cost Efficiency':'Optimize input costs, use local varieties, implement rainwater harvesting, and practice integrated pest management.',
+  'Sustainable':    'Focus on soil health, water conservation, biodiversity, and minimal chemical use. Implement agroforestry practices.'
+};
+
+document.getElementById('farmingForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const d = {
+    location:   document.getElementById('location').value,
+    farmSize:   document.getElementById('farmSize').value,
+    cropType:   document.getElementById('cropType').value,
+    season:     document.getElementById('season').value,
+    irrigation: document.getElementById('irrigation').value,
+    soilType:   document.getElementById('soilType').value,
+    budget:     document.getElementById('budget').value,
+    goal:       document.getElementById('goal').value
+  };
+  generatePlan(d);
+  setTimeout(() => document.getElementById('generatedPlan').scrollIntoView({ behavior:'smooth', block:'start' }), 200);
+});
+
+function generatePlan(d) {
+  const varieties = VARIETIES[d.cropType]?.join(', ') || 'Contact local agriculture office';
+  const yield_est = (parseFloat(d.farmSize) * 25).toFixed(1);
+  const water_est = (parseFloat(d.farmSize) * 1500).toFixed(0);
+
+  document.getElementById('planContent').innerHTML = `
+    ${block('accent-gold','📌','Farm Overview',`
+      <div class="fp-mini-grid">
+        <div class="fp-mini-item"><div class="mi-label">Location</div><div class="mi-val">${d.location}</div></div>
+        <div class="fp-mini-item"><div class="mi-label">Farm Size</div><div class="mi-val">${d.farmSize} acres</div></div>
+        <div class="fp-mini-item"><div class="mi-label">Season</div><div class="mi-val">${d.season}</div></div>
+        <div class="fp-mini-item"><div class="mi-label">Budget</div><div class="mi-val">₹${d.budget}</div></div>
+      </div>
+    `)}
+    ${block('accent-fern','🌾','Crop Recommendations',`
+      <strong>Primary Crop:</strong> ${d.cropType}<br>
+      <strong>Recommended Varieties:</strong> ${varieties}<br>
+      <strong>Estimated Yield:</strong> ${yield_est} quintals
+    `)}
+    ${block('accent-amber','💧','Irrigation Plan',`
+      <strong>Type:</strong> ${d.irrigation}<br>
+      <strong>Schedule:</strong> ${IRRIGATION_SCH[d.irrigation]}<br>
+      <strong>Daily Requirement:</strong> ${water_est} litres
+    `)}
+    ${block('accent-rust','🌱','Soil & Fertilizer',`
+      <strong>Soil Type:</strong> ${d.soilType}<br>
+      <strong>Recommended Mix:</strong> ${FERTILIZERS[d.soilType]}<br>
+      <strong>Application:</strong> Split doses — 50% at sowing · 25% at day 30 · 25% at day 60
+    `)}
+    ${block('accent-slate','📅','Activity Timeline',`
+      <strong>Week 1–2:</strong> Land preparation, soil testing, base fertilizer<br>
+      <strong>Week 3–4:</strong> Sowing / planting, irrigation setup<br>
+      <strong>Week 5–8:</strong> Growth monitoring, pest control, first fertilizer dose<br>
+      <strong>Week 9–12:</strong> Second fertilizer dose, weed management<br>
+      <strong>Week 13+:</strong> Harvest preparation and execution
+    `)}
+    ${block('accent-mist','🎯','Goal-Specific Strategy',`
+      <strong>Goal:</strong> ${d.goal}<br><br>${GOAL_TIPS[d.goal]}
+    `)}
+    ${block('accent-gold','💰','Budget Breakdown',`
+      <div class="fp-mini-grid">
+        <div class="fp-mini-item"><div class="mi-label">Seeds</div><div class="mi-val">25%</div></div>
+        <div class="fp-mini-item"><div class="mi-label">Fertilizers</div><div class="mi-val">30%</div></div>
+        <div class="fp-mini-item"><div class="mi-label">Irrigation</div><div class="mi-val">20%</div></div>
+        <div class="fp-mini-item"><div class="mi-label">Labor</div><div class="mi-val">15%</div></div>
+        <div class="fp-mini-item"><div class="mi-label">Pest Control</div><div class="mi-val">10%</div></div>
+      </div>
+    `)}
+  `;
+
+  document.getElementById('generatedPlan').classList.add('show');
+}
+
+function block(accent, icon, title, body) {
+  return `
+    <div class="fp-block">
+      <div class="fp-block-accent ${accent}"></div>
+      <div class="fp-block-title">${icon} ${title}</div>
+      <div class="fp-block-body">${body}</div>
+    </div>`;
+}
+
+// PDF Export
+document.getElementById('exportBtn').addEventListener('click', function() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const loc = document.getElementById('location').value;
+  const fs  = document.getElementById('farmSize').value;
+  const ct  = document.getElementById('cropType').value;
+  const sea = document.getElementById('season').value;
+  const irr = document.getElementById('irrigation').value;
+  const st  = document.getElementById('soilType').value;
+  const bud = document.getElementById('budget').value;
+  const gl  = document.getElementById('goal').value;
+
+  doc.setFontSize(20); doc.setTextColor(46,125,50);
+  doc.text('Personalized Farming Plan', 105, 20, { align:'center' });
+  doc.setFontSize(10); doc.setTextColor(120,120,120);
+  doc.text(`Generated for: ${loc} | ${ct} | ${sea}`, 105, 28, { align:'center' });
+
+  let y = 40;
+  const section = (title) => {
+    if (y > 250) { doc.addPage(); y = 20; }
+    doc.setFontSize(13); doc.setFont(undefined,'bold'); doc.setTextColor(46,125,50);
+    doc.text(title, 20, y); y += 8;
+    doc.setFontSize(10); doc.setFont(undefined,'normal'); doc.setTextColor(50,50,50);
+  };
+  const line = (txt) => { doc.text(txt, 26, y); y += 6; };
+
+  section('Farm Overview');
+  line(`Location: ${loc}`); line(`Farm Size: ${fs} acres`);
+  line(`Season: ${sea}`);   line(`Budget: Rs ${bud}`); y += 4;
+
+  section('Crop Recommendations');
+  line(`Crop: ${ct}`);
+  line(`Varieties: ${VARIETIES[ct]?.join(', ') || 'Consult local office'}`);
+  line(`Est. Yield: ${(parseFloat(fs)*25).toFixed(1)} quintals`); y += 4;
+
+  section('Irrigation Plan');
+  line(`Type: ${irr}`); line(`Schedule: ${IRRIGATION_SCH[irr]}`);
+  line(`Daily Water: ${(parseFloat(fs)*1500).toFixed(0)} litres`); y += 4;
+
+  section('Soil & Fertilizer');
+  line(`Soil: ${st}`); line(`Mix: ${FERTILIZERS[st]}`); y += 4;
+
+  section('Timeline');
+  ['Week 1–2: Land prep, soil test, base fertilizer',
+   'Week 3–4: Sowing, irrigation setup',
+   'Week 5–8: Monitor, pest control, 1st dose',
+   'Week 9–12: 2nd dose, weed management',
+   'Week 13+: Harvest'].forEach(line); y += 4;
+
+  section('Goal Strategy');
+  line(`Goal: ${gl}`);
+  doc.setFontSize(9);
+  const wrapped = doc.splitTextToSize(GOAL_TIPS[gl], 160);
+  doc.text(wrapped, 26, y); y += wrapped.length * 5 + 6;
+
+  section('Budget Breakdown');
+  ['Seeds 25%','Fertilizers 30%','Irrigation 20%','Labor 15%','Pest Control 10%'].forEach(i => line(i));
+
+  const pages = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= pages; i++) {
+    doc.setPage(i);
+    doc.setFontSize(8); doc.setTextColor(160,160,160);
+    doc.text('AI Agriculture Platform', 105, 290, { align:'center' });
+    doc.text(`Page ${i} of ${pages}`, 105, 285, { align:'center' });
+  }
+
+  doc.save(`Farming_Plan_${loc.replace(/\s+/g,'_')}.pdf`);
+});
+</script>
+{% endblock %}

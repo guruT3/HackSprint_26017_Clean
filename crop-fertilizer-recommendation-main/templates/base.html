@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AGRI MITRA{% endblock %}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Nunito+Sans:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --orange: #E8621A;
+            --orange-light: #F4894A;
+            --orange-pale: #FFF0E8;
+            --green: #3A7D44;
+            --green-light: #5BA368;
+            --green-pale: #EAF3EB;
+            --grey-dark: #2C2C2C;
+            --grey-mid: #6B6B6B;
+            --grey-light: #E8E8E8;
+            --grey-bg: #F5F4F2;
+            --white: #FFFFFF;
+            --nav-h: 68px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--grey-bg);
+            color: var(--grey-dark);
+            font-family: 'Nunito Sans', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* ── NAVBAR ────────────────────────────────────── */
+        .site-nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            height: var(--nav-h);
+            background: var(--grey-dark);
+            border-bottom: 3px solid var(--orange);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, .25);
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-inner {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        /* Brand */
+        .nav-brand {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.55rem;
+            font-weight: 800;
+            color: var(--white);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: .45rem;
+            transition: opacity .2s;
+        }
+
+        .nav-brand:hover {
+            opacity: .85;
+            color: var(--white);
+        }
+
+        .nav-brand .brand-accent {
+            color: var(--orange);
+        }
+
+        .nav-brand span {
+            font-size: 1.5rem;
+        }
+
+        /* Links */
+        .nav-links {
+            display: flex;
+            align-items: center;
+            list-style: none;
+            gap: .2rem;
+        }
+
+        .nav-links a {
+            font-weight: 600;
+            color: rgba(255, 255, 255, .75);
+            text-decoration: none;
+            padding: .45rem 1rem;
+            border-radius: 7px;
+            transition: background .2s, color .2s, transform .15s;
+            white-space: nowrap;
+            letter-spacing: .3px;
+            text-transform: uppercase;
+            font-size: .78rem;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, .1);
+            color: var(--orange-light);
+            transform: translateY(-1px);
+        }
+
+        .nav-links a.active {
+            background: rgba(232, 98, 26, .18);
+            color: var(--orange-light);
+        }
+
+        /* ── ACCOUNT BUTTON ────────────────────────────── */
+        .account-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            padding: 5px 12px 5px 6px;
+            border-radius: 30px;
+            border: 1.5px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .account-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--orange);
+            transform: translateY(-1px);
+            color: var(--white);
+        }
+
+        .account-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--orange), var(--orange-light));
+            color: white;
+            font-size: 0.78rem;
+            font-weight: 800;
+            font-family: 'Syne', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(232, 98, 26, 0.5);
+            flex-shrink: 0;
+        }
+
+        .account-info {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+
+        .account-email {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 600;
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .account-coins {
+            font-size: 0.65rem;
+            color: #f59e0b;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        /* ── PREDICT DROPDOWN ──────────────────────────── */
+        .predict-wrap {
+            position: relative;
+        }
+
+        .predict-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: .45rem;
+            background: var(--orange);
+            color: #fff;
+            border: none;
+            border-radius: 9px;
+            padding: .55rem 1.3rem;
+            font-family: 'Nunito Sans', sans-serif;
+            font-weight: 700;
+            font-size: .82rem;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(232, 98, 26, .38);
+            transition: background .2s, transform .2s, box-shadow .2s;
+            white-space: nowrap;
+        }
+
+        .predict-btn:hover {
+            background: var(--orange-light);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(232, 98, 26, .50);
+        }
+
+        .predict-btn .arrow {
+            font-size: .65rem;
+            transition: transform .25s;
+        }
+
+        .predict-wrap.open .arrow {
+            transform: rotate(180deg);
+        }
+
+        /* Dropdown panel */
+        .predict-dropdown {
+            position: absolute;
+            top: calc(100% + 12px);
+            right: 0;
+            min-width: 270px;
+            background: var(--white);
+            border: 2px solid var(--grey-light);
+            border-top: 3px solid var(--orange);
+            border-radius: 14px;
+            padding: .7rem;
+            box-shadow: 0 20px 56px rgba(0, 0, 0, .18);
+            display: none;
+            flex-direction: column;
+            gap: .3rem;
+            transform-origin: top right;
+            animation: dropIn .22s ease forwards;
+        }
+
+        @keyframes dropIn {
+            from {
+                opacity: 0;
+                transform: scale(.96) translateY(-6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .predict-wrap.open .predict-dropdown {
+            display: flex;
+        }
+
+        .drop-item {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: .65rem .9rem;
+            border-radius: 9px;
+            text-decoration: none;
+            color: var(--grey-dark);
+            font-weight: 600;
+            font-size: .88rem;
+            transition: background .2s, transform .15s;
+        }
+
+        .drop-item:hover {
+            background: var(--grey-bg);
+            color: var(--orange);
+            transform: translateX(4px);
+        }
+
+        .drop-item .di-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 9px;
+            background: var(--grey-light);
+            display: grid;
+            place-items: center;
+            font-size: 1.05rem;
+            flex-shrink: 0;
+            transition: background .2s;
+        }
+
+        .drop-item:hover .di-icon {
+            background: var(--orange-pale);
+        }
+
+        .drop-item .di-label {
+            line-height: 1.2;
+        }
+
+        .drop-item .di-sub {
+            font-size: .73rem;
+            color: var(--grey-mid);
+            font-weight: 400;
+        }
+
+        .drop-label {
+            font-size: .68rem;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: var(--grey-mid);
+            padding: .35rem .9rem 0;
+            font-family: 'Syne', sans-serif;
+        }
+
+        .drop-divider {
+            height: 1px;
+            background: var(--grey-light);
+            margin: .4rem 0;
+        }
+
+        /* Hamburger */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: .4rem;
+            border: none;
+            background: transparent;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 24px;
+            height: 2.5px;
+            background: var(--white);
+            border-radius: 2px;
+            transition: all .3s;
+        }
+
+        /* Mobile menu */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: var(--nav-h);
+            left: 0;
+            right: 0;
+            background: var(--grey-dark);
+            border-bottom: 3px solid var(--orange);
+            padding: 1.5rem 2rem;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, .25);
+            flex-direction: column;
+            gap: .4rem;
+            z-index: 999;
+        }
+
+        .mobile-menu.open {
+            display: flex;
+        }
+
+        .mobile-menu a {
+            text-decoration: none;
+            color: rgba(255, 255, 255, .8);
+            font-weight: 600;
+            font-size: .9rem;
+            padding: .7rem 1rem;
+            border-radius: 8px;
+            transition: background .2s;
+        }
+
+        .mobile-menu a:hover {
+            background: rgba(255, 255, 255, .08);
+            color: var(--orange-light);
+        }
+
+        /* Mobile account card */
+        .mobile-account {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(232, 98, 26, 0.1);
+            border: 1px solid rgba(232, 98, 26, 0.25);
+            border-radius: 12px;
+            padding: 12px 14px;
+            text-decoration: none;
+            margin-bottom: 4px;
+            transition: background 0.2s;
+        }
+
+        .mobile-account:hover {
+            background: rgba(232, 98, 26, 0.18);
+            color: var(--white);
+        }
+
+        .mobile-account-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--orange), var(--orange-light));
+            color: white;
+            font-size: 1rem;
+            font-weight: 800;
+            font-family: 'Syne', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .mobile-account-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .mobile-account-email {
+            font-size: 0.82rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .mobile-account-coins {
+            font-size: 0.73rem;
+            color: #f59e0b;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        .mobile-account-arrow {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.8rem;
+        }
+
+        .mobile-predict-toggle {
+            background: none;
+            border: none;
+            font-family: 'Nunito Sans', sans-serif;
+            font-weight: 700;
+            font-size: .9rem;
+            color: var(--orange-light);
+            text-align: left;
+            padding: .7rem 1rem;
+            cursor: pointer;
+            border-radius: 8px;
+            letter-spacing: .3px;
+        }
+
+        .mobile-sub {
+            padding-left: 1rem;
+            display: none;
+            flex-direction: column;
+            gap: .3rem;
+            border-left: 3px solid var(--orange);
+            margin-left: 1rem;
+        }
+
+        .mobile-sub.open {
+            display: flex;
+        }
+
+        .mobile-sub a {
+            font-size: .87rem;
+            color: rgba(255, 255, 255, .65);
+        }
+
+        /* ── PAGE ──────────────────────────────────────── */
+        main {
+            min-height: calc(100vh - var(--nav-h) - 200px);
+        }
+
+        /* ── FOOTER ────────────────────────────────────── */
+        .site-footer {
+            background: var(--grey-dark);
+            color: rgba(255, 255, 255, .85);
+            padding: 3rem 2rem 1.5rem;
+            border-top: 4px solid var(--orange);
+        }
+
+        .footer-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
+            gap: 2.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .footer-inner {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .footer-inner {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .footer-brand {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: .8rem;
+            color: var(--white);
+        }
+
+        .footer-brand .fb-accent {
+            color: var(--orange);
+        }
+
+        .footer-tagline {
+            opacity: .7;
+            font-size: .88rem;
+            line-height: 1.65;
+        }
+
+        .footer-col h4 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            margin-bottom: 1.1rem;
+            font-size: .82rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--grey-light);
+            opacity: .7;
+        }
+
+        .footer-col h4::after {
+            content: '';
+            display: block;
+            width: 28px;
+            height: 2px;
+            background: var(--green-light);
+            margin-top: .45rem;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col ul li {
+            margin-bottom: .55rem;
+        }
+
+        .footer-col ul li a {
+            color: rgba(255, 255, 255, .6);
+            text-decoration: none;
+            font-size: .88rem;
+            transition: color .2s, padding-left .2s;
+            display: inline-block;
+        }
+
+        .footer-col ul li a:hover {
+            color: var(--orange-light);
+            padding-left: 4px;
+        }
+
+        .footer-green-strip {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            background: var(--green);
+            color: #fff;
+            font-size: .75rem;
+            font-weight: 700;
+            padding: .3rem .75rem;
+            border-radius: 20px;
+            margin-top: 1rem;
+            letter-spacing: .3px;
+        }
+
+        .footer-bottom {
+            max-width: 1280px;
+            margin: 2rem auto 0;
+            padding-top: 1.2rem;
+            border-top: 1px solid rgba(255, 255, 255, .1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: .8rem;
+            opacity: .6;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .social-links {
+            display: flex;
+            gap: .6rem;
+        }
+
+        .social-links a {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .1);
+            display: grid;
+            place-items: center;
+            text-decoration: none;
+            font-size: .82rem;
+            color: rgba(255, 255, 255, .7);
+            transition: background .2s, color .2s;
+        }
+
+        .social-links a:hover {
+            background: var(--orange);
+            color: #fff;
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .predict-wrap {
+                display: none;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .desktop-account {
+                display: none;
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+    <!-- ── NAVBAR ─────────────────────────────────────────────────── -->
+    <nav class="site-nav">
+        <div class="nav-inner">
+
+            <!-- Brand -->
+            <a class="nav-brand" href="{{ url_for('look') }}">
+                <span>🌱</span> Agri<span class="brand-accent">Mitra</span>
+            </a>
+
+            <!-- Desktop links -->
+            <ul class="nav-links">
+                <li><a href="{{ url_for('look') }}"
+                        class="{% if request.endpoint == 'look' %}active{% endif %}">Home</a></li>
+                < <li><a href="/farmer-connect">Community</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                    <li><a href="/crop">USe Our Harvest IQ</a></li>
+                    <li><a href="/new_predict">RealTime  Monitoring</a></li>
+
+                    <!-- ✅ Account icon — only when logged in -->
+                    {% if session.get('logged_in') %}
+                    <li>
+                        <a href="{{ url_for('dashboard') }}"
+                            class="account-btn {% if request.endpoint == 'dashboard' %}active{% endif %}">
+                            <div class="account-avatar">
+                                {{ session.get('email', 'U')[0].upper() }}
+                            </div>
+                            <div class="account-info">
+                                <span class="account-email">{{ session.get('email', '') }}</span>
+                                <span class="account-coins">🪙 {{ session.get('coins', 0) }} credits</span>
+                            </div>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li><a href="{{ url_for('login') }}">Login</a></li>
+                    {% endif %}
+            </ul>
+
+            <!-- Predict dropdown -->
+            <div class="predict-wrap" id="predictWrap">
+                <button class="predict-btn" id="predictToggle" onclick="togglePredict(event)">
+                    🌾 Predict &amp; Tools <span class="arrow">▼</span>
+                </button>
+                <div class="predict-dropdown" id="predictDropdown">
+                    <div class="drop-label">Crop Intelligence</div>
+                    <a class="drop-item" href="/predict">
+                        <div class="di-icon">🧠</div>
+                        <div class="di-label">
+                            Crop Prediction
+                            <div class="di-sub">AI-powered recommendation</div>
+                        </div>
+                    </a>
+                    <a class="drop-item" href="{{ url_for('new_predict') }}">
+                        <div class="di-icon">📍</div>
+                        <div class="di-label">
+                            Accurate Farm Prediction
+                            <div class="di-sub">GPS location and soil intelligence</div>
+                        </div>
+                    </a>
+                    <a class="drop-item" href="/disease-detection">
+                        <div class="di-icon">🔬</div>
+                        <div class="di-label">
+                            Disease Detection
+                            <div class="di-sub">Identify crop diseases</div>
+                        </div>
+                    </a>
+                    <a class="drop-item" href="/farm-plan">
+                        <div class="di-icon">🗺️</div>
+                        <div class="di-label">
+                            Farm Plan
+                            <div class="di-sub">Smart farming layout</div>
+                        </div>
+                    </a>
+                    <div class="drop-divider"></div>
+                    <div class="drop-label">Services</div>
+                    <a class="drop-item" href="/appoinment">
+                        <div class="di-icon">📅</div>
+                        <div class="di-label">
+                            Book Appointment
+                            <div class="di-sub">Meet an agronomist</div>
+                        </div>
+                    </a>
+                    <a class="drop-item"
+                        href="https://cdn.botpress.cloud/webchat/v3.2/shareable.html?configUrl=https://files.bpcontent.cloud/2025/09/06/17/20250906174319-NTZF1IAF.json">
+                        <div class="di-icon">💬</div>
+                        <div class="di-label">
+                            AI Chatbot
+                            <div class="di-sub">Instant farming advice</div>
+                        </div>
+                    </a>
+                    <a class="drop-item" href="/jb">
+                        <div class="di-icon">👨‍🌾</div>
+                        <div class="di-label">
+                            Farmer Job Portal
+                            <div class="di-sub">Find agricultural work</div>
+                        </div>
+                    </a>
+
+                    <a class="drop-item" href="/precision-field-dashboard">
+                        <div class="di-icon">👨‍🌾</div>
+                        <div class="di-label">
+                            Precision-field
+                            <div class="di-sub">Find Precision Outputs</div>
+                        </div>
+                    </a>
+
+
+
+                    <a class="drop-item" href="/cold-storage">
+                        <div class="di-icon">📦</div>
+                        <div class="di-label">
+                            Cold Storage
+                            <div class="di-sub">Explore Cold Storage</div>
+                        </div>
+                    </a>
+                    <a class="drop-item" href="/shop">
+                        <div class="di-icon">🔨</div>
+                        <div class="di-label">
+                            Shop Tools
+                            <div class="di-sub">Shop NPK Tools</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Mobile hamburger -->
+            <button class="hamburger" id="hamburger" onclick="toggleMobile()" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+
+        </div>
+    </nav>
+
+    <!-- ── MOBILE MENU ─────────────────────────────────────────────── -->
+    <div class="mobile-menu" id="mobileMenu">
+
+        <!-- ✅ Mobile account card — only when logged in -->
+        {% if session.get('logged_in') %}
+        <a href="{{ url_for('dashboard') }}" class="mobile-account">
+            <div class="mobile-account-avatar">
+                {{ session.get('email', 'U')[0].upper() }}
+            </div>
+            <div class="mobile-account-info">
+                <div class="mobile-account-email">{{ session.get('email', '') }}</div>
+                <div class="mobile-account-coins">🪙 {{ session.get('coins', 0) }} credits</div>
+            </div>
+            <div class="mobile-account-arrow">›</div>
+        </a>
+        {% else %}
+        <a href="{{ url_for('login') }}">🔐 Login</a>
+        {% endif %}
+
+        <a href="{{ url_for('look') }}">🏠 Home</a>
+        <a href="{{ url_for('about') }}">ℹ️ About</a>
+        <a href="/ftalk">🤝 Community</a>
+        <!-- <a href="/contact">📞 Contact</a> -->
+
+        <button class="mobile-predict-toggle" onclick="toggleMobileSub()">🌾 Predict &amp; Tools ▾</button>
+        <div class="mobile-sub" id="mobileSub">
+            <a href="/predict">🧠 Crop Prediction</a>
+            <a href="{{ url_for('new_predict') }}">📍 Accurate Farm Prediction</a>
+            <a href="/disease-detection">🔬 Disease Detection</a>
+            <a href="/farm-plan">🗺️ Farm Plan</a>
+            <a href="/appoinment">📅 Book Appointment</a>
+            <a href="/cold-storage">Cold Storage</a>
+            <a
+                href="https://cdn.botpress.cloud/webchat/v3.2/shareable.html?configUrl=https://files.bpcontent.cloud/2025/09/06/17/20250906174319-NTZF1IAF.json">💬
+                AI Chatbot</a>
+            <a href="/jb">👨‍🌾 Farmer Job Portal</a>
+            <a href="/shop">🔨 Shop Tools</a>
+        </div>
+    </div>
+
+    <!-- ── CONTENT ─────────────────────────────────────────────────── -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ── FOOTER ─────────────────────────────────────────────────── -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div>
+                <div class="footer-brand">🌱 Agri<span class="fb-accent">Mitra</span></div>
+                <p class="footer-tagline">Empowering farmers with AI-driven insights, market intelligence, and precision
+                    agriculture tools for a better harvest.</p>
+                <div class="footer-green-strip">🌿 Proudly Serving Indian Farmers</div>
+                <div class="social-links" style="margin-top:1.3rem;">
+                    <a href="#" title="Facebook">f</a>
+                    <a href="#" title="Twitter">𝕏</a>
+                    <a href="#" title="Instagram">▶</a>
+                    <a href="#" title="YouTube">▷</a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h4>Explore</h4>
+                <ul>
+                    <li><a href="{{ url_for('look') }}">Home</a></li>
+                    <li><a href="{{ url_for('about') }}">About Us</a></li>
+                    <li><a href="/ftalk">Community</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                    <li><a href="/shop">Tools Shop</a></li>
+                    <li><a href="/loan">Loan Assistance</a></li>
+                    <li><a href="/courses">Explore Courses</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Quick Tools</h4>
+                <ul>
+                    <li><a href="/predict">Crop Prediction</a></li>
+                    <li><a href="{{ url_for('new_predict') }}">Accurate Farm Prediction</a></li>
+                    <li><a href="/disease-detection">Disease Detection</a></li>
+                    <li><a href="/weather">Weather Forecast</a></li>
+                    <li><a href="/mp">Market Prices</a></li>
+                    <li><a href="/farming-calendar">Farm Calendar</a></li>
+                    <li><a href="/farm-plan">Farm Plan</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Stay Updated</h4>
+                <p style="font-size:.77rem; opacity:.55; margin-top:.85rem;">📍 India &nbsp;|&nbsp; 📞 1800-XXX-XXXX</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <span>© 2025 Agri Mitra. All rights reserved.</span>
+            <span>Empowering farmers with AI-driven insights 🌾</span>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Predict dropdown
+        function togglePredict(e) {
+            e.stopPropagation();
+            document.getElementById('predictWrap').classList.toggle('open');
+        }
+        document.addEventListener('click', function () {
+            document.getElementById('predictWrap').classList.remove('open');
+        });
+        document.getElementById('predictDropdown').addEventListener('click', function (e) {
+            e.stopPropagation();
+        });
+
+        // Mobile menu
+        function toggleMobile() {
+            document.getElementById('mobileMenu').classList.toggle('open');
+        }
+        function toggleMobileSub() {
+            document.getElementById('mobileSub').classList.toggle('open');
+        }
+        document.addEventListener('click', function (e) {
+            const menu = document.getElementById('mobileMenu');
+            const hamburger = document.getElementById('hamburger');
+            if (!menu.contains(e.target) && !hamburger.contains(e.target)) {
+                menu.classList.remove('open');
+            }
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>
+
+<!-- this is the separate route -->
+
+
+

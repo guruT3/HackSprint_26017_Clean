@@ -1,0 +1,15 @@
+flask
+gunicorn
+requests
+numpy
+pandas
+scikit-learn
+tensorflow
+Pillow
+Flask-SQLAlchemy
+Flask-Migrate
+joblib
+twilio
+python-dotenv
+
+

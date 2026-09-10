@@ -1,0 +1,696 @@
+{% extends "base.html" %}
+
+{% block title %}Create Account – Agri Mitra{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --g1: #1b5e20;
+        --g2: #2e7d32;
+        --g3: #4CAF50;
+        --g4: #8BC34A;
+        --orange: #FFB74D;
+        --glass: rgba(255,255,255,.13);
+        --glass-border: rgba(255,255,255,.22);
+        --glass-strong: rgba(255,255,255,.93);
+    }
+
+    /* ── FULL PAGE BACKGROUND ───────────────────── */
+    .reg-page {
+        min-height: calc(100vh - 68px);
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 1.5rem;
+        overflow: hidden;
+        background: linear-gradient(150deg, #0d3b14 0%, #1b5e20 25%, #2e7d32 55%, #388e3c 80%, #558b2f 100%);
+    }
+
+    /* Animated blobs */
+    .reg-page::before,
+    .reg-page::after {
+        content: '';
+        position: absolute;
+        border-radius: 50%;
+        pointer-events: none;
+    }
+    .reg-page::before {
+        width: 650px; height: 650px;
+        background: radial-gradient(circle, rgba(139,195,74,.2) 0%, transparent 70%);
+        top: -180px; left: -180px;
+        animation: blobA 12s ease-in-out infinite alternate;
+    }
+    .reg-page::after {
+        width: 550px; height: 550px;
+        background: radial-gradient(circle, rgba(255,183,77,.13) 0%, transparent 70%);
+        bottom: -130px; right: -130px;
+        animation: blobA 15s ease-in-out infinite alternate-reverse;
+    }
+    @keyframes blobA {
+        from { transform: scale(1) translate(0,0); }
+        to   { transform: scale(1.2) translate(40px,-30px); }
+    }
+
+    /* Particles */
+    .particles {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+    }
+    .particle {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255,255,255,.22);
+        animation: rise linear infinite;
+    }
+    @keyframes rise {
+        from { transform: translateY(100vh) scale(0); opacity: 0; }
+        10%  { opacity: 1; }
+        90%  { opacity: .5; }
+        to   { transform: translateY(-10vh) scale(1); opacity: 0; }
+    }
+
+    /* ── CARD ───────────────────────────────────── */
+    .reg-card {
+        position: relative;
+        z-index: 10;
+        width: 100%;
+        max-width: 1020px;
+        display: grid;
+        grid-template-columns: 380px 1fr;
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow:
+            0 32px 80px rgba(0,0,0,.38),
+            0 0 0 1px rgba(255,255,255,.12);
+        animation: cardIn .7s cubic-bezier(.16,1,.3,1) both;
+    }
+    @keyframes cardIn {
+        from { opacity: 0; transform: translateY(40px) scale(.97); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ── LEFT PANEL ─────────────────────────────── */
+    .reg-panel {
+        background: var(--glass);
+        backdrop-filter: blur(26px);
+        -webkit-backdrop-filter: blur(26px);
+        border-right: 1px solid var(--glass-border);
+        padding: 3rem 2.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+    .reg-panel::before {
+        content: '🌾';
+        position: absolute;
+        font-size: 12rem;
+        bottom: -2rem;
+        right: -2rem;
+        opacity: .07;
+        pointer-events: none;
+        line-height: 1;
+    }
+
+    .brand-logo {
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: #fff;
+        margin-bottom: 2.2rem;
+        text-decoration: none;
+    }
+    .brand-logo .accent { color: var(--orange); }
+
+    .panel-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.1rem;
+        font-weight: 900;
+        color: #fff;
+        line-height: 1.15;
+        margin-bottom: .8rem;
+    }
+    .panel-title em { font-style: normal; color: var(--orange); }
+
+    .panel-desc {
+        color: rgba(255,255,255,.78);
+        font-size: .9rem;
+        line-height: 1.7;
+        margin-bottom: 2rem;
+    }
+
+    /* Counter strip */
+    .counter-strip {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    .counter-item .num {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.6rem;
+        font-weight: 900;
+        color: var(--orange);
+        line-height: 1;
+    }
+    .counter-item .lbl {
+        font-size: .72rem;
+        color: rgba(255,255,255,.65);
+        margin-top: .15rem;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+    }
+
+    /* Benefit list */
+    .benefit-list { display: flex; flex-direction: column; gap: .65rem; }
+    .benefit {
+        display: flex;
+        align-items: center;
+        gap: .7rem;
+        color: rgba(255,255,255,.88);
+        font-size: .87rem;
+        font-weight: 500;
+    }
+    .benefit-dot {
+        width: 30px; height: 30px;
+        border-radius: 8px;
+        background: rgba(255,255,255,.13);
+        border: 1px solid rgba(255,255,255,.18);
+        display: grid;
+        place-items: center;
+        font-size: .95rem;
+        flex-shrink: 0;
+        transition: background .2s;
+    }
+    .benefit:hover .benefit-dot { background: rgba(255,183,77,.28); }
+
+    /* ── RIGHT PANEL (form) ─────────────────────── */
+    .reg-form-panel {
+        background: var(--glass-strong);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        padding: 2.8rem 2.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        overflow-y: auto;
+        max-height: 92vh;
+    }
+
+    .form-head { margin-bottom: 1.6rem; }
+    .form-head h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.7rem;
+        font-weight: 900;
+        color: var(--g1);
+        margin-bottom: .25rem;
+    }
+    .form-head p { color: #777; font-size: .87rem; }
+
+    /* Flash error */
+    .flash-error {
+        display: flex;
+        align-items: flex-start;
+        gap: .7rem;
+        background: #ffebee;
+        border: 1.5px solid #ef9a9a;
+        border-left: 4px solid #e53935;
+        border-radius: 10px;
+        padding: .85rem 1rem;
+        margin-bottom: 1.2rem;
+        font-size: .85rem;
+        color: #b71c1c;
+    }
+
+    /* Form groups */
+    .fgroup { margin-bottom: 1rem; }
+    .fgroup label {
+        display: block;
+        font-weight: 700;
+        font-size: .75rem;
+        color: #444;
+        margin-bottom: .4rem;
+        letter-spacing: .4px;
+        text-transform: uppercase;
+    }
+    .fgroup label .req { color: #e53935; margin-left: 2px; }
+    .fgroup label .opt {
+        color: #aaa;
+        font-weight: 400;
+        font-size: .72rem;
+        text-transform: none;
+        letter-spacing: 0;
+        margin-left: .3rem;
+    }
+
+    .input-box { position: relative; }
+    .input-box .i-icon {
+        position: absolute;
+        left: 13px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: .95rem;
+        pointer-events: none;
+        opacity: .45;
+        transition: opacity .2s;
+    }
+    .input-box input {
+        width: 100%;
+        padding: .78rem 1rem .78rem 2.6rem;
+        border: 2px solid #dde7dd;
+        border-radius: 11px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: .9rem;
+        color: #333;
+        background: rgba(255,255,255,.8);
+        outline: none;
+        transition: border-color .25s, box-shadow .25s, background .25s;
+    }
+    .input-box input::placeholder { color: #bbb; font-size: .88rem; }
+    .input-box input:focus {
+        border-color: var(--g3);
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(76,175,80,.15);
+    }
+    .input-box input:focus ~ .i-icon { opacity: .9; }
+
+    /* Two-column row */
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: .9rem;
+    }
+
+    /* Section divider */
+    .sec-divider {
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+        color: #bbb;
+        font-size: .73rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin: .4rem 0;
+    }
+    .sec-divider::before, .sec-divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: #e0e0e0;
+    }
+
+    /* Field error */
+    .field-err {
+        color: #c62828;
+        font-size: .76rem;
+        margin-top: .35rem;
+        padding-left: .2rem;
+        display: flex;
+        align-items: center;
+        gap: .3rem;
+    }
+
+    /* Password strength */
+    .strength-bars {
+        display: flex;
+        gap: 4px;
+        margin-top: .5rem;
+    }
+    .s-bar {
+        flex: 1;
+        height: 4px;
+        border-radius: 2px;
+        background: #e0e0e0;
+        transition: background .3s;
+    }
+    .s-bar.weak   { background: #ef5350; }
+    .s-bar.medium { background: #ff9800; }
+    .s-bar.strong { background: var(--g3); }
+
+    .strength-lbl {
+        font-size: .73rem;
+        font-weight: 600;
+        margin-top: .3rem;
+        color: #999;
+    }
+    .strength-lbl.weak   { color: #ef5350; }
+    .strength-lbl.medium { color: #ff9800; }
+    .strength-lbl.strong { color: var(--g3); }
+
+    /* Password match */
+    .match-msg {
+        font-size: .73rem;
+        font-weight: 600;
+        margin-top: .3rem;
+    }
+    .match-msg.ok  { color: var(--g3); }
+    .match-msg.err { color: #ef5350; }
+
+    /* Submit button */
+    .btn-register {
+        width: 100%;
+        padding: 1rem;
+        margin-top: 1.2rem;
+        background: linear-gradient(135deg, var(--g3) 0%, var(--g1) 100%);
+        color: #fff;
+        border: none;
+        border-radius: 13px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 6px 22px rgba(76,175,80,.38);
+        transition: all .28s;
+        position: relative;
+        overflow: hidden;
+        letter-spacing: .3px;
+    }
+    .btn-register::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+        transform: translateX(-100%);
+        transition: transform .5s;
+    }
+    .btn-register:hover::after { transform: translateX(100%); }
+    .btn-register:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(76,175,80,.48);
+    }
+
+    /* Login link */
+    .login-link {
+        text-align: center;
+        margin-top: 1.2rem;
+        font-size: .87rem;
+        color: #777;
+    }
+    .login-link a {
+        color: var(--g3);
+        font-weight: 700;
+        text-decoration: none;
+        transition: color .2s;
+    }
+    .login-link a:hover { color: var(--g1); text-decoration: underline; }
+
+    /* Secure badge */
+    .secure-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: .4rem;
+        margin-top: .85rem;
+        font-size: .75rem;
+        color: #aaa;
+    }
+
+    /* ── RESPONSIVE ─────────────────────────────── */
+    @media (max-width: 840px) {
+        .reg-card { grid-template-columns: 1fr; max-width: 460px; }
+        .reg-panel {
+            padding: 2.2rem 2rem;
+            border-right: none;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .reg-panel::before { font-size: 7rem; }
+        .reg-form-panel { padding: 2.2rem 2rem; max-height: none; }
+        .panel-title { font-size: 1.7rem; }
+        .form-row { grid-template-columns: 1fr; }
+        .counter-strip { gap: 1rem; }
+    }
+    @media (max-width: 480px) {
+        .reg-page { padding: 1.5rem 1rem; }
+        .benefit-list { flex-direction: row; flex-wrap: wrap; gap: .4rem; }
+        .benefit { font-size: .8rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="reg-page">
+
+    <!-- Particles -->
+    <div class="particles" id="particles"></div>
+
+    <div class="reg-card">
+
+        <!-- ── LEFT PANEL ── -->
+        <div class="reg-panel">
+            <a class="brand-logo" href="{{ url_for('look') }}">
+                🌱 Agri<span class="accent">Mitra</span>
+            </a>
+
+            <h1 class="panel-title">
+                Grow <em>Smarter.</em><br>
+                Start Today.
+            </h1>
+            <p class="panel-desc">
+                Join thousands of Indian farmers using AI to make better decisions — from soil health to market prices.
+            </p>
+
+            <div class="counter-strip">
+                <div class="counter-item">
+                    <div class="num">50K+</div>
+                    <div class="lbl">Farmers</div>
+                </div>
+                <div class="counter-item">
+                    <div class="num">96%</div>
+                    <div class="lbl">Accuracy</div>
+                </div>
+                <div class="counter-item">
+                    <div class="num">Free</div>
+                    <div class="lbl">Always</div>
+                </div>
+            </div>
+
+            <div class="benefit-list">
+                <div class="benefit">
+                    <div class="benefit-dot">🧠</div>
+                    AI-Powered Crop Analysis
+                </div>
+                <div class="benefit">
+                    <div class="benefit-dot">🔬</div>
+                    Disease Detection
+                </div>
+                <div class="benefit">
+                    <div class="benefit-dot">📈</div>
+                    Live Market Prices
+                </div>
+                <div class="benefit">
+                    <div class="benefit-dot">🌤️</div>
+                    Weather Intelligence
+                </div>
+                <div class="benefit">
+                    <div class="benefit-dot">🤝</div>
+                    Farmer Community
+                </div>
+                <div class="benefit">
+                    <div class="benefit-dot">🔒</div>
+                    Secure & Private
+                </div>
+            </div>
+        </div>
+
+        <!-- ── RIGHT PANEL (form) ── -->
+        <div class="reg-form-panel">
+            <div class="form-head">
+                <h2>Create Account 🌱</h2>
+                <p>Free forever — no credit card required</p>
+            </div>
+
+            {% if error %}
+            <div class="flash-error">
+                <span>⚠️</span>
+                <span>{{ error }}</span>
+            </div>
+            {% endif %}
+
+            <form method="POST">
+                {{ form.hidden_tag() }}
+
+                <!-- Full Name -->
+                <div class="fgroup">
+                    <label>Full Name<span class="req">*</span></label>
+                    <div class="input-box">
+                        {{ form.name(class="form-control", placeholder="e.g. Rajan Kumar", id="name") }}
+                        <span class="i-icon">👤</span>
+                    </div>
+                    {% if form.name.errors %}
+                    <div class="field-err">
+                        {% for e in form.name.errors %}⚠ {{ e }}{% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Phone -->
+                <div class="fgroup">
+                    <label>Phone Number<span class="req">*</span></label>
+                    <div class="input-box">
+                        {{ form.phone_number(class="form-control", placeholder="e.g. 9876543210", id="phone_number") }}
+                        <span class="i-icon">📱</span>
+                    </div>
+                    {% if form.phone_number.errors %}
+                    <div class="field-err">
+                        {% for e in form.phone_number.errors %}⚠ {{ e }}{% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Divider -->
+                <div class="sec-divider">Email (Optional)</div>
+
+                <!-- Email -->
+                <div class="fgroup">
+                    <label>Email Address<span class="opt">(optional)</span></label>
+                    <div class="input-box">
+                        {{ form.Email(class="form-control", placeholder="you@example.com", id="Email") }}
+                        <span class="i-icon">✉️</span>
+                    </div>
+                    {% if form.Email.errors %}
+                    <div class="field-err">
+                        {% for e in form.Email.errors %}⚠ {{ e }}{% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Password row -->
+                <div class="form-row">
+                    <div class="fgroup">
+                        <label>Password<span class="req">*</span></label>
+                        <div class="input-box">
+                            {{ form.password(class="form-control", type="password", placeholder="Create password", id="password") }}
+                            <span class="i-icon">🔒</span>
+                        </div>
+                        <!-- Strength bars -->
+                        <div class="strength-bars" id="strengthBars">
+                            <div class="s-bar"></div>
+                            <div class="s-bar"></div>
+                            <div class="s-bar"></div>
+                            <div class="s-bar"></div>
+                        </div>
+                        <div class="strength-lbl" id="strengthLbl">Use 8+ chars with letters & numbers</div>
+                        {% if form.password.errors %}
+                        <div class="field-err">
+                            {% for e in form.password.errors %}⚠ {{ e }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="fgroup">
+                        <label>Confirm Password<span class="req">*</span></label>
+                        <div class="input-box">
+                            {{ form.confirm_password(class="form-control", type="password", placeholder="Repeat password", id="confirmPassword") }}
+                            <span class="i-icon">🔑</span>
+                        </div>
+                        <div class="match-msg" id="matchMsg"></div>
+                        {% if form.confirm_password.errors %}
+                        <div class="field-err">
+                            {% for e in form.confirm_password.errors %}⚠ {{ e }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {{ form.submit(class="btn-register", value="Create My Account →") }}
+            </form>
+
+            <div class="secure-badge">
+                🔒 Your data is encrypted and never sold
+            </div>
+
+            <div class="login-link">
+                Already have an account? <a href="{{ url_for('login') }}">Sign in →</a>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // ── Particles ──────────────────────────────────
+    const container = document.getElementById('particles');
+    for (let i = 0; i < 25; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const size = Math.random() * 5 + 3;
+        p.style.cssText = `
+            left: ${Math.random() * 100}%;
+            width: ${size}px;
+            height: ${size}px;
+            animation-duration: ${Math.random() * 9 + 7}s;
+            animation-delay: ${Math.random() * 9}s;
+        `;
+        container.appendChild(p);
+    }
+
+    // ── Password Strength ──────────────────────────
+    const pwInput   = document.getElementById('password');
+    const cpInput   = document.getElementById('confirmPassword');
+    const bars      = document.querySelectorAll('.s-bar');
+    const strengthL = document.getElementById('strengthLbl');
+    const matchMsg  = document.getElementById('matchMsg');
+
+    function checkStrength(pw) {
+        let score = 0;
+        if (pw.length >= 8)          score++;
+        if (/[a-z]/.test(pw))        score++;
+        if (/[A-Z]/.test(pw))        score++;
+        if (/[0-9]/.test(pw))        score++;
+        if (/[^a-zA-Z0-9]/.test(pw)) score++;
+        return Math.min(score, 4);
+    }
+
+    function renderStrength(score) {
+        bars.forEach((b, i) => {
+            b.className = 's-bar';
+            if (i < score) {
+                b.classList.add(score <= 2 ? 'weak' : score === 3 ? 'medium' : 'strong');
+            }
+        });
+        strengthL.className = 'strength-lbl';
+        if (!pwInput.value) {
+            strengthL.textContent = 'Use 8+ chars with letters & numbers';
+        } else if (score <= 2) {
+            strengthL.textContent = '⚠ Weak — add uppercase, numbers or symbols';
+            strengthL.classList.add('weak');
+        } else if (score === 3) {
+            strengthL.textContent = '~ Medium — almost there!';
+            strengthL.classList.add('medium');
+        } else {
+            strengthL.textContent = '✓ Strong password';
+            strengthL.classList.add('strong');
+        }
+    }
+
+    function renderMatch() {
+        if (!cpInput.value) { matchMsg.textContent = ''; return; }
+        if (pwInput.value === cpInput.value) {
+            matchMsg.textContent = '✓ Passwords match';
+            matchMsg.className = 'match-msg ok';
+        } else {
+            matchMsg.textContent = '✗ Passwords do not match';
+            matchMsg.className = 'match-msg err';
+        }
+    }
+
+    if (pwInput) {
+        pwInput.addEventListener('input', () => {
+            renderStrength(checkStrength(pwInput.value));
+            renderMatch();
+        });
+    }
+    if (cpInput) {
+        cpInput.addEventListener('input', renderMatch);
+    }
+</script>
+{% endblock %}

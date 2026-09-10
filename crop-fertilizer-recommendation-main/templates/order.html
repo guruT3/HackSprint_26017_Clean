@@ -1,0 +1,482 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="order-container">
+    <div class="order-card">
+        <h1>Place Your Order</h1>
+        <p class="subtitle">Fill in your details below</p>
+
+        <div class="location-section location-top">
+            <p class="location-text">Share your current location quickly</p>
+            <button type="button" id="sendLocationBtn" class="location-btn" disabled>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                Send Current Location
+            </button>
+            <p class="location-note" id="locationNote">Please enter your name and phone number to unlock</p>
+        </div>
+
+        {% if success %}
+        <div class="success-message">
+            <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            <h2>Success!</h2>
+            <p>Your information has been sent successfully via WhatsApp.</p>
+        </div>
+        {% endif %}
+
+        {% if location_success %}
+        <!-- <div class="success-message">
+            <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            <h2>Location Shared Successfully!</h2>
+            <p>Your location has been sent to WhatsApp.</p>
+        </div> -->
+        {% endif %}
+
+        <form method="POST" id="orderForm">
+            {{ form.hidden_tag() }}
+            
+            <div class="form-group">
+                <label for="name">Full Name *</label>
+                {{ form.name(class="form-control", placeholder="Enter your full name") }}
+                {% if form.name.errors %}
+                    <span class="error">{{ form.name.errors[0] }}</span>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="Email">Email Address *</label>
+                {{ form.Email(class="form-control", placeholder="your@email.com") }}
+                {% if form.Email.errors %}
+                    <span class="error">{{ form.Email.errors[0] }}</span>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number *</label>
+                {{ form.phone(class="form-control", placeholder="Enter your phone number") }}
+                {% if form.phone.errors %}
+                    <span class="error">{{ form.phone.errors[0] }}</span>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="address">Address *</label>
+                {{ form.address(class="form-control", placeholder="Street address, apartment, suite, etc.") }}
+                {% if form.address.errors %}
+                    <span class="error">{{ form.address.errors[0] }}</span>
+                {% endif %}
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="city">City *</label>
+                    {{ form.city(class="form-control", placeholder="City") }}
+                    {% if form.city.errors %}
+                        <span class="error">{{ form.city.errors[0] }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="state">State *</label>
+                    {{ form.state(class="form-control", placeholder="State") }}
+                    {% if form.state.errors %}
+                        <span class="error">{{ form.state.errors[0] }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="zip">ZIP Code *</label>
+                {{ form.zip(class="form-control", placeholder="ZIP Code") }}
+                {% if form.zip.errors %}
+                    <span class="error">{{ form.zip.errors[0] }}</span>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="submit-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 2L11 13"></path>
+                    <path d="M22 2L15 22L11 13L2 9L22 2Z"></path>
+                </svg>
+                Submit Order
+            </button>
+        </form>
+    </div>
+</div>
+
+<style>
+    .order-container {
+        padding: 60px 20px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .order-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        padding: 50px;
+    }
+
+    .order-card h1 {
+        color: #333;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 40px;
+        font-size: 1.1rem;
+    }
+
+    .success-message {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 15px;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .success-message svg {
+        margin-bottom: 15px;
+    }
+
+    .success-message h2 {
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+    }
+
+    .success-message p {
+        font-size: 1rem;
+        opacity: 0.9;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .error {
+        color: #e74c3c;
+        font-size: 0.85rem;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 30px;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .submit-btn:active {
+        transform: translateY(0);
+    }
+
+    .location-section {
+        margin-bottom: 40px;
+        padding-bottom: 30px;
+        border-bottom: 2px dashed #e0e0e0;
+        text-align: center;
+    }
+
+    .location-top {
+        margin-top: 0;
+        padding-top: 0;
+    }
+
+    .location-text {
+        color: #666;
+        font-size: 1rem;
+        margin-bottom: 15px;
+    }
+
+    .location-btn {
+        padding: 15px 30px;
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .location-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(17, 153, 142, 0.3);
+    }
+
+    .location-btn:active {
+        transform: translateY(0);
+    }
+
+    .location-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .location-note {
+        color: #999;
+        font-size: 0.85rem;
+        margin-top: 10px;
+    }
+
+    @media (max-width: 768px) {
+        .order-card {
+            padding: 30px 20px;
+        }
+
+        .order-card h1 {
+            font-size: 2rem;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<script>
+    // Check if name and phone are filled to unlock location button
+    function checkLocationButtonStatus() {
+        const nameField = document.querySelector('[name="name"]');
+        const phoneField = document.querySelector('[name="phone"]');
+        const locationBtn = document.getElementById('sendLocationBtn');
+        const locationNote = document.getElementById('locationNote');
+        
+        const name = nameField.value.trim();
+        const phone = phoneField.value.trim();
+        
+        if (name && phone) {
+            locationBtn.disabled = false;
+            locationNote.textContent = "We'll request access to your location";
+            locationNote.style.color = '#999';
+        } else {
+            locationBtn.disabled = true;
+            locationNote.textContent = "Please enter your name and phone number to unlock";
+            locationNote.style.color = '#e74c3c';
+        }
+    }
+    
+    // Add event listeners to name and phone fields
+    document.querySelector('[name="name"]').addEventListener('input', checkLocationButtonStatus);
+    document.querySelector('[name="phone"]').addEventListener('input', checkLocationButtonStatus);
+    
+    // Check on page load
+    checkLocationButtonStatus();
+
+    document.getElementById('orderForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Get form data
+        const name = document.querySelector('[name="name"]').value;
+        const email = document.querySelector('[name="Email"]').value;
+        const phone = document.querySelector('[name="phone"]').value;
+        const address = document.querySelector('[name="address"]').value;
+        const city = document.querySelector('[name="city"]').value;
+        const state = document.querySelector('[name="state"]').value;
+        const zip = document.querySelector('[name="zip"]').value;
+        
+        // Create WhatsApp message
+        const message = `*ORDER DETAILS*%0A%0A` +
+                       `*Name:* ${encodeURIComponent(name)}%0A` +
+                       `*Email:* ${encodeURIComponent(email)}%0A` +
+                       `*Phone:* ${encodeURIComponent(phone)}%0A` +
+                       `*Address:* ${encodeURIComponent(address)}%0A` +
+                       `*City:* ${encodeURIComponent(city)}%0A` +
+                       `*State:* ${encodeURIComponent(state)}%0A` +
+                       `*ZIP Code:* ${encodeURIComponent(zip)}`;
+        
+        // WhatsApp API URL
+        const whatsappURL = `https://wa.me/917846917002?text=${message}`;
+        
+        // Open WhatsApp
+        window.open(whatsappURL, '_blank');
+        
+        // Submit the form normally to show success message
+        this.submit();
+    });
+    document.getElementById('orderForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Get form data
+    const formData = new FormData(this);
+    const name = formData.get('name');
+    const email = formData.get('Email');
+    const phone = formData.get('phone');
+    const address = formData.get('address');
+    const city = formData.get('city');
+    const state = formData.get('state');
+    const zip = formData.get('zip');
+    
+    // Create WhatsApp message
+    const message = `*ORDER DETAILS(only COD)*%0A%0A` +
+                   `*Name:* ${encodeURIComponent(name)}%0A` +
+                   `*Email:* ${encodeURIComponent(email)}%0A` +
+                   `*Phone:* ${encodeURIComponent(phone)}%0A` +
+                   `*Address:* ${encodeURIComponent(address)}%0A` +
+                   `*City:* ${encodeURIComponent(city)}%0A` +
+                   `*State:* ${encodeURIComponent(state)}%0A` +
+                   `*ZIP Code:* ${encodeURIComponent(zip)}`;
+    
+    // First, submit to Flask backend
+    fetch(this.action, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(() => {
+        // Then open WhatsApp
+        window.open(`https://wa.me/917846917002?text=${message}`, '_blank');
+        
+        // Reload page to show success message
+        window.location.href = window.location.pathname + '?success=true';
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('There was an error submitting your order. Please try again.');
+    });
+});
+
+    // Send Current Location Button
+    document.getElementById('sendLocationBtn').addEventListener('click', function() {
+        const btn = this;
+        const name = document.querySelector('[name="name"]').value;
+        const phone = document.querySelector('[name="phone"]').value;
+        
+        // Check if geolocation is supported
+        if (!navigator.geolocation) {
+            alert('Geolocation is not supported by your browser');
+            return;
+        }
+
+        // Disable button and show loading state
+        btn.disabled = true;
+        btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle></svg> Getting Location...';
+
+        // Get current position
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+                
+                // Create location message with name and phone
+                const locationMessage = `*CURRENT LOCATION*%0A%0A` +
+                                      `*Name:* ${encodeURIComponent(name)}%0A` +
+                                      `*Phone:* ${encodeURIComponent(phone)}%0A%0A` +
+                                      `*Latitude:* ${latitude}%0A` +
+                                      `*Longitude:* ${longitude}%0A%0A` +
+                                      `*Google Maps Link:*%0A` +
+                                      `https://www.google.com/maps?q=${latitude},${longitude}`;
+                
+                // WhatsApp API URL with location
+                const whatsappURL = `https://wa.me/917846917002?text=${locationMessage}`;
+                
+                // Open WhatsApp
+                window.open(whatsappURL, '_blank');
+                
+                // Show success message by reloading with location_success parameter
+                setTimeout(() => {
+                    window.location.href = window.location.pathname + '?location_success=true';
+                }, 500);
+            },
+            function(error) {
+                // Handle error
+                let errorMessage = 'Unable to get location. ';
+                
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage += 'Please allow location access.';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage += 'Location information unavailable.';
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage += 'Location request timed out.';
+                        break;
+                    default:
+                        errorMessage += 'An unknown error occurred.';
+                }
+                
+                alert(errorMessage);
+                
+                // Reset button (re-check if name and phone are still filled)
+                checkLocationButtonStatus();
+                btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Send Current Location';
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            }
+        );
+    });
+</script>
+{% endblock %}

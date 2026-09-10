@@ -1,0 +1,885 @@
+{% extends "base.html" %}
+
+{% block title %}Agricultural Financial Calculator{% endblock %}
+
+{% block extra_css %}
+<style>
+    .calculator-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .calculator-header {
+        background: linear-gradient(135deg, #2E7D32, #4CAF50);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px 15px 0 0;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .calculator-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .calculator-body {
+        background: white;
+        padding: 2rem;
+        border-radius: 0 0 15px 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-section {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 10px;
+        border: 1px solid #e9ecef;
+    }
+
+    .form-section h3 {
+        color: #2E7D32;
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #495057;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #4CAF50;
+        box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+    }
+
+    .btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(45deg, #2E7D32, #4CAF50);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+        margin-left: 1rem;
+    }
+
+    .results-container {
+        margin-top: 2rem;
+        padding: 2rem;
+        background: #f8f9fa;
+        border-radius: 15px;
+        border: 1px solid #e9ecef;
+        display: none;
+    }
+
+    .results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .result-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        border-left: 4px solid #4CAF50;
+    }
+
+    .result-card.negative {
+        border-left-color: #f44336;
+    }
+
+    .result-card.warning {
+        border-left-color: #ff9800;
+    }
+
+    .result-value {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #2E7D32;
+        margin-bottom: 0.5rem;
+    }
+
+    .result-value.negative {
+        color: #f44336;
+    }
+
+    .result-value.warning {
+        color: #ff9800;
+    }
+
+    .result-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stress-test {
+        margin-top: 2rem;
+        padding: 1.5rem;
+        background: rgb(47, 44, 44);
+        border-radius: 10px;
+        border: 1px solid #dee2e6;
+    }
+
+    .stress-test h4 {
+        color: #dc3545;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .stress-scenario {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+        background: #4e5051;
+        border-radius: 8px;
+    }
+
+    .loading {
+        display: none;
+        text-align: center;
+        padding: 2rem;
+        color: #6c757d;
+    }
+
+    .spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #4CAF50;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .export-buttons {
+        text-align: center;
+        margin-top: 1rem;
+    }
+
+    .alert {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+        border: 1px solid transparent;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+    }
+
+    .alert-warning {
+        background-color: #fff3cd;
+        border-color: #ffeaa7;
+        color: #856404;
+    }
+
+    @media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .calculator-header h1 {
+            font-size: 2rem;
+        }
+        
+        .results-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="calculator-container">
+    <div class="calculator-header">
+        <h1>
+            <i class="fas fa-seedling"></i>
+            Agricultural Financial Calculator
+        </h1>
+        <p>Calculate crop profitability, loan requirements, and financial planning</p>
+    </div>
+
+    <div class="calculator-body">
+        <form id="calculatorForm">
+            <div class="form-grid">
+                <!-- Crop Information -->
+                <div class="form-section">
+                    <h3><i class="fas fa-wheat-awn"></i> Crop Information</h3>
+                    
+                    <div class="form-group">
+                        <label for="crop_type">Crop Type</label>
+                        <select id="crop_type" name="crop_type" class="form-control" required>
+                            <option value="wheat">Wheat</option>
+                            <option value="rice">Rice</option>
+                            <option value="maize">Maize</option>
+                            <option value="cotton">Cotton</option>
+                            <option value="sugarcane">Sugarcane</option>
+                            <option value="potato">Potato</option>
+                            <option value="tomato">Tomato</option>
+                            <option value="onion">Onion</option>
+                            <option value="soybean">Soybean</option>
+                            <option value="groundnut">Groundnut</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="area">Area (Acres)</label>
+                        <input type="number" id="area" name="area" class="form-control" step="0.1" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="expected_price">Expected Price per Quintal (₹)</label>
+                        <input type="number" id="expected_price" name="expected_price" class="form-control" step="0.01" min="0" placeholder="Leave empty for market price">
+                    </div>
+                </div>
+
+                <!-- Cost Information -->
+                <div class="form-section">
+                    <h3><i class="fas fa-calculator"></i> Cost Breakdown</h3>
+                    
+                    <div class="form-group">
+                        <label for="seed_cost">Seed Cost (₹)</label>
+                        <input type="number" id="seed_cost" name="seed_cost" class="form-control" step="0.01" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fertilizer_cost">Fertilizer Cost (₹)</label>
+                        <input type="number" id="fertilizer_cost" name="fertilizer_cost" class="form-control" step="0.01" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="labor_cost">Labor Cost (₹)</label>
+                        <input type="number" id="labor_cost" name="labor_cost" class="form-control" step="0.01" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="irrigation_cost">Irrigation Cost (₹)</label>
+                        <input type="number" id="irrigation_cost" name="irrigation_cost" class="form-control" step="0.01" min="0" value="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pesticide_cost">Pesticide Cost (₹)</label>
+                        <input type="number" id="pesticide_cost" name="pesticide_cost" class="form-control" step="0.01" min="0" value="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="other_costs">Other Costs (₹)</label>
+                        <input type="number" id="other_costs" name="other_costs" class="form-control" step="0.01" min="0" value="0">
+                    </div>
+                </div>
+
+                <!-- Financial Information -->
+                <div class="form-section">
+                    <h3><i class="fas fa-piggy-bank"></i> Financial Details</h3>
+                    
+                    <div class="form-group">
+                        <label for="farmer_savings">Available Savings (₹)</label>
+                        <input type="number" id="farmer_savings" name="farmer_savings" class="form-control" step="0.01" min="0" value="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loan_interest_rate">Loan Interest Rate (%)</label>
+                        <input type="number" id="loan_interest_rate" name="loan_interest_rate" class="form-control" step="0.1" min="0" max="50" value="8.5">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loan_term_months">Loan Term (Months)</label>
+                        <input type="number" id="loan_term_months" name="loan_term_months" class="form-control" min="1" max="120" value="12">
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-calculator"></i>
+                    Calculate Financial Plan
+                </button>
+                <button type="reset" class="btn btn-secondary">
+                    <i class="fas fa-refresh"></i>
+                    Reset Form
+                </button>
+            </div>
+        </form>
+
+        <!-- Loading indicator -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Calculating your financial plan...</p>
+        </div>
+
+        <!-- Results Container -->
+        <div id="results" class="results-container">
+            <h3 style="color: #2E7D32; margin-bottom: 1.5rem; text-align: center;">
+                <i class="fas fa-chart-line"></i>
+                Financial Calculation Results
+            </h3>
+
+            <div class="results-grid" id="resultsGrid">
+                <!-- Results will be populated here -->
+            </div>
+
+            <div class="stress-test" id="stressTest">
+                <h4>
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Stress Test Scenarios
+                </h4>
+                <div id="stressScenarios">
+                    <!-- Stress test results will be populated here -->
+                </div>
+            </div>
+
+            <div class="export-buttons">
+                <button onclick="exportResultsToPDF()" class="btn btn-secondary">
+                    <i class="fas fa-file-pdf"></i>
+                    Export as PDF
+                </button>
+                <button onclick="shareResults()" class="btn btn-secondary">
+                    <i class="fas fa-share"></i>
+                    Share Results
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include jsPDF library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+// Crop yield data (quintals per acre)
+const CROP_YIELDS = {
+    wheat: 20.0,
+    rice: 25.0,
+    maize: 30.0,
+    cotton: 15.0,
+    sugarcane: 400.0,
+    potato: 150.0,
+    tomato: 200.0,
+    onion: 180.0,
+    soybean: 12.0,
+    groundnut: 18.0
+};
+
+// Market prices (per quintal in INR)
+const MARKET_PRICES = {
+    wheat: 2100.0,
+    rice: 2200.0,
+    maize: 1800.0,
+    cotton: 5500.0,
+    sugarcane: 350.0,
+    potato: 1200.0,
+    tomato: 2500.0,
+    onion: 1800.0,
+    soybean: 4200.0,
+    groundnut: 5200.0
+};
+
+let currentResults = null;
+
+// Calculate EMI
+function calculateEMI(principal, annualRate, months) {
+    if (principal <= 0) return 0;
+    
+    if (annualRate === 0) return principal / months;
+    
+    const monthlyRate = annualRate / 12 / 100;
+    const emi = principal * monthlyRate * Math.pow(1 + monthlyRate, months) / (Math.pow(1 + monthlyRate, months) - 1);
+    return Math.round(emi * 100) / 100;
+}
+
+// Perform stress tests
+function performStressTests(baseRevenue, baseProfit, expectedYield, pricePerQtl) {
+    const stressTests = [];
+    const baseCosts = baseRevenue - baseProfit;
+    
+    // Price drop by 10%
+    const newPrice1 = pricePerQtl * 0.9;
+    const newRevenue1 = expectedYield * newPrice1;
+    const newProfit1 = newRevenue1 - baseCosts;
+    const profitChange1 = baseProfit !== 0 ? ((newProfit1 - baseProfit) / baseProfit) * 100 : 0;
+    
+    stressTests.push({
+        scenario: "Price drops by 10%",
+        revenue: Math.round(newRevenue1 * 100) / 100,
+        profit: Math.round(newProfit1 * 100) / 100,
+        profit_change_percent: Math.round(profitChange1 * 100) / 100
+    });
+    
+    // Yield drops by 15%
+    const newYield2 = expectedYield * 0.85;
+    const newRevenue2 = newYield2 * pricePerQtl;
+    const newProfit2 = newRevenue2 - baseCosts;
+    const profitChange2 = baseProfit !== 0 ? ((newProfit2 - baseProfit) / baseProfit) * 100 : 0;
+    
+    stressTests.push({
+        scenario: "Yield drops by 15%",
+        revenue: Math.round(newRevenue2 * 100) / 100,
+        profit: Math.round(newProfit2 * 100) / 100,
+        profit_change_percent: Math.round(profitChange2 * 100) / 100
+    });
+    
+    // Combined scenario
+    const combinedYield = expectedYield * 0.9;
+    const combinedPrice = pricePerQtl * 0.95;
+    const combinedRevenue = combinedYield * combinedPrice;
+    const combinedProfit = combinedRevenue - baseCosts;
+    const profitChange3 = baseProfit !== 0 ? ((combinedProfit - baseProfit) / baseProfit) * 100 : 0;
+    
+    stressTests.push({
+        scenario: "Combined: 5% price drop + 10% yield drop",
+        revenue: Math.round(combinedRevenue * 100) / 100,
+        profit: Math.round(combinedProfit * 100) / 100,
+        profit_change_percent: Math.round(profitChange3 * 100) / 100
+    });
+    
+    return stressTests;
+}
+
+// Main calculation function
+function calculateFinances(formData) {
+    const cropType = formData.crop_type.toLowerCase();
+    const area = parseFloat(formData.area) || 0;
+    const yieldPerAcre = CROP_YIELDS[cropType];
+    const expectedYieldQtl = area * yieldPerAcre;
+    
+    const pricePerQtl = formData.expected_price ? parseFloat(formData.expected_price) : MARKET_PRICES[cropType];
+    const revenue = expectedYieldQtl * pricePerQtl;
+    
+    const totalCosts = (parseFloat(formData.seed_cost) || 0) +
+                       (parseFloat(formData.fertilizer_cost) || 0) +
+                       (parseFloat(formData.labor_cost) || 0) +
+                       (parseFloat(formData.irrigation_cost) || 0) +
+                       (parseFloat(formData.pesticide_cost) || 0) +
+                       (parseFloat(formData.other_costs) || 0);
+    
+    const profit = revenue - totalCosts;
+    const profitMarginPercent = revenue > 0 ? (profit / revenue * 100) : 0;
+    
+    const farmerSavings = parseFloat(formData.farmer_savings) || 0;
+    const loanRequired = Math.max(0, totalCosts - farmerSavings);
+    
+    const interestRate = parseFloat(formData.loan_interest_rate) || 8.5;
+    const loanTermMonths = parseInt(formData.loan_term_months) || 12;
+    
+    const monthlyEMI = calculateEMI(loanRequired, interestRate, loanTermMonths);
+    const repaymentCapacityMonthly = loanTermMonths > 0 ? Math.max(0, profit / loanTermMonths) : 0;
+    const isEMIAffordable = monthlyEMI <= repaymentCapacityMonthly;
+    
+    const stressTests = performStressTests(revenue, profit, expectedYieldQtl, pricePerQtl);
+    
+    return {
+        crop_type: formData.crop_type,
+        area_acres: Math.round(area * 100) / 100,
+        expected_yield_qtl: Math.round(expectedYieldQtl * 100) / 100,
+        price_per_qtl: Math.round(pricePerQtl * 100) / 100,
+        revenue: Math.round(revenue * 100) / 100,
+        total_costs: Math.round(totalCosts * 100) / 100,
+        profit: Math.round(profit * 100) / 100,
+        profit_margin_percent: Math.round(profitMarginPercent * 100) / 100,
+        loan_required: Math.round(loanRequired * 100) / 100,
+        monthly_emi: Math.round(monthlyEMI * 100) / 100,
+        repayment_capacity_monthly: Math.round(repaymentCapacityMonthly * 100) / 100,
+        is_emi_affordable: isEMIAffordable,
+        stress_tests: stressTests,
+        calculation_date: new Date().toISOString()
+    };
+}
+
+// Format currency
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        maximumFractionDigits: 0
+    }).format(amount);
+}
+
+// Display results
+function displayResults(results) {
+    currentResults = results;
+    
+    const resultsGrid = document.getElementById('resultsGrid');
+    
+    resultsGrid.innerHTML = `
+        <div class="result-card">
+            <div class="result-value">${results.area_acres}</div>
+            <div class="result-label">Area (Acres)</div>
+        </div>
+        <div class="result-card">
+            <div class="result-value">${results.expected_yield_qtl}</div>
+            <div class="result-label">Expected Yield (Qtl)</div>
+        </div>
+        <div class="result-card">
+            <div class="result-value">${formatCurrency(results.price_per_qtl)}</div>
+            <div class="result-label">Price per Quintal</div>
+        </div>
+        <div class="result-card">
+            <div class="result-value">${formatCurrency(results.revenue)}</div>
+            <div class="result-label">Total Revenue</div>
+        </div>
+        <div class="result-card">
+            <div class="result-value">${formatCurrency(results.total_costs)}</div>
+            <div class="result-label">Total Costs</div>
+        </div>
+        <div class="result-card ${results.profit < 0 ? 'negative' : ''}">
+            <div class="result-value ${results.profit < 0 ? 'negative' : ''}">${formatCurrency(results.profit)}</div>
+            <div class="result-label">Net Profit</div>
+        </div>
+        <div class="result-card ${results.profit_margin_percent < 10 ? 'warning' : ''}">
+            <div class="result-value ${results.profit_margin_percent < 10 ? 'warning' : ''}">${results.profit_margin_percent}%</div>
+            <div class="result-label">Profit Margin</div>
+        </div>
+        <div class="result-card ${results.loan_required > 0 ? 'warning' : ''}">
+            <div class="result-value ${results.loan_required > 0 ? 'warning' : ''}">${formatCurrency(results.loan_required)}</div>
+            <div class="result-label">Loan Required</div>
+        </div>
+        <div class="result-card ${!results.is_emi_affordable ? 'negative' : ''}">
+            <div class="result-value ${!results.is_emi_affordable ? 'negative' : ''}">${formatCurrency(results.monthly_emi)}</div>
+            <div class="result-label">Monthly EMI</div>
+        </div>
+        <div class="result-card">
+            <div class="result-value">${formatCurrency(results.repayment_capacity_monthly)}</div>
+            <div class="result-label">Repayment Capacity/Month</div>
+        </div>
+    `;
+    
+    // Display stress test results
+    const stressScenarios = document.getElementById('stressScenarios');
+    stressScenarios.innerHTML = results.stress_tests.map(test => `
+        <div class="stress-scenario">
+            <div>
+                <strong>${test.scenario}</strong><br>
+                <small>Revenue: ${formatCurrency(test.revenue)} | Profit: ${formatCurrency(test.profit)}</small>
+            </div>
+            <div class="result-value ${test.profit_change_percent < 0 ? 'negative' : ''}" style="font-size: 1.2rem;">
+                ${test.profit_change_percent > 0 ? '+' : ''}${test.profit_change_percent}%
+            </div>
+        </div>
+    `).join('');
+    
+    // Show results container
+    document.getElementById('results').style.display = 'block';
+    
+    // Scroll to results
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+    
+    // Show affordability alert
+    if (!results.is_emi_affordable && results.loan_required > 0) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-danger';
+        alertDiv.innerHTML = '<strong>Warning:</strong> The monthly EMI exceeds your estimated repayment capacity. Consider reducing costs or increasing the loan term.';
+        document.getElementById('results').insertBefore(alertDiv, document.getElementById('results').firstChild);
+    } else if (results.profit > 0) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-success';
+        alertDiv.innerHTML = '<strong>Great!</strong> Your crop cultivation plan shows positive profitability and manageable financing.';
+        document.getElementById('results').insertBefore(alertDiv, document.getElementById('results').firstChild);
+    }
+}
+
+// Export results to PDF
+function exportResultsToPDF() {
+    if (!currentResults) {
+        alert('No results to export. Please calculate first.');
+        return;
+    }
+    
+    try {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF();
+        
+        // Set font
+        pdf.setFont('helvetica');
+        
+        // Title
+        pdf.setFontSize(20);
+        pdf.setTextColor(46, 125, 50);
+        pdf.text('Agricultural Financial Calculator Report', 105, 20, { align: 'center' });
+        
+        // Date
+        pdf.setFontSize(10);
+        pdf.setTextColor(108, 117, 125);
+        const reportDate = new Date().toLocaleDateString('en-IN');
+        pdf.text(`Report Generated: ${reportDate}`, 105, 30, { align: 'center' });
+        
+        // Line separator
+        pdf.setDrawColor(46, 125, 50);
+        pdf.line(20, 35, 190, 35);
+        
+        let yPosition = 50;
+        
+        // Crop Information Section
+        pdf.setFontSize(16);
+        pdf.setTextColor(46, 125, 50);
+        pdf.text('Crop Information', 20, yPosition);
+        yPosition += 10;
+        
+        pdf.setFontSize(12);
+        pdf.setTextColor(0, 0, 0);
+        pdf.text(`Crop Type: ${currentResults.crop_type.charAt(0).toUpperCase() + currentResults.crop_type.slice(1)}`, 20, yPosition);
+        yPosition += 8;
+        pdf.text(`Area: ${currentResults.area_acres} acres`, 20, yPosition);
+        yPosition += 8;
+        pdf.text(`Expected Yield: ${currentResults.expected_yield_qtl} quintals`, 20, yPosition);
+        yPosition += 8;
+        pdf.text(`Price per Quintal: ${formatCurrency(currentResults.price_per_qtl)}`, 20, yPosition);
+        yPosition += 15;
+        
+        // Financial Summary Section
+        pdf.setFontSize(16);
+        pdf.setTextColor(46, 125, 50);
+        pdf.text('Financial Summary', 20, yPosition);
+        yPosition += 10;
+        
+        pdf.setFontSize(12);
+        pdf.setTextColor(0, 0, 0);
+        pdf.text(`Total Revenue: ${formatCurrency(currentResults.revenue)}`, 20, yPosition);
+        yPosition += 8;
+        pdf.text(`Total Costs: ${formatCurrency(currentResults.total_costs)}`, 20, yPosition);
+        yPosition += 8;
+        
+        // Profit/Loss with color coding
+        if (currentResults.profit >= 0) {
+            pdf.setTextColor(46, 125, 50);
+            pdf.text(`Net Profit: ${formatCurrency(currentResults.profit)}`, 20, yPosition);
+        } else {
+            pdf.setTextColor(244, 67, 54);
+            pdf.text(`Net Loss: ${formatCurrency(Math.abs(currentResults.profit))}`, 20, yPosition);
+        }
+        yPosition += 8;
+        
+        pdf.setTextColor(0, 0, 0);
+        pdf.text(`Profit Margin: ${currentResults.profit_margin_percent}%`, 20, yPosition);
+        yPosition += 15;
+        
+        // Loan Information Section
+        pdf.setFontSize(16);
+        pdf.setTextColor(46, 125, 50);
+        pdf.text('Financing Details', 20, yPosition);
+        yPosition += 10;
+        
+        pdf.setFontSize(12);
+        pdf.setTextColor(0, 0, 0);
+        pdf.text(`Loan Required: ${formatCurrency(currentResults.loan_required)}`, 20, yPosition);
+        yPosition += 8;
+        pdf.text(`Monthly EMI: ${formatCurrency(currentResults.monthly_emi)}`, 20, yPosition);
+        yPosition += 8;
+        pdf.text(`Monthly Repayment Capacity: ${formatCurrency(currentResults.repayment_capacity_monthly)}`, 20, yPosition);
+        yPosition += 8;
+        
+        // EMI Affordability status
+        if (currentResults.is_emi_affordable || currentResults.loan_required === 0) {
+            pdf.setTextColor(46, 125, 50);
+            pdf.text('EMI Status: Affordable', 20, yPosition);
+        } else {
+            pdf.setTextColor(244, 67, 54);
+            pdf.text('EMI Status: Not Affordable - Consider reducing costs or extending loan term', 20, yPosition);
+        }
+        yPosition += 15;
+        
+        // Check if we need a new page
+        if (yPosition > 250) {
+            pdf.addPage();
+            yPosition = 20;
+        }
+        
+        // Stress Test Section
+        pdf.setFontSize(16);
+        pdf.setTextColor(220, 53, 69);
+        pdf.text('Stress Test Scenarios', 20, yPosition);
+        yPosition += 10;
+        
+        pdf.setFontSize(10);
+        pdf.setTextColor(108, 117, 125);
+        pdf.text('These scenarios show how your profitability might change under adverse conditions:', 20, yPosition);
+        yPosition += 10;
+        
+        // Stress test results
+        currentResults.stress_tests.forEach((test, index) => {
+            if (yPosition > 270) {
+                pdf.addPage();
+                yPosition = 20;
+            }
+            
+            pdf.setFontSize(12);
+            pdf.setTextColor(0, 0, 0);
+            pdf.text(`${index + 1}. ${test.scenario}`, 20, yPosition);
+            yPosition += 6;
+            
+            pdf.setFontSize(10);
+            pdf.text(`   Revenue: ${formatCurrency(test.revenue)}`, 25, yPosition);
+            yPosition += 5;
+            pdf.text(`   Profit: ${formatCurrency(test.profit)}`, 25, yPosition);
+            yPosition += 5;
+            
+            // Profit change with color coding
+            if (test.profit_change_percent >= 0) {
+                pdf.setTextColor(46, 125, 50);
+                pdf.text(`   Change: +${test.profit_change_percent}%`, 25, yPosition);
+            } else {
+                pdf.setTextColor(244, 67, 54);
+                pdf.text(`   Change: ${test.profit_change_percent}%`, 25, yPosition);
+            }
+            pdf.setTextColor(0, 0, 0);
+            yPosition += 10;
+        });
+        
+        // Add footer
+        const pageCount = pdf.internal.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i++) {
+            pdf.setPage(i);
+            pdf.setFontSize(8);
+            pdf.setTextColor(108, 117, 125);
+            pdf.text(`Page ${i} of ${pageCount}`, 105, 290, { align: 'center' });
+            pdf.text('Generated by Agricultural Financial Calculator', 105, 295, { align: 'center' });
+        }
+        
+        // Save the PDF
+        const fileName = `agricultural_report_${currentResults.crop_type}_${new Date().toISOString().split('T')[0]}.pdf`;
+        pdf.save(fileName);
+        
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        alert('Error generating PDF. Please try again.');
+    }
+}
+
+// Share results
+function shareResults() {
+    if (!currentResults) return;
+    
+    const shareText = `Agricultural Financial Calculation Results:
+    
+Crop: ${currentResults.crop_type.charAt(0).toUpperCase() + currentResults.crop_type.slice(1)}
+Area: ${currentResults.area_acres} acres
+Expected Yield: ${currentResults.expected_yield_qtl} quintals
+Total Revenue: ${formatCurrency(currentResults.revenue)}
+Total Costs: ${formatCurrency(currentResults.total_costs)}
+Net Profit: ${formatCurrency(currentResults.profit)}
+Profit Margin: ${currentResults.profit_margin_percent}%
+Loan Required: ${formatCurrency(currentResults.loan_required)}
+Monthly EMI: ${formatCurrency(currentResults.monthly_emi)}
+
+Generated by Agricultural Financial Calculator`;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: 'Agricultural Financial Calculation Results',
+            text: shareText
+        });
+    } else {
+        navigator.clipboard.writeText(shareText).then(() => {
+            alert('Results copied to clipboard!');
+        });
+    }
+}
+
+// Form submission handler
+document.getElementById('calculatorForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Show loading
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('results').style.display = 'none';
+    
+    // Collect form data
+    const formData = new FormData(this);
+    const data = {};
+    for (let [key, value] of formData.entries()) {
+        data[key] = value;
+    }
+    
+    // Simulate calculation delay
+    setTimeout(() => {
+        try {
+            const results = calculateFinances(data);
+            displayResults(results);
+        } catch (error) {
+            console.error('Calculation error:', error);
+            alert('An error occurred during calculation. Please check your inputs and try again.');
+        } finally {
+            document.getElementById('loading').style.display = 'none';
+        }
+    }, 1000);
+});
+
+// Form reset handler
+document.getElementById('calculatorForm').addEventListener('reset', function() {
+    document.getElementById('results').style.display = 'none';
+    currentResults = null;
+});
+</script>
+{% endblock %}

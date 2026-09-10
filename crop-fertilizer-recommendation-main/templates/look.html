@@ -1,0 +1,762 @@
+{% extends 'base.html' %}
+
+{% block title %}Agri Mitra – Empowering Farmers with AI{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --forest:        #0D2818;
+        --forest-mid:    #14381F;
+        --forest-card:   #1A4A28;
+        --forest-light:  #1F5C30;
+        --green-bright:  #22C55E;
+        --green-neon:    #4ADE80;
+        --green-muted:   #86EFAC;
+        --amber:         #F59E0B;
+        --amber-light:   #FCD34D;
+        --amber-glow:    rgba(245,158,11,.2);
+        --border:        rgba(34,197,94,.1);
+        --border-bright: rgba(34,197,94,.3);
+        --text:          #BBF7D0;
+        --text-bright:   #ECFDF5;
+        --text-muted:    #6EE7A0;
+        --text-dim:      #4B7A5E;
+        --radius:        16px;
+    }
+
+    body { background: var(--forest); color: var(--text); overflow-x: hidden; }
+
+    /* ── HERO ────────────────────────────────────────── */
+    .hero {
+        position: relative;
+        min-height: 94vh;
+        display: flex; align-items: center; overflow: hidden;
+        background: linear-gradient(135deg, #060F0A 0%, #0D2818 45%, #0A2215 100%);
+    }
+
+    .hero::before {
+        content: '';
+        position: absolute; inset: 0;
+        background-image:
+            radial-gradient(circle at 1px 1px, rgba(34,197,94,.06) 1px, transparent 0);
+        background-size: 40px 40px;
+        pointer-events: none;
+    }
+
+    .glow-orb-1 {
+        position: absolute; width: 700px; height: 700px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(34,197,94,.13) 0%, transparent 65%);
+        top: -200px; right: -150px; pointer-events: none;
+    }
+    .glow-orb-2 {
+        position: absolute; width: 500px; height: 500px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(245,158,11,.09) 0%, transparent 65%);
+        bottom: -150px; left: -100px; pointer-events: none;
+    }
+    .glow-orb-3 {
+        position: absolute; width: 350px; height: 350px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(74,222,128,.06) 0%, transparent 65%);
+        top: 30%; left: 35%; pointer-events: none;
+    }
+
+    .hero-content {
+        position: relative; z-index: 2;
+        max-width: 1280px; margin: 0 auto;
+        padding: 4rem 2rem;
+        display: grid; grid-template-columns: 1fr 1fr;
+        gap: 4rem; align-items: center;
+    }
+
+    .hero-badge {
+        display: inline-flex; align-items: center; gap: .5rem;
+        background: rgba(34,197,94,.1);
+        border: 1px solid rgba(34,197,94,.25);
+        color: var(--green-neon); border-radius: 50px;
+        padding: .4rem 1.1rem; font-size: .78rem;
+        font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+        margin-bottom: 1.5rem; animation: fadeUp .8s ease both;
+    }
+    .hero-badge .dot {
+        width: 7px; height: 7px; border-radius: 50%;
+        background: var(--green-bright);
+        animation: blink 1.4s ease-in-out infinite;
+        box-shadow: 0 0 8px var(--green-bright);
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+    .hero-title {
+        font-family: 'Syne', sans-serif;
+        font-size: clamp(2.6rem, 5vw, 4.2rem);
+        font-weight: 800; color: var(--text-bright);
+        line-height: 1.08; margin-bottom: 1.5rem;
+        animation: fadeUp .9s .1s ease both;
+    }
+    .hero-title em {
+        font-style: normal;
+        background: linear-gradient(90deg, var(--green-neon), var(--amber-light));
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    .hero-desc {
+        font-size: 1.05rem; color: var(--text-dim);
+        line-height: 1.8; margin-bottom: 2rem;
+        animation: fadeUp .9s .2s ease both; max-width: 480px;
+    }
+
+    .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; animation: fadeUp .9s .3s ease both; }
+
+    .btn-primary-cta {
+        display: inline-flex; align-items: center; gap: .6rem;
+        background: linear-gradient(135deg, var(--green-bright), #16A34A);
+        color: #fff; border: none; border-radius: 10px;
+        padding: .85rem 2rem;
+        font-family: 'Nunito Sans', sans-serif;
+        font-weight: 700; font-size: .95rem; text-decoration: none;
+        box-shadow: 0 8px 32px rgba(34,197,94,.35), 0 0 0 1px rgba(34,197,94,.2);
+        transition: all .25s;
+    }
+    .btn-primary-cta:hover {
+        background: linear-gradient(135deg, var(--green-neon), var(--green-bright));
+        color: #fff; transform: translateY(-3px);
+        box-shadow: 0 14px 40px rgba(34,197,94,.5);
+    }
+
+    .btn-outline-cta {
+        display: inline-flex; align-items: center; gap: .6rem;
+        background: rgba(34,197,94,.06);
+        color: var(--text-bright); border: 1px solid var(--border);
+        border-radius: 10px; padding: .85rem 2rem;
+        font-family: 'Nunito Sans', sans-serif;
+        font-weight: 600; font-size: .95rem; text-decoration: none;
+        backdrop-filter: blur(8px); transition: all .25s;
+    }
+    .btn-outline-cta:hover {
+        background: rgba(34,197,94,.12);
+        color: var(--green-neon); border-color: var(--border-bright);
+        transform: translateY(-3px);
+    }
+
+    .hero-stats {
+        display: flex; gap: 2rem; margin-top: 2.5rem;
+        padding-top: 2rem; border-top: 1px solid var(--border);
+        animation: fadeUp .9s .4s ease both;
+    }
+    .hero-stat .num {
+        font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800;
+        background: linear-gradient(135deg, var(--green-neon), var(--amber));
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        line-height: 1;
+    }
+    .hero-stat .lbl { font-size: .72rem; color: var(--text-dim); margin-top: .25rem; text-transform: uppercase; letter-spacing: .6px; }
+
+    /* ── HERO VISUAL / VIDEO CARD ── */
+    .hero-visual { position: relative; animation: fadeUp .9s .2s ease both; display: flex; justify-content: center; }
+    .hero-card-3d { position: relative; width: 380px; height: 380px; }
+
+    /* Video container replaces the old .field-illustration emoji box */
+    .field-illustration {
+        width: 100%;
+        height: 100%;
+        border-radius: 28px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        box-shadow: 0 30px 80px rgba(0,0,0,.5), 0 0 100px rgba(34,197,94,.08), inset 0 1px 0 rgba(34,197,94,.1);
+        position: relative;
+        background: linear-gradient(160deg, #1A4A28 0%, #0D2818 100%);
+    }
+
+    /* Green shimmer overlay on top of video */
+    .field-illustration::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            180deg,
+            rgba(13,40,24,.15) 0%,
+            transparent 40%,
+            rgba(34,197,94,.06) 100%
+        );
+        pointer-events: none;
+        z-index: 1;
+        border-radius: 28px;
+    }
+
+    .hero-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        border-radius: 28px;
+    }
+
+    .float-badge {
+        position: absolute;
+        background: rgba(20,56,31,.95);
+        border: 1px solid var(--border-bright);
+        border-radius: 14px; padding: .7rem 1.1rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,.4), 0 0 20px rgba(34,197,94,.08);
+        font-size: .82rem; font-weight: 600; color: var(--text-bright);
+        display: flex; align-items: center; gap: .5rem;
+        animation: floatY 3s ease-in-out infinite; z-index: 3;
+        backdrop-filter: blur(12px);
+    }
+    .float-badge:nth-child(2) { animation-delay: .5s; }
+    .float-badge:nth-child(3) { animation-delay: 1s; }
+    @keyframes floatY { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+    .float-badge.top-left  { top: -18px; left: -24px; }
+    .float-badge.bot-right { bottom: -18px; right: -24px; }
+    .float-badge .badge-val { color: var(--green-neon); font-size: 1rem; }
+
+    /* ── SECTION COMMON ──────────────────────────────── */
+    .section { padding: 5rem 2rem; max-width: 1280px; margin: 0 auto; }
+    .section-label {
+        font-size: .72rem; font-weight: 700; letter-spacing: 2.5px;
+        text-transform: uppercase; color: var(--green-bright);
+        margin-bottom: .75rem; display: flex; align-items: center; gap: .6rem;
+    }
+    .section-label::before {
+        content: ''; display: inline-block; width: 22px; height: 2px;
+        background: linear-gradient(90deg, var(--green-bright), var(--amber));
+        border-radius: 2px;
+    }
+    .section-title {
+        font-family: 'Syne', sans-serif;
+        font-size: clamp(1.8rem, 3vw, 2.6rem);
+        font-weight: 800; color: var(--text-bright); line-height: 1.2; margin-bottom: 1rem;
+    }
+    .section-title span {
+        background: linear-gradient(90deg, var(--green-neon), var(--amber));
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .section-desc { color: var(--text-dim); font-size: .97rem; line-height: 1.8; max-width: 560px; }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ── MARQUEE STRIP ───────────────────────────────── */
+    .strip {
+        background: linear-gradient(90deg, #14381F, #1F5C30, #14381F);
+        border-top: 1px solid var(--border-bright);
+        border-bottom: 1px solid var(--border-bright);
+        overflow: hidden; padding: .9rem 0; white-space: nowrap;
+    }
+    .strip-track { display: inline-block; animation: marquee 24s linear infinite; }
+    .strip-item {
+        display: inline-flex; align-items: center; gap: .5rem;
+        color: var(--green-muted); font-weight: 700; font-size: .83rem;
+        padding: 0 2.5rem; letter-spacing: .3px;
+    }
+    .strip-item .si-dot { color: var(--amber); font-size: .5rem; }
+    .strip-item::after { content: '✦'; margin-left: 2.5rem; opacity: .4; color: var(--amber); font-size: .6rem; }
+    @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+    /* ── SERVICES ────────────────────────────────────── */
+    .services-bg {
+        background: linear-gradient(180deg, #0A1F11 0%, #0D2818 100%);
+        padding: 5rem 0; border-top: 1px solid var(--border);
+    }
+    .services-grid {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.25rem; margin-top: 3rem;
+    }
+    .service-card {
+        background: rgba(26,74,40,.4);
+        border-radius: var(--radius); padding: 1.8rem;
+        border: 1px solid var(--border);
+        transition: all .3s; cursor: pointer;
+        position: relative; overflow: hidden;
+        text-decoration: none; display: block; color: var(--text);
+        backdrop-filter: blur(8px);
+    }
+    .service-card::before {
+        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, var(--green-bright), var(--amber));
+        transform: scaleX(0); transform-origin: left; transition: transform .35s;
+    }
+    .service-card::after {
+        content: ''; position: absolute; inset: 0;
+        background: radial-gradient(circle at top left, rgba(34,197,94,.07) 0%, transparent 60%);
+        opacity: 0; transition: opacity .35s;
+    }
+    .service-card:hover {
+        border-color: var(--border-bright);
+        transform: translateY(-6px);
+        box-shadow: 0 20px 50px rgba(0,0,0,.4), 0 0 30px rgba(34,197,94,.07);
+        color: var(--text); background: rgba(26,74,40,.7);
+    }
+    .service-card:hover::before { transform: scaleX(1); }
+    .service-card:hover::after  { opacity: 1; }
+    .service-card:hover .sc-icon { background: rgba(34,197,94,.15); border-color: rgba(34,197,94,.3); }
+
+    .sc-icon {
+        width: 52px; height: 52px; border-radius: 12px;
+        background: rgba(34,197,94,.06); border: 1px solid var(--border);
+        display: grid; place-items: center; font-size: 1.6rem;
+        margin-bottom: 1.2rem; transition: all .3s; position: relative; z-index: 1;
+    }
+    .sc-title { font-weight: 700; font-size: .98rem; margin-bottom: .5rem; color: var(--text-bright); position: relative; z-index: 1; }
+    .sc-desc  { font-size: .84rem; color: var(--text-dim); line-height: 1.65; position: relative; z-index: 1; }
+    .sc-arrow { margin-top: 1rem; color: var(--green-bright); font-weight: 700; font-size: .83rem; position: relative; z-index: 1; }
+
+    /* ── FEATURES HIGHLIGHT ──────────────────────────── */
+    .features-hl-wrap { background: var(--forest); padding: 5rem 0; border-top: 1px solid var(--border); }
+    .features-hl {
+        display: grid; grid-template-columns: 1fr 1fr;
+        gap: 4rem; align-items: center;
+        max-width: 1280px; margin: 0 auto; padding: 0 2rem;
+    }
+    @media (max-width: 900px) {
+        .features-hl { grid-template-columns: 1fr; }
+        .hero-content { grid-template-columns: 1fr; }
+        .hero-visual  { display: none; }
+    }
+
+    .hl-main-card {
+        background: linear-gradient(135deg, #1A4A28 0%, #0D2818 100%);
+        border: 1px solid var(--border);
+        border-top: 2px solid var(--green-bright);
+        border-radius: 20px; padding: 2.5rem 2rem;
+        box-shadow: 0 20px 60px rgba(0,0,0,.4), 0 0 40px rgba(34,197,94,.05);
+        position: relative; overflow: hidden;
+    }
+    .hl-main-card::before { content:'🌾'; position:absolute; font-size:8rem; right:-1rem; bottom:-1rem; opacity:.06; }
+    .hl-main-card h3 { font-family:'Syne',sans-serif; font-size:1.35rem; margin-bottom:.5rem; color:var(--text-bright); }
+    .hl-main-card p  { color:var(--text-dim); font-size:.88rem; line-height:1.65; }
+
+    .prog-bar-wrap { margin-top:1.5rem; display:flex; flex-direction:column; gap:.9rem; }
+    .prog-row { display:flex; justify-content:space-between; margin-bottom:.3rem; font-size:.8rem; }
+    .prog-row .prog-label { color:var(--text-dim); }
+    .prog-row .prog-val   { font-weight:700; }
+    .prog-track { height:5px; background:rgba(34,197,94,.08); border-radius:3px; }
+    .prog-fill  { height:100%; border-radius:3px; }
+
+    .hl-mini-cards { display:grid; grid-template-columns:1fr 1fr; gap:.9rem; margin-top:.9rem; }
+    .hl-mini {
+        background: rgba(26,74,40,.5); border: 1px solid var(--border);
+        border-radius: 12px; padding: 1.1rem; text-align: center;
+        backdrop-filter: blur(8px); transition: all .25s;
+    }
+    .hl-mini:hover { border-color: var(--border-bright); background: rgba(34,197,94,.08); }
+    .hl-mini .icon { font-size:1.6rem; margin-bottom:.4rem; display:block; }
+    .hl-mini .lbl  { font-size:.72rem; font-weight:600; color:var(--text-dim); }
+    .hl-mini .val  { font-family:'Syne',sans-serif; font-size:1.25rem; font-weight:800; color:var(--green-neon); }
+
+    .hl-features { display:flex; flex-direction:column; gap:.9rem; margin-top:2.5rem; }
+    .hl-feature {
+        display:flex; gap:1.1rem; align-items:flex-start;
+        padding:1.1rem 1.3rem;
+        background: rgba(26,74,40,.35);
+        border-radius:12px; border:1px solid var(--border);
+        transition:all .25s; backdrop-filter:blur(6px);
+    }
+    .hl-feature:hover { border-color:var(--border-bright); transform:translateX(8px); background:rgba(34,197,94,.07); }
+    .hl-f-icon {
+        width:42px; height:42px; border-radius:10px;
+        background:rgba(34,197,94,.12); border:1px solid rgba(34,197,94,.2);
+        display:grid; place-items:center; font-size:1.2rem; flex-shrink:0;
+    }
+    .hl-f-title { font-weight:700; font-size:.9rem; margin-bottom:.25rem; color:var(--text-bright); }
+    .hl-f-desc  { font-size:.8rem; color:var(--text-dim); line-height:1.55; }
+
+    /* ── TIPS ────────────────────────────────────────── */
+    .tips-bg {
+        background:linear-gradient(180deg, #0A1F11 0%, #0D2818 100%);
+        padding:5rem 0; border-top:1px solid var(--border);
+    }
+    .tips-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:1.25rem; margin-top:3rem; }
+    .tip-card {
+        background:rgba(26,74,40,.4); border:1px solid var(--border);
+        border-radius:var(--radius); overflow:hidden; transition:all .3s; cursor:pointer;
+        backdrop-filter:blur(6px);
+    }
+    .tip-card:hover { transform:translateY(-6px); box-shadow:0 20px 50px rgba(0,0,0,.4); border-color:var(--border-bright); }
+    .tip-thumb { height:170px; display:flex; align-items:center; justify-content:center; font-size:4.5rem; }
+    .tip-thumb-1 { background:linear-gradient(135deg,#0A2A14,#061A0A); }
+    .tip-thumb-2 { background:linear-gradient(135deg,#1F1A05,#141000); }
+    .tip-thumb-3 { background:linear-gradient(135deg,#0A1A2A,#060E18); }
+    .tip-content { padding:1.4rem; }
+    .tip-tag {
+        display:inline-block; background:rgba(34,197,94,.1); color:var(--green-muted);
+        font-size:.7rem; font-weight:700; letter-spacing:.8px; text-transform:uppercase;
+        border-radius:50px; padding:.22rem .7rem; margin-bottom:.7rem;
+        border:1px solid rgba(34,197,94,.2);
+    }
+    .tip-title { font-weight:700; font-size:.95rem; margin-bottom:.45rem; line-height:1.4; color:var(--text-bright); }
+    .tip-excerpt { font-size:.83rem; color:var(--text-dim); line-height:1.65; margin-bottom:.9rem; }
+    .tip-read { font-size:.81rem; font-weight:700; color:var(--green-bright); text-decoration:none; display:inline-flex; align-items:center; gap:.3rem; }
+    .tip-read:hover { color:var(--green-neon); }
+
+    /* ── TESTIMONIALS ────────────────────────────────── */
+    .testi-bg {
+        background:var(--forest); padding:5rem 0;
+        border-top:1px solid var(--border); position:relative; overflow:hidden;
+    }
+    .testi-bg::before {
+        content:''; position:absolute; inset:0;
+        background:
+            radial-gradient(ellipse at 20% 50%, rgba(34,197,94,.06) 0%, transparent 50%),
+            radial-gradient(ellipse at 80% 50%, rgba(245,158,11,.05) 0%, transparent 50%);
+        pointer-events:none;
+    }
+    .testi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.25rem; margin-top:3rem; position:relative; z-index:1; }
+    .testi-card {
+        background:rgba(26,74,40,.45); border:1px solid var(--border);
+        border-radius:var(--radius); padding:1.8rem; transition:all .3s; backdrop-filter:blur(8px);
+    }
+    .testi-card:hover { border-color:var(--border-bright); transform:translateY(-5px); background:rgba(26,74,40,.75); box-shadow:0 20px 48px rgba(0,0,0,.4); }
+    .testi-quote { font-size:2.5rem; color:var(--amber); line-height:1; margin-bottom:.6rem; }
+    .testi-stars { color:var(--amber); font-size:.82rem; margin-bottom:.75rem; letter-spacing:2px; }
+    .testi-text  { color:var(--text-dim); font-size:.9rem; line-height:1.75; margin-bottom:1.4rem; font-style:italic; }
+    .testi-author { display:flex; align-items:center; gap:.8rem; }
+    .testi-avatar {
+        width:42px; height:42px; border-radius:50%;
+        display:grid; place-items:center; font-size:1.3rem;
+        background:rgba(34,197,94,.12); border:1.5px solid rgba(34,197,94,.25); flex-shrink:0;
+    }
+    .testi-name { font-weight:700; color:var(--text-bright); font-size:.88rem; }
+    .testi-loc  { font-size:.75rem; color:var(--text-dim); }
+
+    /* ── CTA BANNER ──────────────────────────────────── */
+    .cta-banner {
+        background:linear-gradient(135deg, #060F0A 0%, #0D2818 40%, #0A2215 100%);
+        border-top:1px solid var(--border-bright);
+        padding:6rem 2rem; text-align:center; position:relative; overflow:hidden;
+    }
+    .cta-banner::before {
+        content:''; position:absolute; inset:0;
+        background:
+            radial-gradient(ellipse at 30% 50%, rgba(34,197,94,.1) 0%, transparent 55%),
+            radial-gradient(ellipse at 70% 50%, rgba(245,158,11,.07) 0%, transparent 55%);
+        pointer-events:none;
+    }
+    .cta-banner::after {
+        content:''; position:absolute; inset:0;
+        background-image: radial-gradient(circle at 1px 1px, rgba(34,197,94,.05) 1px, transparent 0);
+        background-size:40px 40px; pointer-events:none;
+    }
+    .cta-banner h2 {
+        font-family:'Syne',sans-serif;
+        font-size:clamp(2rem,4vw,3rem); font-weight:800;
+        color:var(--text-bright); margin-bottom:1rem; position:relative; z-index:1;
+    }
+    .cta-banner h2 span {
+        background:linear-gradient(90deg,var(--green-neon),var(--amber));
+        -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .cta-banner p { color:var(--text-dim); font-size:1rem; margin-bottom:2.5rem; position:relative; z-index:1; }
+    .cta-tag {
+        display:inline-flex; align-items:center; gap:.4rem;
+        background:rgba(34,197,94,.1); color:var(--green-neon);
+        border:1px solid rgba(34,197,94,.2); border-radius:50px;
+        padding:.3rem .9rem; font-size:.75rem; font-weight:700;
+        letter-spacing:.5px; margin-bottom:1rem; position:relative; z-index:1;
+    }
+    .btn-cta-main {
+        display:inline-flex; align-items:center; gap:.6rem;
+        background:linear-gradient(135deg,var(--green-bright),#16A34A);
+        color:#fff; border-radius:12px; padding:1rem 2.5rem;
+        font-weight:700; font-size:1rem; text-decoration:none;
+        box-shadow:0 8px 32px rgba(34,197,94,.4);
+        transition:all .25s; position:relative; z-index:1;
+    }
+    .btn-cta-main:hover {
+        background:linear-gradient(135deg,var(--green-neon),var(--green-bright));
+        color:#fff; transform:translateY(-3px);
+        box-shadow:0 16px 48px rgba(34,197,94,.55);
+    }
+
+    /* ── SCROLL REVEAL ───────────────────────────────── */
+    .reveal { opacity:0; transform:translateY(28px); transition:all .7s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+
+    @media (max-width:768px) {
+        .hero { min-height:auto; }
+        .hero-content { padding:3rem 1.5rem; }
+        .hero-stats { flex-wrap:wrap; gap:1.2rem; }
+        .section { padding:3.5rem 1.5rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ── HERO ──────────────────────────────────────────────────────── -->
+<section class="hero">
+    <div class="glow-orb-1"></div>
+    <div class="glow-orb-2"></div>
+    <div class="glow-orb-3"></div>
+
+    <div class="hero-content">
+        <div>
+            <div class="hero-badge"><span class="dot"></span> AI-Powered Agriculture Platform</div>
+            <h1 class="hero-title">Grow <em>Smarter.</em><br>Harvest <em>Better.</em></h1>
+            <p class="hero-desc">Agri Mitra uses advanced AI to analyze your soil, weather, and market data — giving you precise crop recommendations, disease alerts, and farming insights in seconds.</p>
+            <div class="hero-cta">
+                <a href="/predict" class="btn-primary-cta">🌾 Predict My Crop</a>
+                <a href="/ftalk" class="btn-outline-cta">🤝 Join Community</a>
+            </div>
+        </div>
+        <!-- Top bar or wherever you want the button -->
+
+        <!-- ── HERO VISUAL with VIDEO ── -->
+        <div class="hero-visual">
+            <div class="hero-card-3d">
+
+                <!-- VIDEO -->
+                <div class="field-illustration">
+                    <video
+                        class="hero-video"
+                        autoplay
+                        muted
+                        loop
+                        playsinline
+                        style="width:100%;height:100%;object-fit:cover;display:block;border-radius:28px;"
+                    >
+                        <source src="/static/video/From Main Klickpin CF- Pinterest Video - 6vwIonWK4.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <!-- ── END VIDEO ── -->
+
+                <div class="float-badge top-left">
+                    <span>🧠</span>
+                    <div>
+                        <div style="font-size:.68rem;color:var(--text-dim);line-height:1;">AI Result</div>
+                        <div class="badge-val">Rice — 95%</div>
+                    </div>
+                </div>
+                <div class="float-badge bot-right">
+                    <span>💧</span>
+                    <div>
+                        <div style="font-size:.68rem;color:var(--text-dim);line-height:1;">Rainfall</div>
+                        <div class="badge-val">148 mm</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── MARQUEE STRIP ──────────────────────────────────────────────── -->
+<div class="strip">
+    <div class="strip-track">
+        <span class="strip-item">🌾 Crop Prediction</span>
+        <span class="strip-item">🔬 Disease Detection</span>
+        <span class="strip-item">📈 Live Market Prices</span>
+        <span class="strip-item">🌤️ Weather Forecast</span>
+        <span class="strip-item">👨‍🌾 Farmer Job Portal</span>
+        <span class="strip-item">💬 AI Chatbot</span>
+        <span class="strip-item">📅 Farm Calendar</span>
+        <span class="strip-item">💳 Loan Assistance</span>
+        <span class="strip-item">🌾 Crop Prediction</span>
+        <span class="strip-item">🔬 Disease Detection</span>
+        <span class="strip-item">📈 Live Market Prices</span>
+        <span class="strip-item">🌤️ Weather Forecast</span>
+        <span class="strip-item">👨‍🌾 Farmer Job Portal</span>
+        <span class="strip-item">💬 AI Chatbot</span>
+        <span class="strip-item">📅 Farm Calendar</span>
+        <span class="strip-item">💳 Loan Assistance</span>
+    </div>
+</div>
+
+<!-- ── SERVICES ───────────────────────────────────────────────────── -->
+<div class="services-bg">
+    <div class="section">
+        <div class="reveal">
+            <div class="section-label">What We Offer</div>
+            <h2 class="section-title">Everything a Farmer <span>Needs</span></h2>
+            <p class="section-desc">From AI crop prediction to market prices — one platform, all the tools to make farming profitable.</p>
+        </div>
+        <div class="services-grid">
+            <a class="service-card reveal" href="/predict">
+                <div class="sc-icon">🧠</div>
+                <div class="sc-title">AI Crop Prediction</div>
+                <div class="sc-desc">Enter your soil NPK, pH, temperature, humidity and rainfall. Our model recommends the most suitable crops instantly.</div>
+                <div class="sc-arrow">Try Now →</div>
+            </a>
+            <a class="service-card reveal" href="/disease-detection" style="transition-delay:.05s">
+                <div class="sc-icon">🔬</div>
+                <div class="sc-title">Disease Detection</div>
+                <div class="sc-desc">Upload a photo of your plant. AI identifies diseases, pests, and nutrient deficiencies with treatment advice.</div>
+                <div class="sc-arrow">Diagnose Now →</div>
+            </a>
+            <a class="service-card reveal" href="/weather" style="transition-delay:.1s">
+                <div class="sc-icon">🌤️</div>
+                <div class="sc-title">Weather Forecast</div>
+                <div class="sc-desc">Hyper-local 7-day weather predictions tailored for agriculture. Plan irrigation and harvest with confidence.</div>
+                <div class="sc-arrow">Check Weather →</div>
+            </a>
+            <a class="service-card reveal" href="/mp" style="transition-delay:.15s">
+                <div class="sc-icon">📈</div>
+                <div class="sc-title">Market Prices</div>
+                <div class="sc-desc">Real-time mandi rates and price trend analysis powered by our AI bot. Know when and where to sell.</div>
+                <div class="sc-arrow">View Prices →</div>
+            </a>
+            <a class="service-card reveal" href="/farming-calendar" style="transition-delay:.2s">
+                <div class="sc-icon">📅</div>
+                <div class="sc-title">Farming Calendar</div>
+                <div class="sc-desc">Season-wise crop schedules, sowing and harvesting timelines crafted for your region.</div>
+                <div class="sc-arrow">Plan Now →</div>
+            </a>
+            <a class="service-card reveal" href="/loan" style="transition-delay:.25s">
+                <div class="sc-icon">💳</div>
+                <div class="sc-title">Loan Assistance</div>
+                <div class="sc-desc">Explore government schemes, Kisan Credit Cards, and microfinance options with guided applications.</div>
+                <div class="sc-arrow">Learn More →</div>
+            </a>
+            <a class="service-card reveal" href="/courses" style="transition-delay:.25s">
+                <div class="sc-icon">💳</div>
+                <div class="sc-title">courses</div>
+                <div class="sc-desc">Explore</div>
+                <div class="sc-arrow">Learn More →</div>
+            </a>
+            
+            <a class="service-card reveal" href="/games" style="transition-delay:.25s">
+                <div class="sc-icon">💳</div>
+                <div class="sc-title">Games </div>
+                <div class="sc-desc">Explore</div>
+                <div class="sc-arrow">Learn More →</div>
+            </a>
+            
+            <div style="position: fixed; top: 20px; right: 20px;">
+    <a href="{{ url_for('dashboard') }}" style="
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.95rem;
+        box-shadow: 0 4px 12px rgba(102,126,234,0.4);
+    ">
+        🪙 {{ session.get('coins', 0) }} &nbsp;|&nbsp; Dashboard
+    </a>
+</div>
+        </div>
+    </div>
+</div>
+
+<!-- ── FEATURES HIGHLIGHT ─────────────────────────────────────────── -->
+<div class="features-hl-wrap">
+    <div class="features-hl">
+        <div class="reveal">
+            <div class="hl-main-card">
+                <h3>🌱 Your Soil Report</h3>
+                <p>AI-analyzed soil profile showing nutrient levels, pH balance, and personalized crop match scores.</p>
+                <div class="prog-bar-wrap">
+                    <div>
+                        <div class="prog-row"><span class="prog-label">Nitrogen (N)</span><span class="prog-val" style="color:var(--amber)">72 kg/ha</span></div>
+                        <div class="prog-track"><div class="prog-fill" style="width:72%;background:linear-gradient(90deg,var(--amber),#FCD34D)"></div></div>
+                    </div>
+                    <div>
+                        <div class="prog-row"><span class="prog-label">Phosphorus (P)</span><span class="prog-val" style="color:var(--green-neon)">48 kg/ha</span></div>
+                        <div class="prog-track"><div class="prog-fill" style="width:48%;background:var(--green-bright)"></div></div>
+                    </div>
+                    <div>
+                        <div class="prog-row"><span class="prog-label">Potassium (K)</span><span class="prog-val" style="color:#67E8F9">85 kg/ha</span></div>
+                        <div class="prog-track"><div class="prog-fill" style="width:85%;background:#22D3EE"></div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="hl-mini-cards">
+                <div class="hl-mini"><span class="icon">🥇</span><div class="val">Rice</div><div class="lbl">Top Match</div></div>
+                <div class="hl-mini"><span class="icon">🌡️</span><div class="val">27°C</div><div class="lbl">Avg Temp</div></div>
+                <div class="hl-mini"><span class="icon">💧</span><div class="val">68%</div><div class="lbl">Humidity</div></div>
+                <div class="hl-mini"><span class="icon">🌧️</span><div class="val">148mm</div><div class="lbl">Rainfall</div></div>
+            </div>
+        </div>
+
+        <div class="reveal">
+            <div class="section-label">Why Agri Mitra</div>
+            <h2 class="section-title">Precision Farming,<br><span>Zero Guesswork</span></h2>
+            <p class="section-desc">Our AI processes seven critical parameters to generate hyper-accurate crop recommendations, fertilizer plans, and water management advice — in real time.</p>
+            <div class="hl-features">
+                <div class="hl-feature"><div class="hl-f-icon">🎯</div><div><div class="hl-f-title">99% Crop Prediction Accuracy</div><div class="hl-f-desc">Trained on 2.2 million data points across Indian agro-climatic zones.</div></div></div>
+                <div class="hl-feature"><div class="hl-f-icon">⚡</div><div><div class="hl-f-title">Results in Under 3 Seconds</div><div class="hl-f-desc">Instant recommendations — no waiting, no complicated reports.</div></div></div>
+                <div class="hl-feature"><div class="hl-f-icon">🌍</div><div><div class="hl-f-title">Multilingual Support</div><div class="hl-f-desc">Available in English and Hindi, with more regional languages coming soon.</div></div></div>
+                <div class="hl-feature"><div class="hl-f-icon">📱</div><div><div class="hl-f-title">Works on Any Device</div><div class="hl-f-desc">Fully responsive on mobile, tablet, and desktop — even on slow connections.</div></div></div>
+            </div>
+            <a href="/predict" class="btn-primary-cta" style="margin-top:2rem;display:inline-flex;">🌾 Try Crop Prediction Free</a>
+        </div>
+    </div>
+</div>
+
+<!-- ── FARMING TIPS ────────────────────────────────────────────────── -->
+<div class="tips-bg">
+    <div class="section">
+        <div class="reveal">
+            <div class="section-label">Knowledge Hub</div>
+            <h2 class="section-title">Latest Farming <span>Tips & Insights</span></h2>
+            <p class="section-desc">Expert agronomist advice, seasonal guides, and crop management strategies updated weekly.</p>
+        </div>
+        <div class="tips-grid">
+            <div class="tip-card reveal">
+                <div class="tip-thumb tip-thumb-1">🌾</div>
+                <div class="tip-content">
+                    <span class="tip-tag">Soil Health</span>
+                    <div class="tip-title">How to Improve Soil Nitrogen Naturally</div>
+                    <div class="tip-excerpt">Learn green manuring, composting, and crop rotation techniques that boost nitrogen without synthetic fertilizers.</div>
+                    <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10748132/" class="tip-read">Read Article →</a>
+                </div>
+            </div>
+            <div class="tip-card reveal" style="transition-delay:.1s">
+                <div class="tip-thumb tip-thumb-2">🌽</div>
+                <div class="tip-content">
+                    <span class="tip-tag">Kharif Season</span>
+                    <div class="tip-title">Top 5 Kharif Crops for High Yield in 2025</div>
+                    <div class="tip-excerpt">From paddy to soybean — discover which crops deliver the best returns this monsoon season.</div>
+                    <a href="https://farmonaut.com/precision-farming/farming-for-profit-top-5-high-yield-crops-tools-for-2025" class="tip-read">Read Article →</a>
+                </div>
+            </div>
+            <div class="tip-card reveal" style="transition-delay:.2s">
+                <div class="tip-thumb tip-thumb-3">🌊</div>
+                <div class="tip-content">
+                    <span class="tip-tag">Water Management</span>
+                    <div class="tip-title">Drip Irrigation: Save 60% Water, Boost Yield</div>
+                    <div class="tip-excerpt">A step-by-step guide to setting up drip irrigation on small and medium farms with subsidy info.</div>
+                    <a href="https://farmonaut.com/precision-farming/best-trickle-irrigation-system-to-save-60-water" class="tip-read">Read Article →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── CTA BANNER ─────────────────────────────────────────────────── -->
+<div class="cta-banner reveal">
+    <div class="cta-tag">🌿 Join 50,000+ Farmers</div>
+    <h2>Ready to Transform<br><span>Your Farm?</span></h2>
+    <p>One platform. All the AI tools you need to farm smarter and earn more.</p>
+    <a href="/predict" class="btn-cta-main">🚀 Get Started — It's Free</a>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const reveals = document.querySelectorAll('.reveal');
+    const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => obs.observe(el));
+
+    function animateCounter(el, target, suffix='') {
+        let start = 0;
+        const step = target / (1800/16);
+        const timer = setInterval(() => {
+            start = Math.min(start + step, target);
+            el.textContent = Math.floor(start).toLocaleString() + suffix;
+            if (start >= target) clearInterval(timer);
+        }, 16);
+    }
+    const statsSection = document.querySelector('.hero-stats');
+    if (statsSection) {
+        const nums = statsSection.querySelectorAll('.num');
+        let animated = false;
+        new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting && !animated) {
+                animated = true;
+                const targets = [50000, 96, 22], suffixes = ['K+', '%', '+'];
+                nums.forEach((el, i) => animateCounter(el, i===0 ? targets[i]/1000 : targets[i], suffixes[i]));
+            }
+        }, { threshold: 0.5 }).observe(statsSection);
+    }
+</script>
+{% endblock %}

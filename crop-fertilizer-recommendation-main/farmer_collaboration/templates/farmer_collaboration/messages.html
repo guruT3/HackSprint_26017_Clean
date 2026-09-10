@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Messages & Chat — Farmer Connect</title>
+    <link rel="stylesheet" href="{{ url_for('farmer_collaboration.static', filename='css/farmer_connect.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="fc-container">
+    <div class="fc-navbar">
+        <a href="{{ url_for('farmer_collaboration.dashboard') }}" class="fc-brand">🌾 Farmer Connect</a>
+        <div class="fc-nav-links">
+            <a href="{{ url_for('farmer_collaboration.dashboard') }}" class="fc-nav-link">Dashboard</a>
+            <a href="{{ url_for('farmer_collaboration.messages') }}" class="fc-nav-link active">💬 Messages</a>
+        </div>
+    </div>
+
+    <div class="fc-grid-2">
+        <!-- Contacts List -->
+        <div class="fc-card">
+            <h3 style="margin-top:0;">💬 Conversations</h3>
+            {% for f in farmers %}
+            <div style="padding:12px; border-bottom:1px solid #f1f5f9; cursor:pointer; background: #f8fafc; border-radius:8px; margin-bottom:8px;">
+                <div style="font-weight:700; color:#0f172a;">{{ f.name }} ✓</div>
+                <div style="font-size:0.82rem; color:#64748b;">📍 {{ f.district }}, {{ f.state }}</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Chat Window -->
+        <div class="fc-card" style="display:flex; flex-direction:column; justify-space-between; height:450px;">
+            <div class="fc-card-header" style="border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
+                <strong style="font-size:1.1rem; color:#0f172a;">Chat with Subhashree Naik (Bargarh)</strong>
+                <span class="fc-badge fc-badge-green">Online</span>
+            </div>
+
+            <div style="flex:1; overflow-y:auto; padding:12px 0; display:flex; flex-direction:column; gap:10px;">
+                <div style="background:#e2e8f0; padding:10px 14px; border-radius:12px; align-self:flex-start; max-width:75%; font-size:0.9rem;">
+                    Hello Ramesh bhai! I saw your requirement for 500 kg Swarna Paddy seeds. Are you looking for delivery in Bargarh block?
+                </div>
+                <div style="background:#2e7d32; color:#fff; padding:10px 14px; border-radius:12px; align-self:flex-end; max-width:75%; font-size:0.9rem;">
+                    Yes Subhashree, I am looking for certified seeds. What is your best price per kg?
+                </div>
+                <div style="background:#e2e8f0; padding:10px 14px; border-radius:12px; align-self:flex-start; max-width:75%; font-size:0.9rem;">
+                    I can offer ₹45/kg for 500 kg batch with free delivery to your farm!
+                </div>
+            </div>
+
+            <div style="display:flex; gap:8px; border-top:1px solid #e2e8f0; padding-top:12px;">
+                <input type="text" placeholder="Type your message..." style="flex:1; padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+                <button onclick="alert('Message sent!')" class="fc-btn fc-btn-primary" style="background:#2e7d32; color:#fff;">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

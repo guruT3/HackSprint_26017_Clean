@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+
+{% block title %}About Us - Meet Our Team{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .about-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 80px 20px 60px;
+        text-align: center;
+    }
+
+    .about-hero h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        animation: fadeInUp 0.8s ease-out;
+    }
+
+    .about-hero p {
+        font-size: 1.2rem;
+        max-width: 900px;
+        margin: 0 auto;
+        opacity: 0.95;
+        line-height: 1.8;
+        animation: fadeInUp 0.8s ease-out 0.2s both;
+    }
+
+    .mission-vision {
+        max-width: 1200px;
+        margin: 60px auto;
+        padding: 0 20px;
+    }
+
+    .mission-vision h2 {
+        font-size: 2.2rem;
+        color: #2d3748;
+        text-align: center;
+        margin-bottom: 30px;
+        font-weight: 700;
+    }
+
+    .mission-vision-content {
+        background: linear-gradient(135deg, #f6f8fb 0%, #ffffff 100%);
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        border-left: 5px solid #667eea;
+    }
+
+    .mission-vision-content p {
+        font-size: 1.1rem;
+        line-height: 1.9;
+        color: #4a5568;
+        margin-bottom: 15px;
+    }
+
+    .team-section-title {
+        text-align: center;
+        font-size: 2.2rem;
+        color: #2d3748;
+        margin: 60px 0 20px;
+        font-weight: 700;
+    }
+
+    .team-subtitle {
+        text-align: center;
+        color: #667eea;
+        font-size: 1.1rem;
+        margin-bottom: 50px;
+        font-weight: 500;
+    }
+
+    .team-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px 80px;
+    }
+
+    .team-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 40px;
+    }
+
+    .team-card {
+        background: white;
+        border-radius: 20px;
+        padding: 40px 35px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        animation: fadeInUp 0.6s ease-out both;
+        border-top: 4px solid #667eea;
+    }
+
+    .team-card:nth-child(1) { 
+        animation-delay: 0.1s;
+        border-top-color: #667eea;
+    }
+    .team-card:nth-child(2) { 
+        animation-delay: 0.2s;
+        border-top-color: #764ba2;
+    }
+    .team-card:nth-child(3) { 
+        animation-delay: 0.3s;
+        border-top-color: #f093fb;
+    }
+
+    .team-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+    }
+
+    .team-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 25px;
+        font-size: 2rem;
+        color: white;
+        font-weight: 700;
+    }
+
+    .team-name {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 8px;
+        text-align: center;
+    }
+
+    .team-role {
+        font-size: 1rem;
+        color: #667eea;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    .team-bio {
+        color: #4a5568;
+        line-height: 1.8;
+        font-size: 1rem;
+        text-align: center;
+    }
+
+    .team-divider {
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        margin: 15px auto;
+        border-radius: 2px;
+    }
+
+    @media (max-width: 768px) {
+        .about-hero h1 {
+            font-size: 2rem;
+        }
+
+        .about-hero p {
+            font-size: 1rem;
+        }
+
+        .mission-vision h2,
+        .team-section-title {
+            font-size: 1.8rem;
+        }
+
+        .mission-vision-content {
+            padding: 30px 25px;
+        }
+
+        .team-grid {
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .team-card {
+            padding: 35px 30px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="about-hero">
+    <h1>Meet Our Team</h1>
+    <p>
+        We are a passionate student-led team dedicated to building innovative technology solutions. 
+        From web development to AI/ML integrations, we collaborate to create impactful digital products 
+        that solve real-world problems through creativity, teamwork, and cutting-edge technology.
+    </p>
+</div>
+
+<div class="mission-vision">
+    <h2>Our Mission & Vision</h2>
+    <div class="mission-vision-content">
+        <p>
+            <strong>Our Mission:</strong> To empower innovation through collaborative technology development. 
+            We strive to build scalable, user-centric applications that address modern challenges while 
+            continuously learning and pushing the boundaries of what's possible in software development.
+        </p>
+        <p>
+            <strong>Our Vision:</strong> To become a leading force in student-driven tech innovation, 
+            creating digital products that make a meaningful impact. We envision a future where our 
+            projects inspire others and contribute to advancing technology for the greater good.
+        </p>
+    </div>
+</div>
+
+<div class="team-container">
+    <h2 class="team-section-title">The Minds Behind the Magic</h2>
+    <p class="team-subtitle">Get to know the talented individuals driving our projects forward</p>
+    
+    <div class="team-grid">
+        <!-- Team Member 1: Milind Panda -->
+        <div class="team-card">
+            <div class="team-icon">MP</div>
+            <h3 class="team-name">Milind Panda</h3>
+            <div class="team-divider"></div>
+            <p class="team-role">AI/ML Developer</p>
+            <p class="team-bio">
+                Enthusiastic about artificial intelligence and machine learning applications. 
+                Works on integrating intelligent features into projects, from data analysis to 
+                predictive models, bringing cutting-edge AI capabilities to life.
+            </p>
+        </div>
+
+        <!-- Team Member 2: Guru Prasad Palai -->
+        <div class="team-card">
+            <div class="team-icon">GP</div>
+            <h3 class="team-name">Guru Prasad Palai</h3>
+            <div class="team-divider"></div>
+            <p class="team-role">Backend Developer</p>
+            <p class="team-bio">
+                Specializes in backend architecture and database optimization. Focused on building 
+                robust, secure systems that power seamless user experiences. Always exploring new 
+                technologies to enhance performance and reliability.
+            </p>
+        </div>
+
+        <!-- Team Member 3: Jashobant Sasmal -->
+        <div class="team-card">
+            <div class="team-icon">JS</div>
+            <h3 class="team-name">Jashobant Sasmal</h3>
+            <div class="team-divider"></div>
+            <p class="team-role">Frontend Developer</p>
+            <p class="team-bio">
+                A dedicated developer with expertise in building beautiful, responsive user interfaces. 
+                Passionate about clean code, user experience, and leveraging modern frameworks 
+                to create innovative solutions that make a difference.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

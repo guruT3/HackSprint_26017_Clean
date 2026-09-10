@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mandi Hub & Procurement — Farmer Connect</title>
+    <link rel="stylesheet" href="{{ url_for('farmer_collaboration.static', filename='css/farmer_connect.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="fc-container">
+    <div class="fc-navbar">
+        <a href="{{ url_for('farmer_collaboration.dashboard') }}" class="fc-brand">🌾 Farmer Connect</a>
+        <div class="fc-nav-links">
+            <a href="{{ url_for('farmer_collaboration.dashboard') }}" class="fc-nav-link">Dashboard</a>
+            <a href="{{ url_for('farmer_collaboration.community') }}" class="fc-nav-link">👨‍🌾 Community</a>
+            <a href="{{ url_for('farmer_collaboration.marketplace') }}" class="fc-nav-link">🛒 Marketplace</a>
+            <a href="{{ url_for('farmer_collaboration.requirements') }}" class="fc-nav-link">📋 Requirements</a>
+            <a href="{{ url_for('farmer_collaboration.mandi_hub') }}" class="fc-nav-link active">🏪 Mandi Hub</a>
+        </div>
+    </div>
+
+    <h2>🏪 Mandi Hub & Official Procurement Announcements</h2>
+
+    <div class="fc-grid-2">
+        <!-- Announcements Feed -->
+        <div>
+            <h3 style="margin:0 0 16px 0; font-size:1.25rem;">📢 Recent Procurement Notices & Auctions</h3>
+
+            {% for anc in announcements %}
+            <div class="fc-card" style="margin-bottom:16px; border-left:5px solid #2e7d32;">
+                <div class="fc-card-header">
+                    <div>
+                        <strong style="font-size:1.1rem; color:#0f172a;">{{ anc.mandi_name }} ✓</strong>
+                        <span class="fc-badge fc-badge-green" style="margin-left:8px;">Official Mandi</span>
+                    </div>
+                    <span style="font-size:0.8rem; color:#64748b;">{{ anc.created_at }}</span>
+                </div>
+                <h3 class="fc-card-title" style="margin-top:6px;">{{ anc.title }}</h3>
+                <p style="color:#334155; line-height:1.6;">{{ anc.content }}</p>
+
+                <div style="background:#e8f5e9; border-radius:8px; padding:12px; font-size:0.9rem; font-weight:700; color:#2e7d32; display:flex; justify-content:space-between;">
+                    <span>Crop: {{ anc.crop_type }}</span>
+                    <span>Procurement Price: {{ anc.procurement_price }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Verified Mandi List -->
+        <div>
+            <h3 style="margin:0 0 16px 0; font-size:1.25rem;">📍 Registered Mandis</h3>
+            
+            {% for mandi in mandis %}
+            <div class="fc-card" style="margin-bottom:16px;">
+                <div class="fc-card-header">
+                    <strong style="font-size:1.05rem; color:#0f172a;">{{ mandi.mandi_name }}</strong>
+                    <span class="fc-badge fc-badge-green">Platform Verified</span>
+                </div>
+                <div style="font-size:0.88rem; color:#475569; margin-bottom:8px;">
+                    <div>📍 Location: {{ mandi.district }}, {{ mandi.state }}</div>
+                    <div>📞 Contact: {{ mandi.phone }}</div>
+                    <div>🌾 Supported Crops: {{ mandi.crops }}</div>
+                </div>
+                <button onclick="alert('Connecting to {{ mandi.mandi_name }} procurement desk...')" class="fc-btn fc-btn-primary" style="background:#2e7d32; color:#fff; width:100%; justify-content:center; padding:8px;">Contact Mandi Officer</button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

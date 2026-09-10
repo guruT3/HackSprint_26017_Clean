@@ -1,0 +1,546 @@
+{% extends "base.html" %}
+{% block title %}Farmer Games — AgriMitra{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+    --forest:        #0D2818;
+    --green-bright:  #22C55E;
+    --green-neon:    #4ADE80;
+    --green-muted:   #86EFAC;
+    --amber:         #F59E0B;
+    --amber-light:   #FCD34D;
+    --red:           #F87171;
+    --blue:          #38BDF8;
+    --border:        rgba(34,197,94,.12);
+    --border-bright: rgba(34,197,94,.35);
+    --text:          #BBF7D0;
+    --text-bright:   #ECFDF5;
+    --text-dim:      #4B7A5E;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--forest);font-family:'Nunito Sans',sans-serif;}
+
+.games-wrap{
+    min-height:100vh;
+    background:linear-gradient(135deg,#060F0A 0%,#0D2818 50%,#0A2215 100%);
+    padding:3rem 2rem 6rem;position:relative;overflow:hidden;
+}
+.games-wrap::before{
+    content:'';position:absolute;inset:0;
+    background-image:radial-gradient(circle at 1px 1px,rgba(34,197,94,.05) 1px,transparent 0);
+    background-size:40px 40px;pointer-events:none;
+}
+.gorb{position:absolute;border-radius:50%;pointer-events:none;}
+.gorb1{width:600px;height:600px;top:-200px;right:-150px;background:radial-gradient(circle,rgba(34,197,94,.09) 0%,transparent 65%);}
+.gorb2{width:400px;height:400px;bottom:0;left:-100px;background:radial-gradient(circle,rgba(245,158,11,.07) 0%,transparent 65%);}
+.games-inner{max-width:1100px;margin:0 auto;position:relative;z-index:1;}
+
+/* HEADER */
+.page-label{font-size:.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--green-bright);display:flex;align-items:center;gap:.6rem;margin-bottom:.75rem;}
+.page-label::before{content:'';display:inline-block;width:22px;height:2px;background:linear-gradient(90deg,var(--green-bright),var(--amber));border-radius:2px;}
+.page-title{font-family:'Syne',sans-serif;font-size:clamp(2rem,4vw,3rem);font-weight:800;color:var(--text-bright);line-height:1.1;margin-bottom:.6rem;}
+.page-title span{background:linear-gradient(90deg,var(--green-neon),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-desc{color:var(--text-dim);font-size:.97rem;line-height:1.7;margin-bottom:2.5rem;}
+
+/* TABS */
+.game-tabs{display:flex;gap:.7rem;margin-bottom:2rem;flex-wrap:wrap;}
+.game-tab{padding:.55rem 1.3rem;border-radius:20px;font-size:.85rem;font-weight:700;cursor:pointer;border:1px solid var(--border);color:var(--text-dim);background:rgba(26,74,40,.3);transition:all .2s;font-family:'Nunito Sans',sans-serif;}
+.game-tab:hover{border-color:var(--border-bright);color:var(--green-neon);}
+.game-tab.active{background:rgba(34,197,94,.15);border-color:var(--border-bright);color:var(--green-neon);}
+
+/* PANELS */
+.game-panel{display:none;animation:fadeUp .4s ease both;}
+.game-panel.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+.game-card{background:rgba(26,74,40,.45);border:1px solid var(--border);border-radius:24px;padding:2rem;backdrop-filter:blur(12px);box-shadow:0 20px 60px rgba(0,0,0,.4);}
+
+/* SCORE BAR */
+.score-bar{display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:14px;padding:.9rem 1.4rem;margin-bottom:1.8rem;flex-wrap:wrap;gap:.5rem;}
+.score-item{text-align:center;}
+.score-val{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:var(--green-neon);}
+.score-val.amber{color:var(--amber);}
+.score-val.red{color:var(--red);}
+.score-lbl{font-size:.68rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.8px;}
+
+/* TITLE */
+.g-title{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:var(--text-bright);margin-bottom:.4rem;}
+.g-sub{color:var(--text-dim);font-size:.88rem;margin-bottom:1.5rem;}
+
+/* BUTTONS */
+.g-btn{padding:.75rem 1.8rem;border-radius:12px;font-family:'Nunito Sans',sans-serif;font-weight:800;font-size:.9rem;cursor:pointer;border:none;transition:all .2s;display:inline-flex;align-items:center;gap:.5rem;}
+.g-btn-green{background:linear-gradient(135deg,var(--green-bright),#16A34A);color:#fff;box-shadow:0 6px 20px rgba(34,197,94,.3);}
+.g-btn-green:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(34,197,94,.45);}
+
+/* FEEDBACK */
+.feedback{padding:.8rem 1.2rem;border-radius:12px;font-weight:700;font-size:.88rem;margin-top:1rem;display:none;align-items:center;gap:.5rem;line-height:1.5;}
+.feedback.correct{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:var(--green-neon);display:flex;}
+.feedback.wrong{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.25);color:var(--red);display:flex;}
+
+/* RESULT */
+.result-screen{text-align:center;padding:2rem 1rem;}
+.result-emoji{font-size:4rem;margin-bottom:1rem;display:block;}
+.result-title{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:var(--text-bright);margin-bottom:.5rem;}
+.result-msg{color:var(--text-dim);font-size:.92rem;margin-bottom:1.5rem;line-height:1.6;}
+.result-score{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;background:linear-gradient(90deg,var(--green-neon),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:1.5rem;display:block;}
+
+/* ── QUIZ ── */
+.quiz-progress{height:6px;background:rgba(34,197,94,.1);border-radius:3px;margin-bottom:1.5rem;overflow:hidden;}
+.quiz-progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--green-bright),var(--amber));transition:width .4s ease;}
+.quiz-question{background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:16px;padding:1.4rem 1.6rem;font-size:1.05rem;font-weight:700;color:var(--text-bright);margin-bottom:1.4rem;line-height:1.5;}
+.quiz-options{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1rem;}
+.quiz-opt{padding:.9rem 1rem;border-radius:12px;background:rgba(26,74,40,.5);border:1px solid var(--border);color:var(--text);font-weight:700;font-size:.88rem;cursor:pointer;transition:all .2s;text-align:left;font-family:'Nunito Sans',sans-serif;}
+.quiz-opt:hover:not(:disabled){border-color:var(--border-bright);background:rgba(34,197,94,.1);color:var(--green-neon);}
+.quiz-opt.correct{background:rgba(34,197,94,.2);border-color:rgba(34,197,94,.5);color:var(--green-neon);}
+.quiz-opt.wrong{background:rgba(248,113,113,.15);border-color:rgba(248,113,113,.4);color:var(--red);}
+.quiz-opt:disabled{cursor:default;}
+@media(max-width:600px){.quiz-options{grid-template-columns:1fr;}}
+
+/* ── SOIL MATCH ── */
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;}
+.match-col-title{font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:.7rem;}
+.match-item{padding:.85rem 1.1rem;border-radius:12px;background:rgba(26,74,40,.5);border:2px solid var(--border);color:var(--text-bright);font-weight:700;font-size:.88rem;cursor:pointer;transition:all .2s;margin-bottom:.6rem;display:flex;align-items:center;gap:.5rem;}
+.match-item:hover:not(.matched):not(.wrong-flash){border-color:var(--border-bright);background:rgba(34,197,94,.1);}
+.match-item.selected{border-color:var(--amber);background:rgba(245,158,11,.1);color:var(--amber-light);}
+.match-item.matched{border-color:rgba(34,197,94,.5);background:rgba(34,197,94,.12);color:var(--green-neon);cursor:default;}
+.match-item.wrong-flash{border-color:rgba(248,113,113,.5);background:rgba(248,113,113,.1);animation:shake .3s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* ── WEATHER ── */
+.weather-scene{background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:16px;padding:1.4rem;margin-bottom:1.5rem;text-align:center;}
+.weather-icon{font-size:4rem;margin-bottom:.5rem;display:block;}
+.weather-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--text-bright);margin-bottom:.3rem;}
+.weather-desc{font-size:.85rem;color:var(--text-dim);line-height:1.6;}
+.weather-choices{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1rem;}
+.weather-choice{padding:1rem;border-radius:12px;background:rgba(26,74,40,.5);border:1px solid var(--border);color:var(--text);font-weight:700;font-size:.85rem;cursor:pointer;transition:all .2s;text-align:center;font-family:'Nunito Sans',sans-serif;line-height:1.4;}
+.weather-choice:hover:not(:disabled){border-color:var(--border-bright);background:rgba(34,197,94,.1);color:var(--green-neon);}
+.weather-choice.correct{background:rgba(34,197,94,.2);border-color:rgba(34,197,94,.5);color:var(--green-neon);}
+.weather-choice.wrong{background:rgba(248,113,113,.15);border-color:rgba(248,113,113,.4);color:var(--red);}
+.weather-choice:disabled{cursor:default;}
+.farm-health{display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem;}
+.farm-health-label{font-size:.78rem;color:var(--text-dim);font-weight:700;white-space:nowrap;}
+.farm-health-track{flex:1;height:10px;background:rgba(34,197,94,.1);border-radius:5px;overflow:hidden;}
+.farm-health-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--red),var(--amber),var(--green-bright));transition:width .5s ease;}
+@media(max-width:600px){.weather-choices{grid-template-columns:1fr;}}
+
+/* ── PEST CATCHER ── */
+.pest-info{display:flex;gap:.8rem;margin-bottom:1rem;flex-wrap:wrap;}
+.pest-info-box{flex:1;min-width:80px;background:rgba(26,74,40,.5);border:1px solid var(--border);border-radius:12px;padding:.7rem 1rem;text-align:center;}
+.pest-info-val{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;}
+.pest-info-lbl{font-size:.68rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.6px;}
+.pest-arena{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:16px;padding:1rem;margin-bottom:1rem;position:relative;height:320px;overflow:hidden;cursor:crosshair;user-select:none;}
+.arena-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 100%,rgba(34,197,94,.12) 0%,transparent 60%),linear-gradient(180deg,#060F0A 0%,#0A1F10 100%);border-radius:14px;}
+.arena-ground{position:absolute;bottom:8px;left:0;right:0;font-size:1.2rem;letter-spacing:4px;opacity:.4;text-align:center;pointer-events:none;}
+.pest{position:absolute;font-size:2rem;cursor:pointer;user-select:none;animation:pestFloat .5s ease-in-out infinite alternate;z-index:2;transition:transform .1s;}
+.pest:hover{transform:scale(1.2);}
+@keyframes pestFloat{from{transform:translateY(0)}to{transform:translateY(-6px)}}
+.crop-deco{position:absolute;font-size:1.8rem;pointer-events:none;opacity:.55;z-index:1;}
+.pop-text{position:absolute;font-weight:800;font-size:1.1rem;color:var(--green-neon);pointer-events:none;z-index:10;animation:popUp .7s ease forwards;text-shadow:0 0 10px rgba(74,222,128,.8);white-space:nowrap;}
+.pop-text.bad{color:var(--red);text-shadow:0 0 10px rgba(248,113,113,.8);}
+@keyframes popUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-55px) scale(1.3)}}
+.pest-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:5;background:rgba(6,15,10,.75);border-radius:14px;backdrop-filter:blur(4px);}
+.pest-overlay h3{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:var(--text-bright);margin-bottom:.5rem;}
+.pest-overlay p{color:var(--text-dim);font-size:.88rem;margin-bottom:1.2rem;text-align:center;max-width:280px;line-height:1.5;}
+.hint-bar{margin-top:.8rem;padding:.7rem 1rem;background:rgba(0,0,0,.2);border-radius:10px;border:1px solid var(--border);font-size:.78rem;color:var(--text-dim);font-weight:700;}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="games-wrap">
+    <div class="gorb gorb1"></div>
+    <div class="gorb gorb2"></div>
+    <div class="games-inner">
+
+        <div class="page-label">Play & Learn</div>
+        <h1 class="page-title">Farmer <span>Learning Games</span></h1>
+        <p class="page-desc">Learn farming the fun way — play games, earn knowledge, become a smarter farmer! 🌾</p>
+
+        <div class="game-tabs">
+            <div class="game-tab active" onclick="showGame('quiz',this)">🌾 Crop Quiz</div>
+            <div class="game-tab" onclick="showGame('match',this)">🧩 Soil Match</div>
+            <div class="game-tab" onclick="showGame('weather',this)">🌦️ Weather Farmer</div>
+            <div class="game-tab" onclick="showGame('pest',this)">🪲 Pest Catcher</div>
+        </div>
+
+        <!-- ══ GAME 1: CROP QUIZ ══ -->
+        <div class="game-panel active" id="game-quiz">
+        <div class="game-card">
+            <div class="score-bar">
+                <div class="score-item"><div class="score-val" id="q-score">0</div><div class="score-lbl">Score</div></div>
+                <div class="score-item"><div class="score-val amber" id="q-num">1/10</div><div class="score-lbl">Question</div></div>
+                <div class="score-item"><div class="score-val red" id="q-wrong">0</div><div class="score-lbl">Wrong</div></div>
+            </div>
+            <div id="quiz-main">
+                <div class="quiz-progress"><div class="quiz-progress-fill" id="q-prog" style="width:10%"></div></div>
+                <div class="quiz-question" id="q-text"></div>
+                <div class="quiz-options" id="q-opts"></div>
+                <div class="feedback" id="q-feedback"></div>
+            </div>
+            <div id="quiz-result" style="display:none" class="result-screen">
+                <span class="result-emoji" id="qr-emoji">🏆</span>
+                <div class="result-title" id="qr-title">Quiz Complete!</div>
+                <div class="result-msg" id="qr-msg"></div>
+                <span class="result-score" id="qr-score"></span>
+                <button class="g-btn g-btn-green" onclick="startQuiz()">🔄 Play Again</button>
+            </div>
+        </div>
+        </div>
+
+        <!-- ══ GAME 2: SOIL MATCH ══ -->
+        <div class="game-panel" id="game-match">
+        <div class="game-card">
+            <div class="score-bar">
+                <div class="score-item"><div class="score-val" id="m-score">0</div><div class="score-lbl">Matched</div></div>
+                <div class="score-item"><div class="score-val amber" id="m-attempts">0</div><div class="score-lbl">Attempts</div></div>
+                <div class="score-item"><div class="score-val red" id="m-left">6</div><div class="score-lbl">Remaining</div></div>
+            </div>
+            <div class="g-title">🧩 Match Soil to Crop</div>
+            <p class="g-sub">Click a soil type, then click the matching crop. Learn which crop grows best in which soil!</p>
+            <div id="match-main">
+                <div class="match-grid">
+                    <div><div class="match-col-title">🌍 Soil Types</div><div id="soil-list"></div></div>
+                    <div><div class="match-col-title">🌾 Crops</div><div id="crop-list"></div></div>
+                </div>
+                <div class="feedback" id="m-feedback"></div>
+            </div>
+            <div id="match-result" style="display:none" class="result-screen">
+                <span class="result-emoji">🌱</span>
+                <div class="result-title">All Matched! 🎉</div>
+                <div class="result-msg" id="mr-msg"></div>
+                <span class="result-score" id="mr-score"></span>
+                <button class="g-btn g-btn-green" onclick="startMatch()">🔄 Play Again</button>
+            </div>
+        </div>
+        </div>
+
+        <!-- ══ GAME 3: WEATHER FARMER ══ -->
+        <div class="game-panel" id="game-weather">
+        <div class="game-card">
+            <div class="score-bar">
+                <div class="score-item"><div class="score-val" id="w-score">0</div><div class="score-lbl">Score</div></div>
+                <div class="score-item"><div class="score-val amber" id="w-round">1/8</div><div class="score-lbl">Scenario</div></div>
+                <div class="score-item"><div class="score-val" id="w-health">100%</div><div class="score-lbl">Farm Health</div></div>
+            </div>
+            <div class="farm-health">
+                <span class="farm-health-label">🌿 Farm Health</span>
+                <div class="farm-health-track"><div class="farm-health-fill" id="w-health-bar" style="width:100%"></div></div>
+            </div>
+            <div id="weather-main">
+                <div class="weather-scene">
+                    <span class="weather-icon" id="w-icon">☀️</span>
+                    <div class="weather-title" id="w-title"></div>
+                    <div class="weather-desc" id="w-desc"></div>
+                </div>
+                <div class="weather-choices" id="w-choices"></div>
+                <div class="feedback" id="w-feedback"></div>
+            </div>
+            <div id="weather-result" style="display:none" class="result-screen">
+                <span class="result-emoji" id="wr-emoji">🌾</span>
+                <div class="result-title" id="wr-title">Season Complete!</div>
+                <div class="result-msg" id="wr-msg"></div>
+                <span class="result-score" id="wr-score"></span>
+                <button class="g-btn g-btn-green" onclick="startWeather()">🔄 New Season</button>
+            </div>
+        </div>
+        </div>
+
+        <!-- ══ GAME 4: PEST CATCHER ══ -->
+        <div class="game-panel" id="game-pest">
+        <div class="game-card">
+            <div class="pest-info">
+                <div class="pest-info-box"><div class="pest-info-val" style="color:var(--green-neon)" id="p-caught">0</div><div class="pest-info-lbl">Caught 🪲</div></div>
+                <div class="pest-info-box"><div class="pest-info-val" style="color:var(--red)" id="p-escaped">0</div><div class="pest-info-lbl">Escaped 💨</div></div>
+                <div class="pest-info-box"><div class="pest-info-val" style="color:var(--amber)" id="p-time">30</div><div class="pest-info-lbl">Seconds ⏱</div></div>
+                <div class="pest-info-box"><div class="pest-info-val" style="color:var(--text-bright)" id="p-score">0</div><div class="pest-info-lbl">Score ⭐</div></div>
+            </div>
+            <div class="pest-arena" id="pestArena">
+                <div class="arena-bg"></div>
+                <div class="arena-ground">🌱🌿🌱🌿🌱🌿🌱🌿🌱🌿</div>
+                <div class="pest-overlay" id="pestOverlay">
+                    <h3>🪲 Pest Catcher</h3>
+                    <p>Tap the pests before they eat your crops!<br>Don't tap the crops 🌾 — penalty -5!</p>
+                    <button class="g-btn g-btn-green" onclick="startPest()">▶ Start Game</button>
+                </div>
+            </div>
+            <div class="hint-bar">🪲 Tap pests to catch (+10) &nbsp;|&nbsp; 🌾 Avoid crops (-5) &nbsp;|&nbsp; ⚡ Pests escape after 3.5s (-5)</div>
+        </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ══ TAB SWITCH ══════════════════════════════════
+function showGame(id, tab) {
+    document.querySelectorAll('.game-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.game-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('game-' + id).classList.add('active');
+    tab.classList.add('active');
+}
+
+// ══════════════════════════════════════════════
+// GAME 1 — CROP QUIZ
+// ══════════════════════════════════════════════
+const QUIZ = [
+    {q:"Which crop needs the MOST water to grow?",opts:["Rice 🌾","Wheat 🌿","Maize 🌽","Bajra"],ans:0,exp:"Rice requires flooded paddies — one of the most water-intensive crops."},
+    {q:"What does 'N' stand for in NPK fertilizer?",opts:["Neem","Nitrogen","Natural","Neutral"],ans:1,exp:"N = Nitrogen. It helps plants grow lush green leaves and strong stems."},
+    {q:"Which soil is BEST for growing cotton?",opts:["Sandy soil","Black (Regur) soil","Red soil","Alluvial soil"],ans:1,exp:"Black soil retains moisture and is rich in calcium — perfect for cotton."},
+    {q:"Kharif crops are sown in which season?",opts:["Winter","Summer","Monsoon","Spring"],ans:2,exp:"Kharif crops like rice, cotton are sown at the start of monsoon (June–July)."},
+    {q:"Which crop is called 'Golden Fibre'?",opts:["Cotton","Jute","Sugarcane","Wheat"],ans:1,exp:"Jute is called Golden Fibre because of its golden colour and high value."},
+    {q:"Ideal pH range for most crops?",opts:["3–4","5–5.5","6–7","8–9"],ans:2,exp:"Most crops grow best in slightly acidic to neutral soil: pH 6.0–7.0."},
+    {q:"Drip irrigation saves up to how much water?",opts:["10–20%","30–40%","50–70%","80–90%"],ans:2,exp:"Drip irrigation delivers water to roots directly, saving 50–70% vs flood."},
+    {q:"Which gas do plants absorb in photosynthesis?",opts:["Oxygen","Nitrogen","Carbon Dioxide","Methane"],ans:2,exp:"Plants absorb CO₂ and convert it to food using sunlight — photosynthesis!"},
+    {q:"Vermicompost is made using which organism?",opts:["Bacteria","Earthworms","Fungi","Bees"],ans:1,exp:"Earthworms break down organic waste into rich vermicompost for soil."},
+    {q:"MSP stands for?",opts:["Maximum Sale Price","Minimum Support Price","Market Standard Price","Monthly Subsidy"],ans:1,exp:"MSP = Minimum Support Price — price the government guarantees farmers."},
+];
+
+let qIdx=0, qScore=0, qWrong=0;
+
+function startQuiz(){
+    qIdx=0;qScore=0;qWrong=0;
+    document.getElementById('quiz-main').style.display='';
+    document.getElementById('quiz-result').style.display='none';
+    loadQ();
+}
+function loadQ(){
+    const q=QUIZ[qIdx];
+    document.getElementById('q-score').textContent=qScore;
+    document.getElementById('q-num').textContent=`${qIdx+1}/${QUIZ.length}`;
+    document.getElementById('q-wrong').textContent=qWrong;
+    document.getElementById('q-prog').style.width=`${((qIdx)/QUIZ.length)*100+10}%`;
+    document.getElementById('q-text').textContent=q.q;
+    document.getElementById('q-feedback').className='feedback';
+    const c=document.getElementById('q-opts');
+    c.innerHTML='';
+    q.opts.forEach((o,i)=>{
+        const b=document.createElement('button');
+        b.className='quiz-opt';b.textContent=o;
+        b.onclick=()=>ansQ(i);c.appendChild(b);
+    });
+}
+function ansQ(chosen){
+    const q=QUIZ[qIdx];
+    document.querySelectorAll('.quiz-opt').forEach(b=>b.disabled=true);
+    const fb=document.getElementById('q-feedback');
+    if(chosen===q.ans){
+        document.querySelectorAll('.quiz-opt')[chosen].classList.add('correct');
+        qScore+=10;fb.className='feedback correct';fb.innerHTML=`✅ Correct! ${q.exp}`;
+    } else {
+        document.querySelectorAll('.quiz-opt')[chosen].classList.add('wrong');
+        document.querySelectorAll('.quiz-opt')[q.ans].classList.add('correct');
+        qWrong++;fb.className='feedback wrong';fb.innerHTML=`❌ Wrong! ${q.exp}`;
+    }
+    setTimeout(()=>{qIdx++;qIdx<QUIZ.length?loadQ():showQResult();},2200);
+}
+function showQResult(){
+    document.getElementById('quiz-main').style.display='none';
+    document.getElementById('quiz-result').style.display='block';
+    const pct=Math.round((qScore/(QUIZ.length*10))*100);
+    const emojis=['😢','😐','🙂','😊','🌟','🏆'];
+    const msgs=["Don't give up! Every farmer learns from the field.","Good start! Keep learning 🌱","Nice! You know your farming basics.","Great! You are a knowledgeable farmer!","Excellent farmer knowledge! 💪","Perfect score! You are a Master Farmer! 🧑‍🌾"];
+    document.getElementById('qr-emoji').textContent=emojis[Math.min(Math.floor(pct/20),5)];
+    document.getElementById('qr-title').textContent=pct===100?'🏆 Perfect Score!':'Quiz Complete!';
+    document.getElementById('qr-msg').textContent=msgs[Math.min(Math.floor(pct/20),5)];
+    document.getElementById('qr-score').textContent=`${qScore} / ${QUIZ.length*10} points`;
+}
+
+// ══════════════════════════════════════════════
+//═════════════════════
+// GAME 3 — WEATHER FARMER
+// ══════════════════════════════════════════════
+const WEATHER=[
+    {icon:'☀️',title:'Scorching Hot Day — 42°C',desc:'Crops are wilting in the heat. What do you do?',
+     choices:['💧 Irrigate in the morning','🌾 Harvest everything now','🧪 Apply fertilizer','😴 Do nothing'],
+     ans:0,exp:'Morning irrigation prevents evaporation. Never fertilize in extreme heat.'},
+    {icon:'🌧️',title:'Heavy Monsoon Rain',desc:'Heavy rain has waterlogged your paddy field!',
+     choices:['🚰 Drain excess water','🌱 Plant more seeds','🧪 Add more fertilizer','💧 Add more water'],
+     ans:0,exp:'Waterlogging suffocates roots. Drain immediately to save the crop.'},
+    {icon:'🌨️',title:'Frost Warning Tonight',desc:'Frost predicted. Your vegetables are vulnerable!',
+     choices:['🌿 Cover plants with cloth/mulch','🔥 Burn dry leaves','💧 Over-water the field','✂️ Cut all plants'],
+     ans:0,exp:'Mulch or cloth traps heat around plants, protecting from frost damage.'},
+    {icon:'🌪️',title:'Strong Winds Coming',desc:'Strong winds predicted. Tall wheat crop might fall!',
+     choices:['🪵 Stake tall plants for support','🌾 Harvest immediately','💧 Water more','🌱 Plant new seeds'],
+     ans:0,exp:'Staking prevents lodging — when crops fall over from strong winds.'},
+    {icon:'🌡️',title:'3 Weeks Without Rain',desc:'Soil cracking. Limited water supply. Best strategy?',
+     choices:['🫘 Switch to drought-resistant crops','💧 Water current crops heavily','🌿 Plant water-loving crops','🛑 Abandon the field'],
+     ans:0,exp:'Bajra, jowar, and pulses need very little water — ideal for drought.'},
+    {icon:'🌫️',title:'Dense Fog in Winter',desc:'Fog affecting pollination of your mustard crop!',
+     choices:['🐝 Hand-pollinate or add bees','💧 Irrigate heavily','🔥 Apply heat with fire','⏳ Wait and hope'],
+     ans:0,exp:'Hand-pollination ensures your mustard flowers get pollinated despite fog.'},
+    {icon:'🌈',title:'Perfect Rainfall — Ideal Weather!',desc:'Best conditions of the year. How do you use it?',
+     choices:['🌱 Sow seeds + apply organic compost','🏖️ Take a break','🌾 Just harvest what\'s ready','💊 Apply chemical pesticide'],
+     ans:0,exp:'Perfect weather = perfect planting time! Apply compost while moisture is ideal.'},
+    {icon:'⚡',title:'Hailstorm Damage',desc:'Hail damaged 30% of your crop. Next step?',
+     choices:['📋 Assess damage + file insurance claim','🚜 Plough entire field','💧 Stop all irrigation','🌾 Replant everything now'],
+     ans:0,exp:'Assess first, then claim PM Fasal Bima Yojana insurance. Don\'t rush.'},
+];
+let wIdx=0,wScore=0,wHealth=100;
+
+function startWeather(){
+    wIdx=0;wScore=0;wHealth=100;
+    document.getElementById('weather-main').style.display='';
+    document.getElementById('weather-result').style.display='none';
+    updateHBar();loadW();
+}
+function loadW(){
+    const s=WEATHER[wIdx];
+    document.getElementById('w-score').textContent=wScore;
+    document.getElementById('w-round').textContent=`${wIdx+1}/${WEATHER.length}`;
+    document.getElementById('w-icon').textContent=s.icon;
+    document.getElementById('w-title').textContent=s.title;
+    document.getElementById('w-desc').textContent=s.desc;
+    document.getElementById('w-feedback').className='feedback';
+    const c=document.getElementById('w-choices');c.innerHTML='';
+    s.choices.forEach((ch,i)=>{
+        const b=document.createElement('button');
+        b.className='weather-choice';b.textContent=ch;
+        b.onclick=()=>ansW(i);c.appendChild(b);
+    });
+}
+function ansW(chosen){
+    const s=WEATHER[wIdx];
+    document.querySelectorAll('.weather-choice').forEach(b=>b.disabled=true);
+    const fb=document.getElementById('w-feedback');
+    if(chosen===s.ans){
+        document.querySelectorAll('.weather-choice')[chosen].classList.add('correct');
+        wScore+=10;fb.className='feedback correct';fb.innerHTML=`✅ Smart decision! ${s.exp}`;
+    } else {
+        document.querySelectorAll('.weather-choice')[chosen].classList.add('wrong');
+        document.querySelectorAll('.weather-choice')[s.ans].classList.add('correct');
+        wHealth=Math.max(0,wHealth-15);updateHBar();
+        fb.className='feedback wrong';fb.innerHTML=`❌ Wrong! ${s.exp}`;
+    }
+    if(wHealth<=0){setTimeout(showWResult,1500);return;}
+    setTimeout(()=>{wIdx++;wIdx<WEATHER.length?loadW():showWResult();},2300);
+}
+function updateHBar(){
+    document.getElementById('w-health').textContent=wHealth+'%';
+    document.getElementById('w-health-bar').style.width=wHealth+'%';
+}
+function showWResult(){
+    document.getElementById('weather-main').style.display='none';
+    document.getElementById('weather-result').style.display='block';
+    const pct=Math.round((wScore/(WEATHER.length*10))*100);
+    document.getElementById('wr-score').textContent=`${wScore}/${WEATHER.length*10} · Farm Health: ${wHealth}%`;
+    document.getElementById('wr-emoji').textContent=wHealth<=0?'🥀':pct>=70?'🌾':'🌱';
+    document.getElementById('wr-title').textContent=wHealth<=0?'Farm Destroyed! 😢':'Season Complete! 🌾';
+    document.getElementById('wr-msg').textContent=wHealth<=0?'Your farm ran out of health. Bad weather decisions cost the harvest!':pct>=80?'Excellent! Smart farmer all season! 🏆':pct>=50?'Good effort! Some decisions need improvement.':'Keep learning! Weather management is key to farming success.';
+}
+
+// ══════════════════════════════════════════════
+// GAME 4 — PEST CATCHER
+// ══════════════════════════════════════════════
+const PESTS=['🪲','🐛','🦗','🦟','🐜','🪰'];
+const CROP_DECO=['🌾','🌽','🍅','🥬','🥕','🌿'];
+let pTimer,pSpawn,pActive=false,pCaught=0,pEscaped=0,pTime=30,pScore=0;
+
+function startPest(){
+    document.getElementById('pestOverlay').style.display='none';
+    pCaught=0;pEscaped=0;pTime=30;pScore=0;pActive=true;
+    updatePUI();
+    // Clear old
+    document.querySelectorAll('.pest,.crop-deco,.pop-text').forEach(e=>e.remove());
+    // Plant static crops
+    for(let i=0;i<6;i++) spawnCropDeco();
+    // Spawn pests
+    pSpawn=setInterval(()=>{if(pActive)spawnPest();},1100);
+    // Timer
+    pTimer=setInterval(()=>{
+        pTime--;document.getElementById('p-time').textContent=pTime;
+        if(pTime<=0)endPest();
+    },1000);
+}
+
+function spawnPest(){
+    const arena=document.getElementById('pestArena');
+    const el=document.createElement('div');
+    el.className='pest';
+    el.textContent=PESTS[Math.floor(Math.random()*PESTS.length)];
+    el.style.left=(5+Math.random()*85)+'%';
+    el.style.top=(5+Math.random()*75)+'%';
+    el.onclick=(e)=>{e.stopPropagation();if(!pActive)return;catchPest(el);};
+    arena.appendChild(el);
+    // Auto-escape
+    setTimeout(()=>{if(el.parentNode&&pActive)escapePest(el);},3500);
+}
+
+function spawnCropDeco(){
+    const arena=document.getElementById('pestArena');
+    const el=document.createElement('div');
+    el.className='crop-deco';
+    el.textContent=CROP_DECO[Math.floor(Math.random()*CROP_DECO.length)];
+    el.style.left=(5+Math.random()*85)+'%';
+    el.style.top=(5+Math.random()*80)+'%';
+    // Tapping crop = penalty
+    el.style.pointerEvents='all';
+    el.style.cursor='not-allowed';
+    el.onclick=(e)=>{
+        e.stopPropagation();
+        if(!pActive)return;
+        pScore=Math.max(0,pScore-5);
+        updatePUI();
+        showPop(el.style.left,el.style.top,'-5 oops!',true);
+    };
+    arena.appendChild(el);
+}
+
+function catchPest(el){
+    pCaught++;pScore+=10;
+    showPop(el.style.left,el.style.top,'+10 ✓',false);
+    el.remove();updatePUI();
+}
+function escapePest(el){
+    pEscaped++;pScore=Math.max(0,pScore-5);
+    showPop(el.style.left,el.style.top,'-5 escaped',true);
+    el.remove();updatePUI();
+}
+function showPop(left,top,text,bad){
+    const arena=document.getElementById('pestArena');
+    const p=document.createElement('div');
+    p.className='pop-text'+(bad?' bad':'');
+    p.textContent=text;p.style.left=left;p.style.top=top;
+    arena.appendChild(p);setTimeout(()=>p.remove(),800);
+}
+function updatePUI(){
+    document.getElementById('p-caught').textContent=pCaught;
+    document.getElementById('p-escaped').textContent=pEscaped;
+    document.getElementById('p-score').textContent=pScore;
+}
+function endPest(){
+    clearInterval(pTimer);clearInterval(pSpawn);pActive=false;
+    document.querySelectorAll('.pest').forEach(p=>p.remove());
+    const ov=document.getElementById('pestOverlay');
+    const emoji=pScore>=80?'🏆':pScore>=40?'🌾':'😅';
+    const msg=pScore>=80?'Amazing! Your farm is pest-free! 🌿':pScore>=40?'Good job! Keep protecting your crops!':'Pests won this round. Stay alert!';
+    ov.innerHTML=`
+        <h3>${emoji} Time's Up!</h3>
+        <p>Caught: ${pCaught} &nbsp;|&nbsp; Escaped: ${pEscaped} &nbsp;|&nbsp; Score: ${pScore}</p>
+        <p style="margin-top:.4rem;color:var(--green-muted)">${msg}</p>
+        <button class="g-btn g-btn-green" style="margin-top:1.2rem" onclick="resetPest()">🔄 Play Again</button>
+    `;
+    ov.style.display='flex';
+}
+function resetPest(){
+    document.querySelectorAll('.pest,.crop-deco,.pop-text').forEach(e=>e.remove());
+    pTime=30;document.getElementById('p-time').textContent=30;
+    const ov=document.getElementById('pestOverlay');
+    ov.innerHTML=`
+        <h3>🪲 Pest Catcher</h3>
+        <p>Tap the pests before they eat your crops!<br>Don't tap the crops 🌾 — penalty -5!</p>
+        <button class="g-btn g-btn-green" onclick="startPest()">▶ Start Game</button>
+    `;
+    ov.style.display='flex';
+}
+
+// ── UTILITY ─────────────────────────────
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+// ── INIT ─────────────────────────────────
+window.addEventListener('DOMContentLoaded',()=>{
+    startQuiz();startMatch();startWeather();
+});
+</script>
+{% endblock %}

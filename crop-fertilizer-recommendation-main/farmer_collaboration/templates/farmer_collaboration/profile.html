@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Profile — {{ farmer.name }}</title>
+    <link rel="stylesheet" href="{{ url_for('farmer_collaboration.static', filename='css/farmer_connect.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="fc-container">
+    <div class="fc-navbar">
+        <a href="{{ url_for('farmer_collaboration.dashboard') }}" class="fc-brand">🌾 Farmer Connect</a>
+        <div class="fc-nav-links">
+            <a href="{{ url_for('farmer_collaboration.dashboard') }}" class="fc-nav-link">Dashboard</a>
+            <a href="{{ url_for('farmer_collaboration.community') }}" class="fc-nav-link">Community</a>
+            <a href="{{ url_for('farmer_collaboration.marketplace') }}" class="fc-nav-link">Marketplace</a>
+        </div>
+    </div>
+
+    <div class="fc-grid-2">
+        <!-- Farmer Info Card -->
+        <div class="fc-card">
+            <div>
+                <div class="fc-card-header">
+                    <div>
+                        <h2 style="margin:0; font-size:1.6rem; color:#0f172a;">{{ farmer.name }} {% if farmer.verified %}<span style="color:#2e7d32; font-size:1.2rem;">✓ Platform Verified</span>{% endif %}</h2>
+                        <div style="font-size:0.9rem; color:#64748b; margin-top:4px;">📍 {{ farmer.district }}, {{ farmer.state }}</div>
+                    </div>
+                    <span class="fc-badge fc-badge-green">{{ farmer.rating }} ★</span>
+                </div>
+
+                <div style="background:#f8fafc; border-radius:10px; padding:16px; margin:16px 0;">
+                    <div style="font-size:0.92rem; color:#334155; display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                        <div>Crops Grown: <strong>{{ farmer.crops }}</strong></div>
+                        <div>Farming Experience: <strong>{{ farmer.experience }} Years</strong></div>
+                        <div>Member Status: <strong>Verified Farmer</strong></div>
+                        <div>Rating: <strong>{{ farmer.rating }} / 5.0</strong></div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:flex; gap:12px; margin-top:16px;">
+                <button onclick="FarmerConnectUI.openCollaborationModal('{{ farmer.name }}')" class="fc-btn fc-btn-primary" style="background:#2e7d32; color:#fff; flex:1;">🤝 Request Collaboration</button>
+                <a href="{{ url_for('farmer_collaboration.messages') }}" class="fc-btn fc-btn-secondary" style="background:#f1f5f9; color:#0f172a; flex:1; text-align:center;">💬 Send Message</a>
+            </div>
+        </div>
+
+        <!-- Seller Products -->
+        <div>
+            <h3 style="margin-top:0;">🛒 Marketplace Products by {{ farmer.name }}</h3>
+            {% for item in listings %}
+            <div class="fc-card" style="margin-bottom:12px;">
+                <div class="fc-card-header">
+                    <strong style="color:#0f172a;">{{ item.title }}</strong>
+                    <span style="font-weight:800; color:#2e7d32;">₹{{ item.price }}</span>
+                </div>
+                <div style="font-size:0.82rem; color:#64748b;">Qty: {{ item.quantity }} {{ item.unit }} | 📍 {{ item.location }}</div>
+            </div>
+            {% else %}
+            <div class="fc-card" style="color:#64748b; text-align:center;">No active listings.</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('farmer_collaboration.static', filename='js/farmer_connect.js') }}"></script>
+</body>
+</html>

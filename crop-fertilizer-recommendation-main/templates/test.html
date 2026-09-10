@@ -1,0 +1,698 @@
+// {% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-green: #2d5a27;
+        --light-green: #4a7c59;
+        --accent-gold: #f4a261;
+        --bg-light: #f8f9fa;
+        --text-dark: #2c3e50;
+    }
+
+    .appointment-container {
+        background: linear-gradient(135deg, var(--bg-light) 0%, #e8f5e8 100%);
+        min-height: 100vh;
+        padding: 40px 0;
+        position: relative;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        padding: 40px;
+        margin: 20px auto;
+        max-width: 800px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: linear-gradient(90deg, var(--primary-green), var(--light-green), var(--accent-gold));
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+        position: relative;
+    }
+
+    .page-header h1 {
+        color: var(--primary-green);
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .page-header p {
+        color: var(--text-dark);
+        font-size: 1.1rem;
+        opacity: 0.8;
+    }
+
+    .form-section {
+        margin-bottom: 30px;
+    }
+
+    .section-title {
+        color: var(--primary-green);
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--accent-gold);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-control, .form-select {
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 12px 15px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #fafafa;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--light-green);
+        box-shadow: 0 0 0 0.2rem rgba(74, 124, 89, 0.25);
+        background: white;
+    }
+
+    .btn-submit {
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        border: none;
+        padding: 15px 40px;
+        border-radius: 50px;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(45, 90, 39, 0.3);
+    }
+
+    .btn-submit:active {
+        transform: translateY(0);
+    }
+
+    .btn-submit .spinner-border {
+        display: none;
+        width: 20px;
+        height: 20px;
+    }
+
+    .btn-submit.loading .spinner-border {
+        display: inline-block;
+    }
+
+    .btn-submit.loading .btn-text {
+        display: none;
+    }
+
+    .success-message {
+        background: linear-gradient(135deg, #d4edda, #c3e6cb);
+        border: 2px solid #28a745;
+        color: #155724;
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        margin-bottom: 30px;
+        animation: slideIn 0.5s ease;
+    }
+
+    .error-message {
+        background: linear-gradient(135deg, #f8d7da, #f1b6bb);
+        border: 2px solid #dc3545;
+        color: #721c24;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        animation: slideIn 0.5s ease;
+    }
+
+    .row {
+        margin: 0 -10px;
+    }
+
+    .col-md-6 {
+        padding: 0 10px;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .phone-call-info {
+        background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+        border: 2px solid var(--accent-gold);
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .phone-call-info h4 {
+        color: var(--primary-green);
+        margin-bottom: 10px;
+    }
+
+    .phone-call-info p {
+        color: var(--text-dark);
+        margin-bottom: 0;
+        font-size: 1.05rem;
+    }
+
+    /* Language Selector Styles */
+    .language-selector {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        display: flex;
+        gap: 10px;
+        z-index: 100;
+        background: linear-gradient(135deg, #fff, #f0f0f0);
+        border-radius: 25px;
+        padding: 5px 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border: 1.5px solid var(--accent-gold);
+    }
+    .lang-btn {
+        background: transparent;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        color: var(--primary-green);
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+        font-size: 14px;
+    }
+    .lang-btn.active {
+        background: var(--primary-green);
+        color: white;
+    }
+    .lang-btn:hover:not(.active) {
+        background: var(--accent-gold);
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .form-card {
+            padding: 25px;
+            margin: 10px;
+        }
+        
+        .page-header h1 {
+            font-size: 2rem;
+        }
+        
+        .row {
+            margin: 0;
+        }
+        
+        .col-md-6 {
+            padding: 0;
+        }
+        
+        .language-selector {
+            top: 10px;
+            right: 10px;
+            padding: 4px 8px;
+        }
+        .lang-btn {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+    }
+</style>
+
+<div class="appointment-container">
+    <div class="container">
+        {% if success %}
+        <div class="success-message" id="successMessage">
+            <h4><i class="fas fa-check-circle"></i> Application Submitted Successfully!</h4>
+            <p>Thank you for your submission. You will receive a phone call shortly at the provided number for consultation scheduling.</p>
+        </div>
+        {% endif %}
+
+        <div class="form-card">
+            <!-- Language Selector -->
+            <div class="language-selector" role="group" aria-label="Language selector">
+                <button class="lang-btn active" type="button" onclick="switchLanguage('en', this)">English</button>
+                <button class="lang-btn" type="button" onclick="switchLanguage('hi', this)">हिंदी</button>
+                <button class="lang-btn" type="button" onclick="switchLanguage('or', this)">ଓଡ଼ିଆ</button>
+            </div>
+
+            <div class="page-header">
+                <h1><i class="fas fa-seedling"></i> <span id="headerTitle">Farmer Consultation Request</span></h1>
+                <p id="headerSubtitle">Please fill in your details to schedule an agricultural consultation</p>
+            </div>
+
+            <div class="phone-call-info">
+                <h4><i class="fas fa-phone"></i> <span id="consultationTitle">Consultation Process</span></h4>
+                <p id="consultationDesc">After submitting this form, our agricultural expert will call you within 24 hours to discuss your farming needs and schedule an in-person consultation.</p>
+            </div>
+
+            <form method="POST" id="farmerForm" novalidate>
+                {{ form.hidden_tag() }}
+                
+                <!-- Personal Information Section -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-user"></i> <span id="personalInfoTitle">Personal Information</span>
+                    </h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="{{ form.name.id }}" class="form-label"><i class="fas fa-user text-muted"></i> <span id="labelName">Full Name</span></label>
+                                {{ form.name(class="form-control", placeholder="Enter your full name") }}
+                                {% if form.name.errors %}
+                                    <div class="error-message">
+                                        {% for error in form.name.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="{{ form.Email.id }}" class="form-label"><i class="fas fa-envelope text-muted"></i> <span id="labelEmail">Email Address</span></label>
+                                {{ form.Email(class="form-control", placeholder="Enter your email address") }}
+                                {% if form.Email.errors %}
+                                    <div class="error-message">
+                                        {% for error in form.Email.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.phone.id }}" class="form-label"><i class="fas fa-phone text-muted"></i> <span id="labelPhone">Phone Number</span></label>
+                        {{ form.phone(class="form-control", placeholder="Enter 10-digit phone number") }}
+                        {% if form.phone.errors %}
+                            <div class="error-message">
+                                {% for error in form.phone.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Location Information Section -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-map-marker-alt"></i> <span id="locationInfoTitle">Location Information</span>
+                    </h3>
+                    <div class="form-group">
+                        <label for="{{ form.address.id }}" class="form-label"><i class="fas fa-home text-muted"></i> <span id="labelAddress">Complete Address</span></label>
+                        {{ form.address(class="form-control", placeholder="Enter your complete address") }}
+                        {% if form.address.errors %}
+                            <div class="error-message">
+                                {% for error in form.address.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="{{ form.city.id }}" class="form-label"><i class="fas fa-city text-muted"></i> <span id="labelCity">City</span></label>
+                                {{ form.city(class="form-control", placeholder="City") }}
+                                {% if form.city.errors %}
+                                    <div class="error-message">
+                                        {% for error in form.city.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="{{ form.state.id }}" class="form-label"><i class="fas fa-flag text-muted"></i> <span id="labelState">State</span></label>
+                                {{ form.state(class="form-control", placeholder="State") }}
+                                {% if form.state.errors %}
+                                    <div class="error-message">
+                                        {% for error in form.state.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="{{ form.zip.id }}" class="form-label"><i class="fas fa-mail-bulk text-muted"></i> <span id="labelZip">ZIP Code</span></label>
+                                {{ form.zip(class="form-control", placeholder="ZIP Code") }}
+                                {% if form.zip.errors %}
+                                    <div class="error-message">
+                                        {% for error in form.zip.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Farm Information Section -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-tractor"></i> <span id="farmInfoTitle">Farm Information</span>
+                    </h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="{{ form.farm_size.id }}" class="form-label"><i class="fas fa-expand-arrows-alt text-muted"></i> <span id="labelFarmSize">Farm Size (in acres)</span></label>
+                                {{ form.farm_size(class="form-control", placeholder="e.g., 5.5", step="0.1") }}
+                                {% if form.farm_size.errors %}
+                                    <div class="error-message">
+                                        {% for error in form.farm_size.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="{{ form.crop_type.id }}" class="form-label"><i class="fas fa-leaf text-muted"></i> <span id="labelCropType">Crop Type</span></label>
+                                {{ form.crop_type(class="form-control", placeholder="e.g., Rice, Wheat, Corn") }}
+                                {% if form.crop_type.errors %}
+                                    <div class="error-message">
+                                        {% for error in form.crop_type.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="{{ form.soil_type.id }}" class="form-label"><i class="fas fa-mountain text-muted"></i> <span id="labelSoilType">Soil Type</span></label>
+                                {{ form.soil_type(class="form-control", placeholder="e.g., Clay, Sandy, Loamy") }}
+                                {% if form.soil_type.errors %}
+                                    <div class="error-message">
+                                        {% for error in form.soil_type.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="{{ form.irrigation_methods.id }}" class="form-label"><i class="fas fa-tint text-muted"></i> <span id="labelIrrigation">Irrigation Methods</span></label>
+                                {{ form.irrigation_methods(class="form-control", placeholder="e.g., Drip, Sprinkler, Flood") }}
+                                {% if form.irrigation_methods.errors %}
+                                    <div class="error-message">
+                                        {% for error in form.irrigation_methods.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.experience_level.id }}" class="form-label"><i class="fas fa-chart-line text-muted"></i> <span id="labelExperience">Experience Level</span></label>
+                        {{ form.experience_level(class="form-select") }}
+                        {% if form.experience_level.errors %}
+                            <div class="error-message">
+                                {% for error in form.experience_level.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn-submit" id="submitBtn">
+                        <span class="spinner-border" role="status" aria-hidden="true"></span>
+                        <span class="btn-text">
+                            <i class="fas fa-paper-plane"></i> <span id="submitBtnText">Submit Consultation Request</span>
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script>
+document.getElementById('farmerForm').addEventListener('submit', function(e) {
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.classList.add('loading');
+    submitBtn.disabled = true;
+    
+    // Create a hidden form to trigger phone call
+    const phoneCallData = {
+        to: '7846917002',
+        message: 'New farmer consultation request submitted',
+        farmerPhone: document.querySelector('input[name="phone"]').value,
+        farmerName: document.querySelector('input[name="name"]').value
+    };
+    
+    // For demonstration, we'll show a console log
+    console.log('Phone call would be triggered to 7846917002 with data:', phoneCallData);
+    
+    // You can implement actual phone call functionality here
+    // Example with fetch API:
+    /*
+    fetch('/trigger-phone-call', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(phoneCallData)
+    }).then(response => {
+        if (response.ok) {
+            console.log('Phone call triggered successfully');
+        }
+    }).catch(error => {
+        console.error('Error triggering phone call:', error);
+    });
+    */
+});
+
+// Language Selector Function
+function switchLanguage(lang, btn) {
+    const buttons = document.querySelectorAll('.lang-btn');
+    buttons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    // Elements to translate
+    const elements = {
+        headerTitle: document.getElementById('headerTitle'),
+        headerSubtitle: document.getElementById('headerSubtitle'),
+        consultationTitle: document.getElementById('consultationTitle'),
+        consultationDesc: document.getElementById('consultationDesc'),
+        personalInfoTitle: document.getElementById('personalInfoTitle'),
+        labelName: document.getElementById('labelName'),
+        labelEmail: document.getElementById('labelEmail'),
+        labelPhone: document.getElementById('labelPhone'),
+        locationInfoTitle: document.getElementById('locationInfoTitle'),
+        labelAddress: document.getElementById('labelAddress'),
+        labelCity: document.getElementById('labelCity'),
+        labelState: document.getElementById('labelState'),
+        labelZip: document.getElementById('labelZip'),
+        farmInfoTitle: document.getElementById('farmInfoTitle'),
+        labelFarmSize: document.getElementById('labelFarmSize'),
+        labelCropType: document.getElementById('labelCropType'),
+        labelSoilType: document.getElementById('labelSoilType'),
+        labelIrrigation: document.getElementById('labelIrrigation'),
+        labelExperience: document.getElementById('labelExperience'),
+        submitBtnText: document.getElementById('submitBtnText'),
+    };
+
+    if (lang === 'hi') {
+        elements.headerTitle.textContent = 'किसान परामर्श अनुरोध';
+        elements.headerSubtitle.textContent = 'कृषि परामर्श निर्धारित करने के लिए कृपया अपनी जानकारी भरें';
+        elements.consultationTitle.textContent = 'परामर्श प्रक्रिया';
+        elements.consultationDesc.textContent = 'इस फॉर्म को जमा करने के बाद, हमारे कृषि विशेषज्ञ 24 घंटे के भीतर आपको कॉल करेंगे ताकि आपकी खेती की आवश्यकताओं पर चर्चा की जा सके और व्यक्तिगत परामर्श निर्धारित किया जा सके।';
+        elements.personalInfoTitle.textContent = 'व्यक्तिगत जानकारी';
+        elements.labelName.textContent = 'पूरा नाम';
+        elements.labelEmail.textContent = 'ईमेल पता';
+        elements.labelPhone.textContent = 'फोन नंबर';
+        elements.locationInfoTitle.textContent = 'स्थान जानकारी';
+        elements.labelAddress.textContent = 'पूरा पता';
+        elements.labelCity.textContent = 'शहर';
+        elements.labelState.textContent = 'राज्य';
+        elements.labelZip.textContent = 'पिन कोड';
+        elements.farmInfoTitle.textContent = 'खेती की जानकारी';
+        elements.labelFarmSize.textContent = 'खेती का आकार (एकड़ में)';
+        elements.labelCropType.textContent = 'फसल का प्रकार';
+        elements.labelSoilType.textContent = 'मिट्टी का प्रकार';
+        elements.labelIrrigation.textContent = 'सिंचाई के तरीके';
+        elements.labelExperience.textContent = 'अनुभव स्तर';
+        elements.submitBtnText.textContent = 'परामर्श अनुरोध सबमिट करें';
+    } else if (lang === 'or') {
+        elements.headerTitle.textContent = 'କୃଷକ ପରାମର୍ଶ ଅନୁରୋଧ';
+        elements.headerSubtitle.textContent = 'କୃଷି ପରାମର୍ଶ ନିର୍ଦ୍ଧାରଣ ପାଇଁ ଦୟାକରି ଆପଣଙ୍କର ବିବରଣୀ ପୂରଣ କରନ୍ତୁ';
+        elements.consultationTitle.textContent = 'ପରାମର୍ଶ ପ୍ରକ୍ରିୟା';
+        elements.consultationDesc.textContent = 'ଏହି ଫର୍ମ ସମର୍ପଣ କରିବା ପରେ, ଆମର କୃଷି ବିଶେଷଜ୍ଞ 24 ଘଣ୍ଟା ମଧ୍ୟରେ ଆପଣଙ୍କୁ କଲ୍ କରିବେ ଯାହା ଆପଣଙ୍କର କୃଷି ଆବଶ୍ୟକତା ବିଷୟରେ ଆଲୋଚନା କରିବା ଏବଂ ବ୍ୟକ୍ତିଗତ ପରାମର୍ଶ ନିର୍ଦ୍ଧାରଣ କରିବା ପାଇଁ।';
+        elements.personalInfoTitle.textContent = 'ବ୍ୟକ୍ତିଗତ ସୂଚନା';
+        elements.labelName.textContent = 'ପୂର୍ଣ୍ଣ ନାମ';
+        elements.labelEmail.textContent = 'ଇମେଲ୍ ଠିକଣା';
+        elements.labelPhone.textContent = 'ଫୋନ୍ ନମ୍ବର';
+        elements.locationInfoTitle.textContent = 'ଅବସ୍ଥାନ ସୂଚନା';
+        elements.labelAddress.textContent = 'ସମ୍ପୂର୍ଣ୍ଣ ଠିକଣା';
+        elements.labelCity.textContent = 'ସହର';
+        elements.labelState.textContent = 'ରାଜ୍ୟ';
+        elements.labelZip.textContent = 'ଜିପ୍ କୋଡ୍';
+        elements.farmInfoTitle.textContent = 'ଫାର୍ମ ସୂଚନା';
+        elements.labelFarmSize.textContent = 'ଫାର୍ମ ଆକାର (ଏକରରେ)';
+        elements.labelCropType.textContent = 'ଫସଲ ପ୍ରକାର';
+        elements.labelSoilType.textContent = 'ମାଟି ପ୍ରକାର';
+        elements.labelIrrigation.textContent = 'ସିଞ୍ଚାଇ ପ୍ରଣାଳୀ';
+        elements.labelExperience.textContent = 'ଅନୁଭବ ସ୍ତର';
+        elements.submitBtnText.textContent = 'ପରାମର୍ଶ ଅନୁରୋଧ ସମର୍ପଣ କରନ୍ତୁ';
+    } else {
+        // English default
+        elements.headerTitle.textContent = 'Farmer Consultation Request';
+        elements.headerSubtitle.textContent = 'Please fill in your details to schedule an agricultural consultation';
+        elements.consultationTitle.textContent = 'Consultation Process';
+        elements.consultationDesc.textContent = 'After submitting this form, our agricultural expert will call you within 24 hours to discuss your farming needs and schedule an in-person consultation.';
+        elements.personalInfoTitle.textContent = 'Personal Information';
+        elements.labelName.textContent = 'Full Name';
+        elements.labelEmail.textContent = 'Email Address';
+        elements.labelPhone.textContent = 'Phone Number';
+        elements.locationInfoTitle.textContent = 'Location Information';
+        elements.labelAddress.textContent = 'Complete Address';
+        elements.labelCity.textContent = 'City';
+        elements.labelState.textContent = 'State';
+        elements.labelZip.textContent = 'ZIP Code';
+        elements.farmInfoTitle.textContent = 'Farm Information';
+        elements.labelFarmSize.textContent = 'Farm Size (in acres)';
+        elements.labelCropType.textContent = 'Crop Type';
+        elements.labelSoilType.textContent = 'Soil Type';
+        elements.labelIrrigation.textContent = 'Irrigation Methods';
+        elements.labelExperience.textContent = 'Experience Level';
+        elements.submitBtnText.textContent = 'Submit Consultation Request';
+    }
+}
+
+// Form validation enhancements (optional, keep your existing validation)
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('farmerForm');
+    const inputs = form.querySelectorAll('input, select, textarea');
+    
+    inputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            validateField(this);
+        });
+        
+        input.addEventListener('input', function() {
+            if (this.classList.contains('is-invalid')) {
+                validateField(this);
+            }
+        });
+    });
+    
+    function validateField(field) {
+        const value = field.value.trim();
+        const fieldName = field.name;
+        let isValid = true;
+        let errorMessage = '';
+        
+        if (field.required && !value) {
+            isValid = false;
+            errorMessage = 'This field is required.';
+        }
+        
+        switch(fieldName) {
+            case 'phone':
+                const phoneRegex = /^\d{10}$/;
+                if (value && !phoneRegex.test(value)) {
+                    isValid = false;
+                    errorMessage = 'Please enter a valid 10-digit phone number.';
+                }
+                break;
+            case 'Email':
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (value && !emailRegex.test(value)) {
+                    isValid = false;
+                    errorMessage = 'Please enter a valid email address.';
+                }
+                break;
+            case 'zip':
+                const zipRegex = /^\d{6}$/;
+                if (value && !zipRegex.test(value)) {
+                    isValid = false;
+                    errorMessage = 'Please enter a valid 6-digit ZIP code.';
+                }
+                break;
+            case 'farm_size':
+                if (value && (parseFloat(value) <= 0)) {
+                    isValid = false;
+                    errorMessage = 'Farm size must be greater than 0.';
+                }
+                break;
+        }
+        
+        if (isValid) {
+            field.classList.remove('is-invalid');
+            field.classList.add('is-valid');
+        } else {
+            field.classList.remove('is-valid');
+            field.classList.add('is-invalid');
+        }
+    }
+});
+
+// Additional scripts for input formatting, smooth scroll, etc. can remain unchanged
+</script>
+{% endblock %}

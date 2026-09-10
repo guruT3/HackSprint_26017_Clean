@@ -1,0 +1,821 @@
+{% extends "base.html" %}
+
+{% block title %}Weather Intelligence – Agri Mitra{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --green:  #4CAF50;
+        --lgreen: #8BC34A;
+        --orange: #FFB74D;
+        --bg:     #F1F8E9;
+        --text:   #333333;
+        --radius: 18px;
+        --shadow: 0 8px 32px rgba(76,175,80,.13);
+    }
+
+    body { background: var(--bg); }
+
+    /* ── PAGE WRAPPER ─────────────────────────── */
+    .wx-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2.5rem 1.5rem 4rem;
+    }
+
+    /* ── PAGE HEADER ──────────────────────────── */
+    .wx-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+    .wx-header .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        background: #e8f5e9;
+        color: var(--green);
+        border-radius: 50px;
+        padding: .3rem 1rem;
+        font-size: .78rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: .9rem;
+    }
+    .wx-header h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(1.9rem, 4vw, 2.8rem);
+        font-weight: 900;
+        color: var(--text);
+        margin-bottom: .5rem;
+    }
+    .wx-header h1 span { color: var(--green); }
+    .wx-header p { color: #666; font-size: 1rem; }
+
+    /* ── SEARCH ───────────────────────────────── */
+    .search-card {
+        background: linear-gradient(135deg, var(--green) 0%, #2e7d32 100%);
+        border-radius: var(--radius);
+        padding: 2rem 2.5rem;
+        box-shadow: 0 12px 40px rgba(76,175,80,.25);
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    .search-card::before {
+        content: '🌤️';
+        position: absolute;
+        font-size: 8rem;
+        right: -1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: .1;
+        pointer-events: none;
+    }
+    .search-card h2 {
+        color: #fff;
+        font-family: 'Playfair Display', serif;
+        font-size: 1.4rem;
+        margin-bottom: 1.2rem;
+        font-weight: 700;
+    }
+    .search-row {
+        display: flex;
+        gap: .75rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    .search-input {
+        flex: 1;
+        min-width: 220px;
+        padding: .8rem 1.2rem;
+        border: none;
+        border-radius: 12px;
+        font-size: .95rem;
+        font-family: 'DM Sans', sans-serif;
+        outline: none;
+        box-shadow: 0 4px 16px rgba(0,0,0,.1);
+        background: #fff;
+        color: var(--text);
+        transition: box-shadow .2s;
+    }
+    .search-input:focus { box-shadow: 0 4px 20px rgba(0,0,0,.18); }
+
+    .btn-search {
+        padding: .8rem 1.8rem;
+        border: none;
+        border-radius: 12px;
+        font-family: 'DM Sans', sans-serif;
+        font-weight: 700;
+        font-size: .92rem;
+        cursor: pointer;
+        transition: all .25s;
+        white-space: nowrap;
+    }
+    .btn-search.primary {
+        background: var(--orange);
+        color: #fff;
+        box-shadow: 0 4px 16px rgba(255,183,77,.4);
+    }
+    .btn-search.primary:hover {
+        background: #fb8c00;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 22px rgba(255,183,77,.5);
+    }
+    .btn-search.secondary {
+        background: rgba(255,255,255,.18);
+        color: #fff;
+        border: 1.5px solid rgba(255,255,255,.4);
+    }
+    .btn-search.secondary:hover {
+        background: rgba(255,255,255,.28);
+        transform: translateY(-2px);
+    }
+
+    /* ── FEEDBACK BARS ────────────────────────── */
+    .loading {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        gap: .75rem;
+        padding: 2.5rem;
+        color: #555;
+        font-size: 1rem;
+    }
+    .spinner {
+        width: 28px; height: 28px;
+        border: 3px solid #ddd;
+        border-top-color: var(--green);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .feedback-bar {
+        border-radius: 12px;
+        padding: .9rem 1.2rem;
+        margin-bottom: 1.2rem;
+        font-weight: 600;
+        font-size: .9rem;
+        display: none;
+    }
+    .feedback-bar.error   { background: #ffebee; color: #c62828; border: 1.5px solid #ef9a9a; }
+    .feedback-bar.success { background: #e8f5e9; color: #2e7d32; border: 1.5px solid #a5d6a7; }
+
+    /* ── MAIN WEATHER GRID ────────────────────── */
+    .wx-grid {
+        display: grid;
+        grid-template-columns: 340px 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    @media (max-width: 900px) { .wx-grid { grid-template-columns: 1fr; } }
+
+    /* Current weather card */
+    .current-card {
+        background: linear-gradient(160deg, #1565c0 0%, #1976d2 50%, #1e88e5 100%);
+        color: #fff;
+        border-radius: var(--radius);
+        padding: 2rem 1.8rem;
+        box-shadow: 0 12px 40px rgba(21,101,192,.25);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    .current-card::after {
+        content: '';
+        position: absolute;
+        width: 250px; height: 250px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.05);
+        bottom: -80px; right: -60px;
+        pointer-events: none;
+    }
+    .current-card img.wx-icon {
+        width: 90px; height: 90px;
+        margin: 0 auto .5rem;
+        filter: drop-shadow(0 4px 12px rgba(0,0,0,.2));
+        display: block;
+    }
+    .current-city { font-size: 1.1rem; font-weight: 600; opacity: .9; margin-bottom: .3rem; }
+    .current-temp {
+        font-family: 'Playfair Display', serif;
+        font-size: 4.5rem;
+        font-weight: 900;
+        line-height: 1;
+        margin-bottom: .4rem;
+    }
+    .current-desc { font-size: 1rem; opacity: .85; margin-bottom: 1.2rem; text-transform: capitalize; }
+    .feels-like {
+        display: inline-block;
+        background: rgba(255,255,255,.15);
+        border-radius: 8px;
+        padding: .3rem .9rem;
+        font-size: .82rem;
+        margin-bottom: 1.5rem;
+    }
+    .wx-details {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: .75rem;
+    }
+    .wx-detail {
+        background: rgba(255,255,255,.12);
+        border-radius: 10px;
+        padding: .7rem;
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        font-size: .82rem;
+        text-align: left;
+    }
+    .wx-detail .di { font-size: 1.1rem; }
+
+    /* Insights card */
+    .insights-card {
+        background: #fff;
+        border-radius: var(--radius);
+        padding: 1.8rem;
+        box-shadow: var(--shadow);
+        border-top: 4px solid var(--green);
+    }
+    .insights-card h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.3rem;
+        color: var(--text);
+        margin-bottom: 1.2rem;
+        font-weight: 700;
+    }
+
+    /* Condition pills row */
+    .conditions-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: .75rem;
+        margin-bottom: 1.5rem;
+    }
+    @media (max-width: 560px) { .conditions-row { grid-template-columns: 1fr; } }
+
+    .condition-pill {
+        background: var(--bg);
+        border-radius: 12px;
+        padding: 1rem .75rem;
+        text-align: center;
+        border: 1.5px solid #e0e0e0;
+        transition: border-color .2s;
+    }
+    .condition-pill:hover { border-color: var(--lgreen); }
+    .condition-pill .cp-icon { font-size: 1.5rem; margin-bottom: .4rem; display: block; }
+    .condition-pill .cp-label { font-size: .75rem; color: #888; margin-bottom: .3rem; }
+    .condition-pill .cp-val { font-size: .9rem; font-weight: 700; }
+    .cp-val.good   { color: var(--green); }
+    .cp-val.medium { color: #f9a825; }
+    .cp-val.high, .cp-val.poor { color: #e53935; }
+
+    /* Alert rows */
+    .alert-row {
+        display: flex;
+        align-items: flex-start;
+        gap: .75rem;
+        padding: .75rem 1rem;
+        border-radius: 10px;
+        margin-bottom: .6rem;
+        font-size: .875rem;
+        line-height: 1.5;
+    }
+    .alert-row.warning { background: #fff3e0; border-left: 4px solid var(--orange); color: #5d4037; }
+    .alert-row.caution { background: #fff9c4; border-left: 4px solid #f9a825; color: #4e342e; }
+    .alert-row.info    { background: #e3f2fd; border-left: 4px solid #1976d2; color: #0d47a1; }
+    .alert-row.rec     { background: #e8f5e9; border-left: 4px solid var(--green); color: #1b5e20; }
+    .alert-row .ar-icon { flex-shrink: 0; font-size: 1rem; margin-top: .1rem; }
+    .alert-row .ar-msg  { flex: 1; }
+
+    .send-btn {
+        background: var(--orange);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: .3rem .8rem;
+        font-size: .75rem;
+        font-weight: 700;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: all .2s;
+        white-space: nowrap;
+        margin-left: auto;
+    }
+    .send-btn:hover { background: #fb8c00; transform: scale(1.05); }
+    .send-btn.sent { background: var(--green); cursor: default; }
+
+    .section-sub {
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: #aaa;
+        margin: 1.2rem 0 .6rem;
+    }
+
+    /* ── FORECAST ─────────────────────────────── */
+    .forecast-card-outer {
+        background: #fff;
+        border-radius: var(--radius);
+        padding: 1.8rem;
+        box-shadow: var(--shadow);
+        margin-bottom: 1.5rem;
+        display: none;
+        border-top: 4px solid var(--lgreen);
+    }
+    .forecast-card-outer h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.3rem;
+        color: var(--text);
+        margin-bottom: 1.2rem;
+        font-weight: 700;
+    }
+    .forecast-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 1rem;
+    }
+    .fc-card {
+        background: var(--bg);
+        border-radius: 12px;
+        padding: 1.1rem;
+        text-align: center;
+        border: 1.5px solid #e8f5e9;
+        transition: all .25s;
+    }
+    .fc-card:hover {
+        border-color: var(--green);
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(76,175,80,.13);
+    }
+    .fc-day   { font-weight: 700; font-size: .95rem; color: var(--text); margin-bottom: .2rem; }
+    .fc-date  { font-size: .75rem; color: #999; margin-bottom: .5rem; }
+    .fc-icon  { width: 48px; height: 48px; margin: 0 auto .4rem; display: block; }
+    .fc-temps { font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: .4rem; }
+    .fc-desc  { font-size: .75rem; color: #777; margin-bottom: .5rem; text-transform: capitalize; }
+    .fc-meta  { font-size: .75rem; color: #888; display: flex; flex-direction: column; gap: .2rem; }
+
+    /* ── TOOLS SECTION ────────────────────────── */
+    .tools-card {
+        background: #fff;
+        border-radius: var(--radius);
+        padding: 1.8rem;
+        box-shadow: var(--shadow);
+        border-top: 4px solid var(--orange);
+    }
+    .tools-card h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.3rem;
+        color: var(--text);
+        margin-bottom: 1.2rem;
+        font-weight: 700;
+    }
+    .tools-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    .tool-item {
+        display: flex;
+        align-items: center;
+        gap: .9rem;
+        padding: 1.1rem;
+        background: var(--bg);
+        border-radius: 12px;
+        border: 1.5px solid transparent;
+        text-decoration: none;
+        color: var(--text);
+        cursor: pointer;
+        transition: all .25s;
+    }
+    .tool-item:hover {
+        border-color: var(--lgreen);
+        background: #f1f8f1;
+        transform: translateX(4px);
+        color: var(--text);
+    }
+    .tool-icon {
+        width: 44px; height: 44px;
+        background: #e8f5e9;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        font-size: 1.3rem;
+        flex-shrink: 0;
+        transition: background .2s;
+    }
+    .tool-item:hover .tool-icon { background: var(--lgreen); }
+    .tool-title { font-weight: 700; font-size: .9rem; margin-bottom: .15rem; }
+    .tool-desc  { font-size: .78rem; color: #888; line-height: 1.4; }
+
+    /* ── RESPONSIVE ───────────────────────────── */
+    @media (max-width: 600px) {
+        .search-row { flex-direction: column; }
+        .search-input { min-width: 100%; }
+        .btn-search { width: 100%; justify-content: center; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="wx-page">
+
+    <!-- Page Header -->
+    <div class="wx-header">
+        <div class="badge">🌦️ Live Agriculture Weather</div>
+        <h1>Smart <span>Weather</span> Intelligence</h1>
+        <p>Hyperlocal forecasts, crop condition analysis, and real-time farming alerts</p>
+    </div>
+
+    <!-- Search -->
+    <div class="search-card">
+        <h2>🔍 Search Your Location</h2>
+        <form id="weatherForm">
+            <div class="search-row">
+                <input type="text" class="search-input" id="cityInput"
+                       placeholder="Enter city name (e.g., New Delhi, Bhubaneswar)"
+                       value="{{ default_city if default_city else '' }}">
+                <button type="submit" class="btn-search primary">🔍 Get Weather</button>
+                <button type="button" class="btn-search secondary" onclick="getCurrentLocation()">📍 My Location</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Feedback -->
+    <div id="loading" class="loading">
+        <div class="spinner"></div>
+        Fetching live weather data…
+    </div>
+    <div id="errorMessage"  class="feedback-bar error"></div>
+    <div id="successMessage" class="feedback-bar success"></div>
+
+    <!-- Weather Display -->
+    <div id="weatherDisplay">
+        {% if weather_data and weather_data.status == 'success' %}
+        <div class="wx-grid">
+
+            <!-- Current weather -->
+            <div class="current-card">
+                <img class="wx-icon"
+                     src="https://openweathermap.org/img/wn/{{ weather_data.data.icon }}@2x.png"
+                     alt="Weather Icon">
+                <div class="current-city">
+                    📍 {{ weather_data.data.city }}, {{ weather_data.data.country }}
+                </div>
+                <div class="current-temp">{{ weather_data.data.temperature }}°</div>
+                <div class="current-desc">{{ weather_data.data.description }}</div>
+                <div class="feels-like">Feels like {{ weather_data.data.feels_like }}°C</div>
+                <div class="wx-details">
+                    <div class="wx-detail"><span class="di">💧</span>{{ weather_data.data.humidity }}% Humidity</div>
+                    <div class="wx-detail"><span class="di">🌬️</span>{{ weather_data.data.wind_speed }} m/s Wind</div>
+                    <div class="wx-detail"><span class="di">🌅</span>{{ weather_data.data.sunrise }}</div>
+                    <div class="wx-detail"><span class="di">🌇</span>{{ weather_data.data.sunset }}</div>
+                </div>
+            </div>
+
+            <!-- Insights -->
+            {% if insights_data and insights_data.status == 'success' %}
+            <div class="insights-card">
+                <h3>🌾 Agricultural Insights</h3>
+
+                <div class="conditions-row">
+                    <div class="condition-pill">
+                        <span class="cp-icon">🚜</span>
+                        <div class="cp-label">Field Work</div>
+                        <div class="cp-val {{ insights_data.farming_conditions.field_work.lower() }}">
+                            {{ insights_data.farming_conditions.field_work }}
+                        </div>
+                    </div>
+                    <div class="condition-pill">
+                        <span class="cp-icon">💧</span>
+                        <div class="cp-label">Irrigation</div>
+                        <div class="cp-val {{ insights_data.farming_conditions.irrigation_need.lower() }}">
+                            {{ insights_data.farming_conditions.irrigation_need }}
+                        </div>
+                    </div>
+                    <div class="condition-pill">
+                        <span class="cp-icon">🐛</span>
+                        <div class="cp-label">Pest Risk</div>
+                        <div class="cp-val {{ insights_data.farming_conditions.pest_risk.lower() }}">
+                            {{ insights_data.farming_conditions.pest_risk }}
+                        </div>
+                    </div>
+                </div>
+
+                {% if insights_data.alerts %}
+                <div class="section-sub">⚠️ Weather Alerts</div>
+                {% for alert in insights_data.alerts %}
+                <div class="alert-row {{ alert.level }}" data-alert-id="{{ loop.index }}">
+                    <span class="ar-icon">
+                        {% if alert.level == 'warning' %}⚠️{% elif alert.level == 'caution' %}⚡{% else %}ℹ️{% endif %}
+                    </span>
+                    <span class="ar-msg">{{ alert.message }}</span>
+                    {% if alert.level == 'warning' %}
+                    <button class="send-btn"
+                            onclick="sendAlertEmails('{{ alert.message }}', '{{ alert.level }}', {{ loop.index }})">
+                        📧 Alert
+                    </button>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                {% endif %}
+
+                {% if insights_data.recommendations %}
+                <div class="section-sub">💡 Recommendations</div>
+                {% for r in insights_data.recommendations %}
+                <div class="alert-row rec">
+                    <span class="ar-icon">✅</span>
+                    <span class="ar-msg">{{ r }}</span>
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+            {% endif %}
+
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Forecast -->
+    <div class="forecast-card-outer" id="forecastSection">
+        <h3>📅 5-Day Forecast</h3>
+        <div class="forecast-grid" id="forecastGrid"></div>
+    </div>
+
+    <!-- Tools -->
+    <div class="tools-card">
+        <h3>🛠️ More Agricultural Tools</h3>
+        <div class="tools-grid">
+            <a class="tool-item" href="/predict">
+                <div class="tool-icon">🧠</div>
+                <div>
+                    <div class="tool-title">Crop Prediction</div>
+                    <div class="tool-desc">AI crop recommendations from soil data</div>
+                </div>
+            </a>
+            <a class="tool-item" href="/disease-detection">
+                <div class="tool-icon">🔬</div>
+                <div>
+                    <div class="tool-title">Disease Detection</div>
+                    <div class="tool-desc">Identify plant diseases from a photo</div>
+                </div>
+            </a>
+            <a class="tool-item" href="/farming-calendar">
+                <div class="tool-icon">📅</div>
+                <div>
+                    <div class="tool-title">Farm Calendar</div>
+                    <div class="tool-desc">Seasonal planting &amp; harvest schedules</div>
+                </div>
+            </a>
+            <a class="tool-item" href="/contact">
+                <div class="tool-icon">📞</div>
+                <div>
+                    <div class="tool-title">Expert Help</div>
+                    <div class="tool-desc">Consult an agronomist directly</div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let currentCity = "{{ default_city if default_city else 'New Delhi' }}";
+let emailAlertsEnabled = localStorage.getItem('emailAlertsEnabled') === 'true';
+
+document.addEventListener('DOMContentLoaded', function () {
+    if (currentCity) loadForecast(currentCity);
+    setInterval(checkForSevereWeatherAlerts, 300000);
+});
+
+/* ── Form submit ──────────────────────────────────── */
+document.getElementById('weatherForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const city = document.getElementById('cityInput').value.trim();
+    if (city) { currentCity = city; getWeatherData(city); loadForecast(city); }
+});
+
+/* ── UI helpers ───────────────────────────────────── */
+function showLoading()  { document.getElementById('loading').style.display = 'flex'; hideMsg(); }
+function hideLoading()  { document.getElementById('loading').style.display = 'none'; }
+
+function hideMsg() {
+    document.getElementById('errorMessage').style.display = 'none';
+    document.getElementById('successMessage').style.display = 'none';
+}
+
+function showError(msg) {
+    const el = document.getElementById('errorMessage');
+    el.textContent = msg;
+    el.style.display = 'block';
+    document.getElementById('successMessage').style.display = 'none';
+    hideLoading();
+}
+
+function showSuccess(msg) {
+    const el = document.getElementById('successMessage');
+    el.textContent = msg;
+    el.style.display = 'block';
+    document.getElementById('errorMessage').style.display = 'none';
+    setTimeout(() => { el.style.display = 'none'; }, 5000);
+}
+
+/* ── Fetch weather ────────────────────────────────── */
+function getWeatherData(city) {
+    showLoading();
+    fetch(`/api/weather/current?city=${encodeURIComponent(city)}`)
+        .then(r => r.json())
+        .then(data => {
+            hideLoading();
+            if (data.status === 'success') {
+                displayWeatherData(data);
+                checkAndSendAutoAlerts(data);
+            } else { showError(data.message || 'Failed to fetch weather data'); }
+        })
+        .catch(err => { hideLoading(); showError('Network error: ' + err.message); });
+}
+
+/* ── Display weather ──────────────────────────────── */
+function displayWeatherData(data) {
+    const w = data.data;
+    const ins = data.agricultural_insights;
+
+    /* Build conditions HTML */
+    const conditions = ins ? `
+        <div class="conditions-row">
+            <div class="condition-pill">
+                <span class="cp-icon">🚜</span>
+                <div class="cp-label">Field Work</div>
+                <div class="cp-val ${ins.farming_conditions.field_work.toLowerCase()}">${ins.farming_conditions.field_work}</div>
+            </div>
+            <div class="condition-pill">
+                <span class="cp-icon">💧</span>
+                <div class="cp-label">Irrigation</div>
+                <div class="cp-val ${ins.farming_conditions.irrigation_need.toLowerCase()}">${ins.farming_conditions.irrigation_need}</div>
+            </div>
+            <div class="condition-pill">
+                <span class="cp-icon">🐛</span>
+                <div class="cp-label">Pest Risk</div>
+                <div class="cp-val ${ins.farming_conditions.pest_risk.toLowerCase()}">${ins.farming_conditions.pest_risk}</div>
+            </div>
+        </div>` : '';
+
+    /* Alerts */
+    let alertsHtml = '';
+    if (ins && ins.alerts && ins.alerts.length) {
+        alertsHtml = '<div class="section-sub">⚠️ Weather Alerts</div>';
+        ins.alerts.forEach((a, i) => {
+            const icon = a.level === 'warning' ? '⚠️' : a.level === 'caution' ? '⚡' : 'ℹ️';
+            const btn  = a.level === 'warning'
+                ? `<button class="send-btn" onclick="sendAlertEmails('${a.message.replace(/'/g,"\\'")}','${a.level}',${i+1})">📧 Alert</button>`
+                : '';
+            alertsHtml += `<div class="alert-row ${a.level}" data-alert-id="${i+1}">
+                <span class="ar-icon">${icon}</span>
+                <span class="ar-msg">${a.message}</span>${btn}</div>`;
+        });
+    }
+
+    /* Recommendations */
+    let recsHtml = '';
+    if (ins && ins.recommendations && ins.recommendations.length) {
+        recsHtml = '<div class="section-sub">💡 Recommendations</div>';
+        ins.recommendations.forEach(r => {
+            recsHtml += `<div class="alert-row rec"><span class="ar-icon">✅</span><span class="ar-msg">${r}</span></div>`;
+        });
+    }
+
+    document.getElementById('weatherDisplay').innerHTML = `
+        <div class="wx-grid">
+            <div class="current-card">
+                <img class="wx-icon"
+                     src="https://openweathermap.org/img/wn/${w.icon}@2x.png" alt="Weather">
+                <div class="current-city">📍 ${w.city}, ${w.country}</div>
+                <div class="current-temp">${w.temperature}°</div>
+                <div class="current-desc">${w.description}</div>
+                <div class="feels-like">Feels like ${w.feels_like}°C</div>
+                <div class="wx-details">
+                    <div class="wx-detail"><span class="di">💧</span>${w.humidity}% Humidity</div>
+                    <div class="wx-detail"><span class="di">🌬️</span>${w.wind_speed} m/s Wind</div>
+                    <div class="wx-detail"><span class="di">🌅</span>${w.sunrise}</div>
+                    <div class="wx-detail"><span class="di">🌇</span>${w.sunset}</div>
+                </div>
+            </div>
+            <div class="insights-card">
+                <h3>🌾 Agricultural Insights</h3>
+                ${conditions}${alertsHtml}${recsHtml}
+            </div>
+        </div>`;
+}
+
+/* ── Forecast ─────────────────────────────────────── */
+function loadForecast(city) {
+    fetch(`/api/weather/forecast?city=${encodeURIComponent(city)}&days=5`)
+        .then(r => r.json())
+        .then(data => { if (data.status === 'success') displayForecast(data.data); })
+        .catch(err => console.error('Forecast error:', err));
+}
+
+function displayForecast(forecastData) {
+    const section = document.getElementById('forecastSection');
+    const grid    = document.getElementById('forecastGrid');
+    if (!forecastData.forecasts || !forecastData.forecasts.length) return;
+
+    grid.innerHTML = forecastData.forecasts.map(f => `
+        <div class="fc-card">
+            <div class="fc-day">${f.day}</div>
+            <div class="fc-date">${f.date}</div>
+            <img class="fc-icon" src="https://openweathermap.org/img/wn/${f.icon}.png" alt="">
+            <div class="fc-temps">${f.temperature.max}° / ${f.temperature.min}°</div>
+            <div class="fc-desc">${f.description}</div>
+            <div class="fc-meta">
+                <span>💧 ${f.humidity}%</span>
+                <span>🌬️ ${f.wind_speed} m/s</span>
+            </div>
+        </div>`).join('');
+
+    section.style.display = 'block';
+}
+
+/* ── Location ─────────────────────────────────────── */
+function getCurrentLocation() {
+    if (!navigator.geolocation) { showError('Geolocation not supported by this browser.'); return; }
+    showLoading();
+    navigator.geolocation.getCurrentPosition(
+        pos => {
+            fetch(`/api/weather/current?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`)
+                .then(r => r.json())
+                .then(data => {
+                    hideLoading();
+                    if (data.status === 'success') {
+                        currentCity = data.data.city;
+                        document.getElementById('cityInput').value = currentCity;
+                        displayWeatherData(data);
+                        loadForecast(currentCity);
+                        checkAndSendAutoAlerts(data);
+                    } else { showError(data.message || 'Failed to get location weather'); }
+                })
+                .catch(err => { hideLoading(); showError('Network error: ' + err.message); });
+        },
+        () => { hideLoading(); showError('Location access denied. Please enter a city manually.'); }
+    );
+}
+
+/* ── Alerts ───────────────────────────────────────── */
+function checkAndSendAutoAlerts(data) {
+    if (!emailAlertsEnabled) return;
+    const ins = data.agricultural_insights;
+    if (ins && ins.alerts) {
+        ins.alerts.forEach((a, i) => {
+            if (a.level === 'warning') setTimeout(() => sendAlertEmails(a.message, a.level, i + 1, true), 1000);
+        });
+    }
+}
+
+function sendAlertEmails(message, level, alertId, isAuto = false) {
+    const btn = document.querySelector(`[data-alert-id="${alertId}"] .send-btn`);
+    if (btn && btn.classList.contains('sent')) { if (!isAuto) showError('Alert already sent for this condition'); return; }
+    if (btn) { btn.textContent = '📤 Sending…'; btn.disabled = true; }
+
+    fetch('/api/weather/send-alert-emails', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, level, city: currentCity, timestamp: new Date().toISOString(), alert_id: alertId })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'success') {
+            if (btn) { btn.textContent = '✅ Sent'; btn.classList.add('sent'); }
+            if (!isAuto) showSuccess(`Alert sent to ${data.emails_sent} users successfully!`);
+        } else {
+            if (btn) { btn.textContent = '❌ Failed'; btn.disabled = false; }
+            if (!isAuto) showError(data.message || 'Failed to send alert emails');
+        }
+    })
+    .catch(err => {
+        if (btn) { btn.textContent = '❌ Error'; btn.disabled = false; }
+        if (!isAuto) showError('Network error: ' + err.message);
+    });
+}
+
+function checkForSevereWeatherAlerts() {
+    if (!emailAlertsEnabled || !currentCity) return;
+    fetch(`/api/weather/check-severe-alerts?city=${encodeURIComponent(currentCity)}`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'success' && data.severe_alerts) {
+                data.severe_alerts.forEach((a, i) => sendAlertEmails(a.message, a.level, `auto_${i}`, true));
+            }
+        })
+        .catch(err => console.error('Severe alert check failed:', err));
+}
+
+/* Auto-refresh every 10 minutes */
+setInterval(() => { if (currentCity) getWeatherData(currentCity); }, 600000);
+</script>
+{% endblock %}

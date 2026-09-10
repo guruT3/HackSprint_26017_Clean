@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ item.title }} — Farmer Connect Marketplace</title>
+    <link rel="stylesheet" href="{{ url_for('farmer_collaboration.static', filename='css/farmer_connect.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="fc-container">
+    <div class="fc-navbar">
+        <a href="{{ url_for('farmer_collaboration.dashboard') }}" class="fc-brand">🌾 Farmer Connect</a>
+        <div class="fc-nav-links">
+            <a href="{{ url_for('farmer_collaboration.marketplace') }}" class="fc-nav-link">← Back to Marketplace</a>
+        </div>
+    </div>
+
+    <div class="fc-grid-2">
+        <div class="fc-card">
+            <div>
+                <div class="fc-card-header">
+                    <span class="fc-badge fc-badge-green">{{ item.category }}</span>
+                    <span class="fc-badge fc-badge-blue">{{ item.status }}</span>
+                </div>
+                <h2 style="font-size:1.6rem; font-weight:800; color:#0f172a; margin:0 0 12px 0;">{{ item.title }}</h2>
+                <div class="fc-price-tag" style="font-size:2rem; margin-bottom:16px;">₹{{ item.price }} <span style="font-size:0.9rem; color:#64748b;">/ {{ item.unit }} ({{ item.price_type }})</span></div>
+
+                <h4 style="margin:16px 0 8px 0;">Product Overview</h4>
+                <p style="color:#475569; line-height:1.6;">High quality agricultural product verified by platform guidelines. Direct purchase inquiry available.</p>
+
+                <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:16px; margin-top:20px;">
+                    <div style="font-weight:700; color:#0f172a; margin-bottom:8px;">Listing Specifications:</div>
+                    <div style="font-size:0.9rem; color:#334155;">
+                        <div>• Quantity Available: <strong>{{ item.quantity }} {{ item.unit }}</strong></div>
+                        <div>• Location: <strong>{{ item.location }}</strong></div>
+                        <div>• Pricing Model: <strong>{{ item.price_type }}</strong></div>
+                        <div>• Trust Badge: <strong>Platform Verified Seller</strong></div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:24px;">
+                <button onclick="FarmerConnectUI.openInquiryModal('{{ item.title }}', '{{ item.seller }}')" class="fc-btn fc-btn-primary" style="background:#2e7d32; color:#fff; width:100%; justify-content:center; padding:14px; font-size:1.05rem;">Interested / Contact Seller</button>
+            </div>
+        </div>
+
+        <!-- Seller Profile Side Card -->
+        <div class="fc-card">
+            <h3 style="margin-top:0;">👨‍🌾 Seller Information</h3>
+            <div style="font-size:1.2rem; font-weight:800; color:#0f172a;">{{ item.seller }} ✓</div>
+            <div style="color:#64748b; font-size:0.9rem; margin-bottom:12px;">📍 {{ item.location }}</div>
+
+            <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:12px; margin-bottom:16px;">
+                <div style="font-weight:700; color:#16a34a;">Seller Reputation: {{ item.rating }} ★★★★★</div>
+                <div style="font-size:0.85rem; color:#166534; margin-top:4px;">Completed 15+ successful transactions on Farmer Connect platform.</div>
+            </div>
+
+            <button onclick="FarmerConnectUI.openCollaborationModal('{{ item.seller }}')" class="fc-btn fc-btn-secondary" style="background:#fff3e0; color:#b45309; width:100%; justify-content:center;">🤝 Request Collaboration</button>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('farmer_collaboration.static', filename='js/farmer_connect.js') }}"></script>
+</body>
+</html>

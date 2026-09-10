@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Search Results — Farmer Connect</title>
+    <link rel="stylesheet" href="{{ url_for('farmer_collaboration.static', filename='css/farmer_connect.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="fc-container">
+    <div class="fc-navbar">
+        <a href="{{ url_for('farmer_collaboration.dashboard') }}" class="fc-brand">🌾 Farmer Connect</a>
+        <div class="fc-nav-links">
+            <a href="{{ url_for('farmer_collaboration.dashboard') }}" class="fc-nav-link">Dashboard</a>
+        </div>
+    </div>
+
+    <h2>🔍 Search Results for "{{ query }}"</h2>
+    <div style="color:#64748b; margin-bottom:20px;">Found {{ results.total_results }} matching results across products, farmers, posts, and mandis.</div>
+
+    <!-- Results Section -->
+    <div class="fc-grid-2">
+        <div>
+            <h3>🛒 Matching Marketplace Products ({{ results.listings|length }})</h3>
+            {% for item in results.listings %}
+            <div class="fc-card" style="margin-bottom:12px;">
+                <div class="fc-card-header">
+                    <strong>{{ item.title }}</strong>
+                    <span style="color:#2e7d32; font-weight:800;">₹{{ item.price }}</span>
+                </div>
+                <div style="font-size:0.85rem; color:#64748b;">Category: {{ item.category }} | 📍 {{ item.location }}</div>
+            </div>
+            {% else %}
+            <div class="fc-card" style="color:#64748b;">No matching marketplace listings found.</div>
+            {% endfor %}
+
+            <h3 style="margin-top:24px;">💬 Matching Community Discussions ({{ results.posts|length }})</h3>
+            {% for post in results.posts %}
+            <div class="fc-card" style="margin-bottom:12px;">
+                <strong style="color:#0f172a;">{{ post.title }}</strong>
+                <p style="font-size:0.88rem; color:#475569; margin:4px 0 0 0;">{{ post.content }}</p>
+            </div>
+            {% else %}
+            <div class="fc-card" style="color:#64748b;">No matching community posts found.</div>
+            {% endfor %}
+        </div>
+
+        <div>
+            <h3>👨‍🌾 Matching Farmers ({{ results.farmers|length }})</h3>
+            {% for f in results.farmers %}
+            <div class="fc-card" style="margin-bottom:12px;">
+                <div style="font-weight:700; color:#0f172a;">{{ f.name }} ✓</div>
+                <div style="font-size:0.85rem; color:#64748b;">Crops: {{ f.crops }} | 📍 {{ f.district }}</div>
+            </div>
+            {% else %}
+            <div class="fc-card" style="color:#64748b;">No matching farmers found.</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Moderation & Trust Dashboard — Farmer Connect</title>
+    <link rel="stylesheet" href="{{ url_for('farmer_collaboration.static', filename='css/farmer_connect.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="fc-container">
+    <div class="fc-navbar" style="background:#1e293b;">
+        <a href="{{ url_for('farmer_collaboration.dashboard') }}" class="fc-brand">⚙️ Admin Dashboard (Farmer Connect)</a>
+        <div class="fc-nav-links">
+            <a href="{{ url_for('farmer_collaboration.dashboard') }}" class="fc-nav-link">← Return to App</a>
+        </div>
+    </div>
+
+    <!-- Summary Statistics Grid -->
+    <div class="fc-grid-3" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));">
+        <div class="fc-card" style="text-align:center;">
+            <div style="font-size:2.2rem; font-weight:800; color:#2e7d32;">{{ total_farmers }}</div>
+            <div style="font-size:0.85rem; color:#64748b; font-weight:600;">Registered Farmers</div>
+        </div>
+        <div class="fc-card" style="text-align:center;">
+            <div style="font-size:2.2rem; font-weight:800; color:#0369a1;">{{ total_mandis }}</div>
+            <div style="font-size:0.85rem; color:#64748b; font-weight:600;">Verified Mandis</div>
+        </div>
+        <div class="fc-card" style="text-align:center;">
+            <div style="font-size:2.2rem; font-weight:800; color:#b45309;">{{ total_listings }}</div>
+            <div style="font-size:0.85rem; color:#64748b; font-weight:600;">Active Marketplace Listings</div>
+        </div>
+        <div class="fc-card" style="text-align:center;">
+            <div style="font-size:2.2rem; font-weight:800; color:#7c3aed;">{{ total_posts }}</div>
+            <div style="font-size:0.85rem; color:#64748b; font-weight:600;">Community Discussions</div>
+        </div>
+    </div>
+
+    <div class="fc-grid-2" style="margin-top:20px;">
+        <!-- Verification Management -->
+        <div class="fc-card">
+            <h3 style="margin-top:0;">👨‍🌾 Platform Verification & Moderation</h3>
+            {% for f in farmers %}
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f1f5f9;">
+                <div>
+                    <div style="font-weight:700; color:#0f172a;">{{ f.name }}</div>
+                    <div style="font-size:0.8rem; color:#64748b;">📍 {{ f.district }} | Rating: {{ f.rating }}★</div>
+                </div>
+                <button onclick="alert('Verification badge updated for {{ f.name }}!')" class="fc-btn fc-btn-secondary" style="background:#e8f5e9; color:#2e7d32; padding:6px 12px; font-size:0.8rem;">
+                    {% if f.verified %}✓ Platform Verified{% else %}Verify Account{% endif %}
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pending Reports -->
+        <div class="fc-card">
+            <h3 style="margin-top:0;">🚨 Reported Content & Spam Moderation</h3>
+            <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:8px; padding:12px; font-size:0.88rem; color:#991b1b; margin-bottom:12px;">
+                <strong>Pending Report #104</strong>: Post titled "Fake Organic Bio Fertilizer" reported for misleading claim.
+                <div style="margin-top:8px; display:flex; gap:8px;">
+                    <button onclick="alert('Report resolved. Post suspended.')" class="fc-btn fc-btn-primary" style="background:#dc2626; color:#fff; padding:4px 10px; font-size:0.8rem;">Suspend Content</button>
+                    <button onclick="alert('Report dismissed.')" class="fc-btn fc-btn-secondary" style="padding:4px 10px; font-size:0.8rem;">Dismiss</button>
+                </div>
+            </div>
+            <div style="color:#64748b; font-size:0.88rem;">No other pending flags.</div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

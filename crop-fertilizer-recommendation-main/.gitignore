@@ -1,0 +1,46 @@
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+env*/
+
+# Environment variables & secrets
+.env
+.env.local
+
+# Database instance & local SQLite files
+instance/
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploaded user images / temporary files
+uploads/
+uploadimages/
+tempCodeRunnerFile.py
+
+# Editor / IDE settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Large Model Files (>100MB GitHub limit)
+# Add *.h5 and *.keras to ignore heavy AI models unless using Git LFS
+*.keras
+*.h5
+
+
