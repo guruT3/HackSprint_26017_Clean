@@ -17,3 +17,4 @@ Flask-WTF
 schedule
 googletrans==4.0.0-rc1
 email-validator
+celery
